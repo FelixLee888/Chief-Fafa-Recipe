@@ -84,3 +84,32 @@ After pushing this repository to GitHub on the `main` branch:
 3. Push to `main` (or re-run the workflow)
 
 The workflow builds the static site with `node scripts/build-site.mjs` and publishes the generated `site/` folder.
+
+## Trigger Refresh on GitHub
+
+For GitHub Pages branch-based deployment (`gh-pages`), use:
+
+- `.github/workflows/refresh-docs-gh-pages.yml`
+
+This workflow:
+
+1. Pulls latest content/images from Google Docs
+2. Rebuilds the site with the repository base path
+3. Force-pushes the output to `gh-pages`
+
+### One-time GitHub Secrets Setup
+
+In `Settings` -> `Secrets and variables` -> `Actions`, add:
+
+- `GOOGLE_DOCS_CLIENT_ID`
+- `GOOGLE_DOCS_CLIENT_SECRET`
+- `GOOGLE_DOCS_REFRESH_TOKEN`
+- `GOOGLE_DOCS_ACCESS_TOKEN` (optional fallback)
+
+### Manual Trigger
+
+Open `Actions` -> `Refresh Docs and Publish` -> `Run workflow`.
+
+Optional input:
+
+- `doc_ids`: comma-separated doc IDs override for one run.

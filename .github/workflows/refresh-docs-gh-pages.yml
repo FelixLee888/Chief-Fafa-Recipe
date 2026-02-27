@@ -1,0 +1,72 @@
+name: Refresh Docs and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      doc_ids:
+        description: "Optional comma-separated Google Doc IDs override"
+        required: false
+        default: ""
+  schedule:
+    - cron: "0 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-docs-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  refresh-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Refresh recipes from Google Docs
+        shell: bash
+        env:
+          GOOGLE_DOCS_CLIENT_ID: ${{ secrets.GOOGLE_DOCS_CLIENT_ID }}
+          GOOGLE_DOCS_CLIENT_SECRET: ${{ secrets.GOOGLE_DOCS_CLIENT_SECRET }}
+          GOOGLE_DOCS_REFRESH_TOKEN: ${{ secrets.GOOGLE_DOCS_REFRESH_TOKEN }}
+          GOOGLE_DOCS_ACCESS_TOKEN: ${{ secrets.GOOGLE_DOCS_ACCESS_TOKEN }}
+          DOC_IDS_INPUT: ${{ github.event.inputs.doc_ids }}
+        run: |
+          set -euo pipefail
+          if [ -n "${DOC_IDS_INPUT:-}" ]; then
+            node scripts/refresh_from_doc_ids.mjs --doc-ids "$DOC_IDS_INPUT"
+          else
+            node scripts/refresh_from_doc_ids.mjs
+          fi
+
+      - name: Build static site
+        env:
+          SITE_BASE_PATH: /${{ github.event.repository.name }}
+        run: node scripts/build-site.mjs
+
+      - name: Publish to gh-pages branch
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd site
+          touch .nojekyll
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No site changes to publish."
+            exit 0
+          fi
+          git commit -m "Auto refresh from Google Docs (${GITHUB_SHA:0:7})"
+          git branch -M gh-pages
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
