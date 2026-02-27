@@ -1,0 +1,256 @@
+{
+  "site": {
+    "title": "Chief Fafa's Recipe",
+    "description": "Modern, searchable recipe collection with auto-categorized cuisine and meal types.",
+    "generatedAt": "2026-02-27T19:11:35.162Z",
+    "source": "google-doc-batch:8",
+    "sourceType": "docs-api-batch",
+    "locales": [
+      "en",
+      "zh-Hant",
+      "ja"
+    ]
+  },
+  "recipes": [
+    {
+      "title": "MASAの料理",
+      "slug": "masa",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Dessert",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "Not clearly detected from source."
+      ],
+      "instructions": [
+        "零失敗！經典香蕉蛋糕/Classic Banana Bread| MASAの料理",
+        "低筋麵粉 Cake flour—150g",
+        "泡打粉 Baking powder—5g",
+        "◆歡迎合作/Contact：bigway1688@gmail.com",
+        "WeChat ID：sunnywung723",
+        "＊料理の名前＆作り方はあくまでも自己流なのでご了承ください",
+        "＊料理名稱&做法不一定正式or傳統, 是從自己的想法&經驗來分享的",
+        "沙拉油：泰山均衡369調合油 TAISUN 369 Blend Oil",
+        "鍋具：THERMOS 膳魔師厚鑄耐摩不沾鍋20cm, 24cm",
+        "鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?si=XzQjOgqb-yd9cyX5&v=_Pw-U2057OgM&feature=youtu.be",
+      "googleDocUrl": "https://docs.google.com/document/d/1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM/edit"
+    },
+    {
+      "title": "蔥油餅也能這樣做？4款超簡單創意料理大公開！",
+      "slug": "4",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Chinese",
+      "type": "Breakfast",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "Not clearly detected from source."
+      ],
+      "instructions": [
+        "冷凍常備的蔥油餅也能變身美味佳餚！簡單創意料理，早餐、午餐、下酒菜通通搞定！",
+        "蔥油餅 Scallion pancakes—2片",
+        "雞腿肉 Chicken thigh—1片",
+        "披薩起司 Pizza cheese—50g",
+        "美乃滋 Mayonnaise—2小匙",
+        "豬絞肉 Ground pork—150g",
+        "生辣椒 Chili pepper—1支",
+        "紅糖 Brown sugar—2小匙",
+        "醬油 Soy sauce－1/2大匙",
+        "蠔油 Oyster sauce—1/2大匙",
+        "肉桂粉 Cinnamon powder—1/2小匙",
+        "白胡椒粉 White pepper—1/2小匙"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?si=jFqlkD2xLrPQeGYK&v=MqCVsEnbunM&feature=youtu.be",
+      "googleDocUrl": "https://docs.google.com/document/d/1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE/edit"
+    },
+    {
+      "title": "長崎風蜂蜜蛋糕 Cake｜MASAの料理",
+      "slug": "cake-masa",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Japanese",
+      "type": "Dessert",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "Not clearly detected from source."
+      ],
+      "instructions": [
+        "長崎風蜂蜜蛋糕 Castella Honey Cake｜MASAの料理",
+        "高筋麵粉 Bread flour—100g",
+        "肉桂粉 Cinnamon powder",
+        "◆歡迎合作/Contact：bigway1688@gmail.com",
+        "WeChat ID：sunnywung723",
+        "＊料理の名前＆作り方はあくまでも自己流なのでご了承ください",
+        "＊料理名稱&做法不一定正式or傳統, 是從自己的想法&經驗來分享的",
+        "沙拉油：泰山均衡369調合油 TAISUN 369 Blend Oil",
+        "鍋具：THERMOS 膳魔師厚鑄耐摩不沾鍋20cm, 24cm",
+        "鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1lqDjFzd2mHd4NT2MvGaF9q5YytSEReRkr9cYL0hHukk-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?si=8IJG403F373cwaOn&v=SvlQi79WabI&feature=youtu.be",
+      "googleDocUrl": "https://docs.google.com/document/d/1lqDjFzd2mHd4NT2MvGaF9q5YytSEReRkr9cYL0hHukk/edit"
+    },
+    {
+      "title": "Ricky教室 肉絲炒麵 一定要煎至外脆內軟至係王道!!",
+      "slug": "ricky",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Soup",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "Not clearly detected from source."
+      ],
+      "instructions": [
+        "「我很喜歡吃肉絲炒麵，但一定要兩面金黃，中間還有麵心才好吃。今時今日吃的肉絲炒麵，大多是炸出來的，吃到中間更是沒有味道的。」名廚Ricky慨嘆地說。",
+        "肉絲炒麵要做得好吃，首先要在麵餅上落功夫。他說最重要將淥好的麵，用生抽調味後才煎。「用適量的油，去慢慢煎脆麵的表層，絕不能為了貪快，而下很多油去炸出來。」他笑說。",
+        "他建議用豬頸肉代替瘦肉，因為瘦肉炒完之後，很多時會變得又乾又嚡，但豬頸肉便不怕有這些問題。",
+        "避免芡汁形成一團的秘訣，是先將雞湯跟粟粉拌在一起，然後立即倒進去炒好的配料，將它慢慢煮至滾起。做出來的芡汁不會起粒之餘，濃稠度亦恰到好處。",
+        "最後將麵放在煮好的配料上。「這樣上碟便不怕芡汁令兩面金黃的麵餅變腍。外脆內軟的肉絲炒麵才是王道。」他邊吃邊說。",
+        "#肉絲炒麵 #Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #OrenjiProduction #HKchef #RickyCheung #Ricky"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1KB5JMvCIwpBot3oxUmAhuUUEO7OiI8MSExHrGoRrDkI-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?si=5k387qC77TzTgfsP&v=3oovJ1ftaSI&feature=youtu.be",
+      "googleDocUrl": "https://docs.google.com/document/d/1KB5JMvCIwpBot3oxUmAhuUUEO7OiI8MSExHrGoRrDkI/edit"
+    },
+    {
+      "title": "Ricky教室 Ricky’s turnip cake lazy recipe updated version",
+      "slug": "ricky-ricky-s-turnip-cake-lazy-recipe-updated-version",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Dessert",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "Not clearly detected from source."
+      ],
+      "instructions": [
+        "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!! 蘿蔔糕 Turnip rice cake 材料 (Ingredients) ： 蘿蔔肉 1200克 Turnip flesh 1200g 清水 300克 (煮蘿蔔用) Water 300g (for cooking turnip sticks) 鹽 12克 Salt 12g 糖 20克 Sugar 20g 雞粉 12克 Chicken stock 12g 黑椒碎 5克 Black pepper 5g 粘米粉 300克 Rice flour 300g 清水 300克 (開粘米粉) Water 300g (Mixed with rice flour) 臘腸 2條 Chinese sausage 2pc 膶腸 2條 Liver sausage 2pc 蝦米 60克 Dried shrimp 60g 豬油 60克 Lard 60g 乾蔥絲 60克 Dried shallot 60g #Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #臘腸 #膶腸 #鵝肝腸 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipricecake"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?si=zAH1jJ8JaFaFkS65&v=4nzjzwywVWI&feature=youtu.be",
+      "googleDocUrl": "https://docs.google.com/document/d/1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM/edit"
+    },
+    {
+      "title": "Ricky教室 全靠呢個秘訣Celebrity chef’s turnip cake recipe",
+      "slug": "ricky-celebrity-chef-s-turnip-cake-recipe",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Dessert",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "白蘿蔔600克",
+        "Turnip 600g",
+        "菜油40克",
+        "Vegetable oil 40g",
+        "櫻花蝦 15克",
+        "Sakura shrimp 15g",
+        "乾蔥 50克",
+        "Shallot 50g",
+        "清水 150克 (煮蘿蔔用)",
+        "Water 150g (Cook turnip)",
+        "黑胡椒粉 2克",
+        "Black pepper powder 2g"
+      ],
+      "instructions": [
+        "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
+        "Chinese Turnip Cake2.0",
+        "Water 150g (Cook turnip)",
+        "Black pepper powder 2g",
+        "Mixed with rice flour)",
+        "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #櫻花蝦 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipcake"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?v=6I8K0cWc0LU",
+      "googleDocUrl": "https://docs.google.com/document/d/1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0/edit"
+    },
+    {
+      "title": "Black Sesame Cotton Sponge Cake",
+      "slug": "black-sesame-cotton-sponge-cake",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Dinner",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "ml corn oil（玉米油油） 65g （1/2 cup) plain flour（普通面粉） 1 tbsp corn starch （玉米粉） 50g （1/2 cup) ground black sesame （黑芝麻粉） 1 whole egg （全蛋） 5 egg yolks （蛋黄） 70ml milk （牛奶） 5 egg whites （蛋白) 1/4 tsp salt（盐） 95g (1/3 cup + 1 tbsp) caster sugar （细砂糖） Special thanks to oven sponsor Firenzzi Learn more on their social media: FB page: https://www.facebook.com/firenzzimalaysia/ (main) Instagram page: https://www.instagram.com/firenzzi_mys/ (newly made)"
+      ],
+      "instructions": [
+        "► Facebook Page: https://www.facebook.com/KathrineKwaBakingTutorial/?epa=SEARCH_BOX ► Instagram: https://www.instagram.com/katherinekwa/ ► Support my recipe book :https://kathrinekwa.com/ Ingredients : 70ml corn oil（玉米油油） 65g （1/2 cup) plain flour（普通面粉） 1 tbsp corn starch （玉米粉） 50g （1/2 cup) ground black sesame （黑芝麻粉） 1 whole egg （全蛋） 5 egg yolks （蛋黄） 70ml milk （牛奶） 5 egg whites （蛋白) 1/4 tsp salt（盐） 95g (1/3 cup + 1 tbsp) caster sugar （细砂糖） Special thanks to oven sponsor Firenzzi Learn more on their social media: FB page: https://www.facebook.com/firenzzimalaysia/ (main) Instagram page: https://www.instagram.com/firenzzi_mys/ (newly made)"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4-01.jpg",
+      "sourceUrl": "https://www.youtube.com/watch?si=fhfNJPgJtO4gcArZ&v=j4lKXjkUkp4&feature=youtu.be",
+      "googleDocUrl": "https://docs.google.com/document/d/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4/edit"
+    },
+    {
+      "title": "號外：KC廚房",
+      "slug": "kc",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Mexican",
+      "type": "Dinner",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "難易度：",
+        "需時：",
+        "吃熱的，一小時可以了；吃凍的，多四小時冷藏時間",
+        "十粒奘，正好",
+        "鮑汁：",
+        "鮑魚水 （ 即在罐內所有浸著鮑魚的汁 ）成罐",
+        "日本清酒 300毫升（ 即係細細支的一支 ）",
+        "蠔油 90克（ 兩茶匙咁上下，多少少或少少少唔會世界末日 ）",
+        "日本醬油 80毫升（ 即係五湯匙左右 ）",
+        "千萬不要順手倒去浸著鮑魚的水",
+        "味醂 50毫升( 即係三湯匙卦? )",
+        "糖 35克（ 即係三茶匙左右 ）"
+      ],
+      "instructions": [
+        "先將清酒及同等份量的清水倒進一重身的煲子內，大火將之燒滾至聞起來沒有刺鼻的酒精味道為止；",
+        "依次序將鮑魚水、醬油、味碄、糖、蠔油、麻油全數「 隊 」下煲中，再大火燒至全滾（ 小心滾瀉！ ）；",
+        "用這個方法做的鮑魚雖然做法簡單，但質地軟熟糯口又富鮑魚香味，最重要的就是味道濃郁得來不膩，保證大家吃不停口。有朋友問能不能換上鮮鮑，個人覺得新鮮鮑魚一受熱來肉質就變韌，以此方法浸煮花的時間長之餘也未必可以做到如此好的口感。加上罐頭鮑魚內的鮑魚水是這道小吃的關鍵材料之一，如果用鮮鮑大家可以用雞湯代替，不過鮑魚的鮮香味就沒有那麼濃郁了。",
+        "好了，要自煮這一份清酒鮑魚成本是多少？南非罐頭鮑魚十隻奘大約是三百幾，不計燈油火蠟人工時間都要近三十多元一只。貴嗎？我可說是不便宜的，而看到此你或會省起 車品品老闆娘的干邑溏心鮑魚 12只才賣$438是何其的超值（ 請按此重溫 ）。不過佳節當前能跟家人及朋友一起分享美味的清酒鮑魚，又確實是人生一大快事。",
+        "人生在世求什麼？但憑可以跟身邊人及親友吃餐好的，無論世界是否在今天終結也是最快樂的事，你說是嗎？",
+        "以電子郵件傳送這篇文章 BlogThis！ 分享至 X 分享至 Facebook 分享到 Pinterest",
+        "Beef No Guy 2012年12月22日 凌晨4:43",
+        "Thanks for sharing your receipe! Looks splendid! We have a high end Cantonese seafood restaurant here that sells their own brand of canned abalone, and on top of that, already braised with sauces, so just re-heating it is all you would need to do, about 10 to 12 small pieces per can, either from Taiwan or South Africa. There are Caucasian/Americans who had this brand, but as part of their dinner banquet dish, who complained the abalone was too metallic tasting and aweful/not worth the money, but I did not have this problem when I ate them at home.",
+        "I might purchase a can or two from HK during my upcoming trip. Do you have any brand recommendations? Also can you recommend where I would buy a good XO sauce, if not from Lei Gardens? Thanks again.",
+        "Thalia 2012年12月22日 下午2:26",
+        "做得好靚啊!一定HIT爆!試過冇哂威士忌,拔蘭地,落RUM,又有微小的分別呢!",
+        "匿名 2012年12月27日 上午10:46"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1vcIKTOgG5zmorL6kb6ZhwQZCvQltcTHH-Xdrj6knYBE-01.jpg",
+      "sourceUrl": "https://gourmetkc.blogspot.com/2012/12/kc.html",
+      "googleDocUrl": "https://docs.google.com/document/d/1vcIKTOgG5zmorL6kb6ZhwQZCvQltcTHH-Xdrj6knYBE/edit"
+    }
+  ]
+}

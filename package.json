@@ -1,0 +1,12 @@
+{
+  "name": "chief-fafa-recipe-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node scripts/import-google-doc.mjs --input data/google-doc-export.txt --output data/recipes.json",
+    "refresh": "node scripts/refresh_from_doc_ids.mjs",
+    "build": "node scripts/build-site.mjs",
+    "start": "python3 -m http.server 8080 --directory site",
+    "service": "node scripts/refresh_service.mjs"
+  }
+}
