@@ -6,10 +6,11 @@ const DATA_PATH = path.resolve('data/recipes.json');
 const STATIC_DIR = path.resolve('static');
 const OUTPUT_DIR = path.resolve('site');
 const DEFAULT_LOCALE = 'en';
-const FAVICON_PATH = '/assets/fafa_icon.png';
-const FAVICON_32_PATH = '/assets/favicon-32.png';
-const APPLE_TOUCH_ICON_PATH = '/assets/apple-touch-icon.png';
+const FAVICON_FILE = 'fafa_icon.png';
+const FAVICON_32_FILE = 'favicon-32.png';
+const APPLE_TOUCH_ICON_FILE = 'apple-touch-icon.png';
 const FAVICON_VERSION = '20260227-2';
+const BASE_PATH = normalizeBasePath(process.env.SITE_BASE_PATH || '');
 
 const LOCALES = {
   en: {
@@ -147,6 +148,30 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function normalizeBasePath(value) {
+  const raw = String(value || '').trim();
+  if (!raw || raw === '/') return '';
+  const withLeadingSlash = raw.startsWith('/') ? raw : `/${raw}`;
+  return withLeadingSlash.replace(/\/+$/, '');
+}
+
+function withBasePath(urlPath) {
+  const normalized = urlPath.startsWith('/') ? urlPath : `/${urlPath}`;
+  return `${BASE_PATH}${normalized}`;
+}
+
+function assetUrl(filename) {
+  return withBasePath(`/assets/${filename}`);
+}
+
+function siteScopedUrl(value) {
+  const raw = String(value || '');
+  if (raw.startsWith('/assets/')) {
+    return withBasePath(raw);
+  }
+  return raw;
+}
+
 async function copyDir(from, to) {
   await fs.mkdir(to, { recursive: true });
   const entries = await fs.readdir(from, { withFileTypes: true });
@@ -179,11 +204,11 @@ function localizeType(locale, type) {
 }
 
 function indexUrl(locale) {
-  return `/${locale}/index.html`;
+  return withBasePath(`/${locale}/index.html`);
 }
 
 function recipeUrl(locale, slug) {
-  return `/${locale}/recipes/${slug}.html`;
+  return withBasePath(`/${locale}/recipes/${slug}.html`);
 }
 
 function hostFromUrl(url) {
@@ -207,10 +232,10 @@ function alternateLinks(page, locale) {
 }
 
 function faviconLinks() {
-  return `<link rel="icon" type="image/png" sizes="32x32" href="${FAVICON_32_PATH}?v=${FAVICON_VERSION}">
-  <link rel="icon" type="image/png" sizes="512x512" href="${FAVICON_PATH}?v=${FAVICON_VERSION}">
-  <link rel="apple-touch-icon" sizes="180x180" href="${APPLE_TOUCH_ICON_PATH}?v=${FAVICON_VERSION}">
-  <link rel="shortcut icon" href="${FAVICON_32_PATH}?v=${FAVICON_VERSION}">`;
+  return `<link rel="icon" type="image/png" sizes="32x32" href="${assetUrl(FAVICON_32_FILE)}?v=${FAVICON_VERSION}">
+  <link rel="icon" type="image/png" sizes="512x512" href="${assetUrl(FAVICON_FILE)}?v=${FAVICON_VERSION}">
+  <link rel="apple-touch-icon" sizes="180x180" href="${assetUrl(APPLE_TOUCH_ICON_FILE)}?v=${FAVICON_VERSION}">
+  <link rel="shortcut icon" href="${assetUrl(FAVICON_32_FILE)}?v=${FAVICON_VERSION}">`;
 }
 
 function languageSwitcher(locale, page) {
@@ -241,7 +266,7 @@ function recipeCard(locale, recipe) {
     .toLowerCase();
 
   const image = recipe.image
-    ? `<figure class="recipe-card__image"><img src="${escapeHtml(recipe.image)}" alt="${escapeHtml(recipe.title)}" loading="lazy" decoding="async"></figure>`
+    ? `<figure class="recipe-card__image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(recipe.title)}" loading="lazy" decoding="async"></figure>`
     : '<div class="recipe-card__image recipe-card__image--empty" aria-hidden="true"></div>';
 
   return `
@@ -307,7 +332,7 @@ function recipeSchema(recipe, locale) {
   };
 
   if (recipe.image) {
-    output.image = [recipe.image];
+    output.image = [siteScopedUrl(recipe.image)];
   }
 
   return output;
@@ -348,7 +373,7 @@ function buildIndexHtml({ site, recipes, locale }) {
   <link rel="canonical" href="${canonical}">
   ${alternateLinks({ kind: 'index' }, locale)}
   ${faviconLinks()}
-  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="${assetUrl('styles.css')}">
   <script type="application/ld+json">${listSchema}</script>
 </head>
 <body>
@@ -411,7 +436,7 @@ function buildIndexHtml({ site, recipes, locale }) {
   </footer>
 
   <script id="recipe-data" type="application/json">${embeddedData}</script>
-  <script src="/assets/app.js" defer></script>
+  <script src="${assetUrl('app.js')}" defer></script>
 </body>
 </html>`;
 }
@@ -427,7 +452,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
   const type = localizeType(locale, recipe.type);
 
   const image = recipe.image
-    ? `<figure class="recipe-hero-image"><img src="${escapeHtml(recipe.image)}" alt="${escapeHtml(recipe.title)}" loading="eager" decoding="async"></figure>`
+    ? `<figure class="recipe-hero-image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(recipe.title)}" loading="eager" decoding="async"></figure>`
     : '';
 
   const sourceLinks = `
@@ -459,11 +484,11 @@ function buildRecipeHtml({ site, recipe, locale }) {
   <meta property="og:description" content="${escapeHtml(recipe.summary)}">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="${escapeHtml(locale)}">
-  ${recipe.image ? `<meta property="og:image" content="${escapeHtml(recipe.image)}">` : ''}
+  ${recipe.image ? `<meta property="og:image" content="${escapeHtml(siteScopedUrl(recipe.image))}">` : ''}
   <link rel="canonical" href="${canonical}">
   ${alternateLinks({ kind: 'recipe', slug: recipe.slug }, locale)}
   ${faviconLinks()}
-  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="${assetUrl('styles.css')}">
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
@@ -529,6 +554,10 @@ function buildRecipeHtml({ site, recipe, locale }) {
 }
 
 function buildRootIndex() {
+  const englishUrl = indexUrl('en');
+  const chineseUrl = indexUrl('zh-Hant');
+  const japaneseUrl = indexUrl('ja');
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -536,7 +565,7 @@ function buildRootIndex() {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chief Fafa's Recipe</title>
   ${faviconLinks()}
-  <meta http-equiv="refresh" content="0; url=/en/index.html">
+  <meta http-equiv="refresh" content="0; url=${englishUrl}">
   <style>
     body { font-family: system-ui, sans-serif; padding: 2rem; }
     a { display: inline-block; margin: 0.35rem 0.5rem 0 0; }
@@ -545,15 +574,15 @@ function buildRootIndex() {
 <body>
   <p>Redirecting to localized site...</p>
   <p>
-    <a href="/en/index.html">English</a>
-    <a href="/zh-Hant/index.html">繁體中文</a>
-    <a href="/ja/index.html">日本語</a>
+    <a href="${englishUrl}">English</a>
+    <a href="${chineseUrl}">繁體中文</a>
+    <a href="${japaneseUrl}">日本語</a>
   </p>
   <script>
     const lang = (navigator.language || '').toLowerCase();
-    let target = '/en/index.html';
-    if (lang.startsWith('zh')) target = '/zh-Hant/index.html';
-    if (lang.startsWith('ja')) target = '/ja/index.html';
+    let target = '${englishUrl}';
+    if (lang.startsWith('zh')) target = '${chineseUrl}';
+    if (lang.startsWith('ja')) target = '${japaneseUrl}';
     location.replace(target);
   </script>
 </body>
@@ -561,7 +590,7 @@ function buildRootIndex() {
 }
 
 function buildSitemap(recipes) {
-  const urls = ['/index.html'];
+  const urls = [withBasePath('/index.html')];
 
   for (const locale of Object.keys(LOCALES)) {
     urls.push(indexUrl(locale));
@@ -617,7 +646,7 @@ async function main() {
 
   await fs.writeFile(path.join(OUTPUT_DIR, 'index.html'), buildRootIndex(), 'utf8');
   await fs.writeFile(path.join(OUTPUT_DIR, 'sitemap.xml'), buildSitemap(payload.recipes), 'utf8');
-  await fs.writeFile(path.join(OUTPUT_DIR, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: /sitemap.xml\n', 'utf8');
+  await fs.writeFile(path.join(OUTPUT_DIR, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${withBasePath('/sitemap.xml')}\n`, 'utf8');
 
   process.stdout.write(`Built ${payload.recipes.length} recipe pages for ${Object.keys(LOCALES).length} locales in ${OUTPUT_DIR}\n`);
 }

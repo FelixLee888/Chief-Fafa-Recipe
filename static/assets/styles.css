@@ -136,7 +136,7 @@ main {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('/assets/fafa_header.png');
+  background-image: url('./fafa_header.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
