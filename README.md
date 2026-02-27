@@ -106,6 +106,13 @@ In `Settings` -> `Secrets and variables` -> `Actions`, add:
 - `GOOGLE_DOCS_REFRESH_TOKEN`
 - `GOOGLE_DOCS_ACCESS_TOKEN` (optional fallback)
 
+Alternative legacy names are also supported:
+
+- `GOOGLE_KEEP_CLIENT_ID`
+- `GOOGLE_KEEP_CLIENT_SECRET`
+- `GOOGLE_KEEP_REFRESH_TOKEN`
+- `GOOGLE_KEEP_ACCESS_TOKEN` (optional fallback)
+
 ### Manual Trigger
 
 Open `Actions` -> `Refresh Docs and Publish` -> `Run workflow`.

@@ -36,6 +36,10 @@ jobs:
           GOOGLE_DOCS_CLIENT_SECRET: ${{ secrets.GOOGLE_DOCS_CLIENT_SECRET }}
           GOOGLE_DOCS_REFRESH_TOKEN: ${{ secrets.GOOGLE_DOCS_REFRESH_TOKEN }}
           GOOGLE_DOCS_ACCESS_TOKEN: ${{ secrets.GOOGLE_DOCS_ACCESS_TOKEN }}
+          GOOGLE_KEEP_CLIENT_ID: ${{ secrets.GOOGLE_KEEP_CLIENT_ID }}
+          GOOGLE_KEEP_CLIENT_SECRET: ${{ secrets.GOOGLE_KEEP_CLIENT_SECRET }}
+          GOOGLE_KEEP_REFRESH_TOKEN: ${{ secrets.GOOGLE_KEEP_REFRESH_TOKEN }}
+          GOOGLE_KEEP_ACCESS_TOKEN: ${{ secrets.GOOGLE_KEEP_ACCESS_TOKEN }}
           DOC_IDS_INPUT: ${{ github.event.inputs.doc_ids }}
         run: |
           set -euo pipefail
