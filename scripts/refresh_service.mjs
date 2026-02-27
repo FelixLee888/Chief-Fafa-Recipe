@@ -188,7 +188,7 @@ function serviceStatus() {
     port: PORT,
     autoRefresh: AUTO_REFRESH,
     intervalMinutes: INTERVAL_MINUTES,
-    docsConfigured: DOC_IDS || 'default-list',
+    docsConfigured: DOC_IDS || 'auto-discovered-google-docs',
     running: state.running,
     lastTrigger: state.lastTrigger,
     lastRunAt: state.lastRunAt,

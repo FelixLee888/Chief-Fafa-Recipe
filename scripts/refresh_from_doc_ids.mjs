@@ -6,11 +6,12 @@ import process from 'node:process';
 const DEFAULT_EXTERNAL_ENV = '/Users/felixlee/Documents/ChiefFaFaBot/.env';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DOCS_API_BASE = 'https://docs.googleapis.com/v1/documents';
+const GOOGLE_DRIVE_FILES_API = 'https://www.googleapis.com/drive/v3/files';
 const IMAGE_STATIC_DIR = path.resolve('static/assets/recipe-images');
 const OUTPUT_RECIPES = path.resolve('data/recipes.json');
 const OUTPUT_REPORT = path.resolve('data/doc-assets.json');
 
-const DOC_IDS = [
+const LEGACY_DOC_IDS = [
   '1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM',
   '1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE',
   '1lqDjFzd2mHd4NT2MvGaF9q5YytSEReRkr9cYL0hHukk',
@@ -69,6 +70,31 @@ function parseArgs(argv) {
     }
   }
   return args;
+}
+
+function parseDocIdList(value) {
+  return String(value || '')
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+
+function uniqueById(items) {
+  const out = [];
+  const seen = new Set();
+  for (const item of items) {
+    const id = String(item?.id || '').trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(item);
+  }
+  return out;
+}
+
+function parsePositiveInt(value, fallback = 0) {
+  const n = Number(String(value || '').trim());
+  if (!Number.isFinite(n) || n <= 0) return fallback;
+  return Math.floor(n);
 }
 
 function parseEnv(raw) {
@@ -146,6 +172,103 @@ async function resolveDocsAccessToken(loaded) {
 
   if (directToken) return directToken;
   throw new Error('Missing Google Docs OAuth token configuration');
+}
+
+async function listGoogleDocsFromDrive(token, options = {}) {
+  const query = String(options.query || '').trim() || "mimeType='application/vnd.google-apps.document' and trashed=false";
+  const pageSize = Math.min(1000, Math.max(1, parsePositiveInt(options.pageSize, 200)));
+  const maxDocs = parsePositiveInt(options.maxDocs, 0);
+
+  const docs = [];
+  let pageToken = '';
+  let stop = false;
+
+  while (!stop) {
+    const params = new URLSearchParams({
+      q: query,
+      fields: 'nextPageToken,files(id,name,modifiedTime,createdTime)',
+      orderBy: 'modifiedTime desc',
+      pageSize: String(pageSize),
+      includeItemsFromAllDrives: 'true',
+      supportsAllDrives: 'true',
+      corpora: 'allDrives'
+    });
+    if (pageToken) params.set('pageToken', pageToken);
+
+    const response = await fetch(`${GOOGLE_DRIVE_FILES_API}?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const body = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const detail = body?.error?.message || `drive api error (${response.status})`;
+      if (response.status === 403 && /scope|insufficient/i.test(detail)) {
+        throw new Error(
+          `Insufficient Google OAuth scope for Drive listing. Re-authorize with scopes: ` +
+            `https://www.googleapis.com/auth/documents.readonly and https://www.googleapis.com/auth/drive.metadata.readonly`
+        );
+      }
+      throw new Error(`Failed to list Google Docs from Drive: ${detail}`);
+    }
+
+    const files = Array.isArray(body?.files) ? body.files : [];
+    for (const file of files) {
+      const id = String(file?.id || '').trim();
+      if (!id) continue;
+      docs.push({
+        id,
+        name: String(file?.name || '').trim(),
+        modifiedTime: String(file?.modifiedTime || '').trim(),
+        createdTime: String(file?.createdTime || '').trim()
+      });
+      if (maxDocs > 0 && docs.length >= maxDocs) {
+        stop = true;
+        break;
+      }
+    }
+
+    if (stop) break;
+    pageToken = String(body?.nextPageToken || '').trim();
+    if (!pageToken) break;
+  }
+
+  return uniqueById(docs);
+}
+
+async function resolveDocEntries(args, loadedEnv, token) {
+  const explicitIds = parseDocIdList(args['doc-ids']);
+  if (explicitIds.length > 0) {
+    return {
+      source: 'explicit',
+      entries: uniqueById(explicitIds.map((id) => ({ id })))
+    };
+  }
+
+  if (String(args['use-legacy-doc-ids'] || '').trim() === '1') {
+    return {
+      source: 'legacy',
+      entries: uniqueById(LEGACY_DOC_IDS.map((id) => ({ id })))
+    };
+  }
+
+  const driveQuery = String(args['drive-query'] || process.env.GOOGLE_DOCS_DRIVE_QUERY || loadedEnv.GOOGLE_DOCS_DRIVE_QUERY || '').trim();
+  const maxDocs = parsePositiveInt(args['max-docs'] || process.env.GOOGLE_DOCS_MAX_DOCS || loadedEnv.GOOGLE_DOCS_MAX_DOCS, 0);
+  const pageSize = parsePositiveInt(args['drive-page-size'] || process.env.GOOGLE_DOCS_DRIVE_PAGE_SIZE || loadedEnv.GOOGLE_DOCS_DRIVE_PAGE_SIZE, 200);
+
+  const entries = await listGoogleDocsFromDrive(token, {
+    query: driveQuery,
+    maxDocs,
+    pageSize
+  });
+
+  if (entries.length === 0) {
+    throw new Error('No Google Docs returned from Drive listing. Check OAuth account and query filters.');
+  }
+
+  return {
+    source: 'drive',
+    entries
+  };
 }
 
 function normalizeText(text) {
@@ -392,52 +515,74 @@ async function main() {
   const loadedEnv = await loadEnv(args);
   const token = await resolveDocsAccessToken(loadedEnv);
 
-  const explicitIds = String(args['doc-ids'] || '')
-    .split(',')
-    .map((v) => v.trim())
-    .filter(Boolean);
-  const docIds = explicitIds.length ? explicitIds : DOC_IDS;
+  const resolved = await resolveDocEntries(args, loadedEnv, token);
+  const docEntries = resolved.entries;
+  const docIds = docEntries.map((entry) => entry.id);
+  process.stdout.write(`Discovered ${docIds.length} Google Docs (source: ${resolved.source}).\n`);
 
   const report = [];
   const recipes = [];
 
-  for (const docId of docIds) {
-    process.stdout.write(`Processing ${docId}...\n`);
-    const docJson = await fetchDoc(docId, token);
-    const { images, text } = await extractImagesForDoc(docId, docJson, token);
-    const urls = extractUrls(text);
-    const originalUrl = pickOriginalUrl(urls);
+  for (let index = 0; index < docEntries.length; index += 1) {
+    const entry = docEntries[index];
+    const docId = entry.id;
+    process.stdout.write(`Processing ${index + 1}/${docEntries.length}: ${docId}...\n`);
 
-    const title = titleFromDocName(docJson.title, text);
-    const summary = summaryFromText(text);
-    const searchable = `${title} ${summary} ${text}`.toLowerCase();
+    try {
+      const docJson = await fetchDoc(docId, token);
+      const { images, text } = await extractImagesForDoc(docId, docJson, token);
+      const urls = extractUrls(text);
+      const originalUrl = pickOriginalUrl(urls);
 
-    report.push({
-      docId,
-      title: docJson.title || '',
-      googleDocUrl: canonicalDocUrl(docId),
-      originalUrl,
-      images,
-      candidateUrls: urls.slice(0, 30)
-    });
+      const title = titleFromDocName(docJson.title, text);
+      const summary = summaryFromText(text);
+      const searchable = `${title} ${summary} ${text}`.toLowerCase();
 
-    recipes.push({
-      title,
-      slug: slugify(title) || docId.toLowerCase(),
-      summary,
-      cuisine: inferCategory(searchable, CUISINE_KEYWORDS, 'Global'),
-      type: inferCategory(searchable, TYPE_KEYWORDS, 'Main Course'),
-      prepTime: 'TBD',
-      cookTime: 'TBD',
-      totalTime: 'TBD',
-      servings: 'TBD',
-      ingredients: ingredientsFromText(text),
-      instructions: instructionsFromText(text),
-      tags: [],
-      image: images[0] || '',
-      sourceUrl: originalUrl,
-      googleDocUrl: canonicalDocUrl(docId)
-    });
+      report.push({
+        status: 'ok',
+        docId,
+        listedName: entry.name || '',
+        listedModifiedTime: entry.modifiedTime || '',
+        title: docJson.title || '',
+        googleDocUrl: canonicalDocUrl(docId),
+        originalUrl,
+        images,
+        candidateUrls: urls.slice(0, 30)
+      });
+
+      recipes.push({
+        title,
+        slug: slugify(title) || docId.toLowerCase(),
+        summary,
+        cuisine: inferCategory(searchable, CUISINE_KEYWORDS, 'Global'),
+        type: inferCategory(searchable, TYPE_KEYWORDS, 'Main Course'),
+        prepTime: 'TBD',
+        cookTime: 'TBD',
+        totalTime: 'TBD',
+        servings: 'TBD',
+        ingredients: ingredientsFromText(text),
+        instructions: instructionsFromText(text),
+        tags: [],
+        image: images[0] || '',
+        sourceUrl: originalUrl,
+        googleDocUrl: canonicalDocUrl(docId)
+      });
+    } catch (error) {
+      const message = error?.message || 'unknown error';
+      process.stderr.write(`Warning: ${docId} skipped (${message})\n`);
+      report.push({
+        status: 'error',
+        docId,
+        listedName: entry.name || '',
+        listedModifiedTime: entry.modifiedTime || '',
+        googleDocUrl: canonicalDocUrl(docId),
+        error: message
+      });
+    }
+  }
+
+  if (recipes.length === 0) {
+    throw new Error('No recipe documents were processed successfully.');
   }
 
   const recipePayload = {
@@ -445,8 +590,11 @@ async function main() {
       title: "Chief Fafa's Recipe",
       description: 'Modern, searchable recipe collection with auto-categorized cuisine and meal types.',
       generatedAt: new Date().toISOString(),
-      source: `google-doc-batch:${docIds.length}`,
-      sourceType: 'docs-api-batch',
+      source: `google-doc-${resolved.source}:${docIds.length}`,
+      sourceType: resolved.source === 'drive' ? 'docs-api-drive-list' : 'docs-api-batch',
+      discoveredDocCount: docIds.length,
+      processedDocCount: recipes.length,
+      skippedDocCount: report.filter((item) => item.status === 'error').length,
       locales: ['en', 'zh-Hant', 'ja']
     },
     recipes

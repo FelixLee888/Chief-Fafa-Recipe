@@ -12,7 +12,7 @@ Modern static recipe site with:
 ## Project Structure
 
 - `scripts/import-google-doc.mjs`: Single-doc importer/parser with image extraction.
-- `scripts/refresh_from_doc_ids.mjs`: Batch extract images + original URLs from fixed Doc IDs.
+- `scripts/refresh_from_doc_ids.mjs`: Batch extract images + original URLs from Google Docs (auto-discovered via Drive API with full pagination; supports explicit Doc ID override).
 - `scripts/build-site.mjs`: Builds multilingual static website into `site/`.
 - `scripts/refresh_service.mjs`: Backend HTTP service with auto-refresh scheduler.
 - `data/doc-assets.json`: Extracted doc/image/source-url report.
@@ -58,6 +58,9 @@ Default behavior:
 - `RECIPE_SERVICE_TOKEN` (if set, required for `/api/refresh` and `/api/logs` via `x-service-token` header or `?token=`)
 - `RECIPE_DOC_IDS` (comma-separated override list)
 - `RECIPE_ENV_FILE` (custom `.env` path)
+- `GOOGLE_DOCS_DRIVE_QUERY` (optional Drive API query override; default is all non-trashed Google Docs)
+- `GOOGLE_DOCS_MAX_DOCS` (optional limit, useful for testing)
+- `GOOGLE_DOCS_DRIVE_PAGE_SIZE` (optional page size for Drive listing, default `200`)
 
 ## Google Docs OAuth Env
 
@@ -67,6 +70,11 @@ Private doc access uses the same env naming as ChiefFaFaBot:
 - `GOOGLE_DOCS_CLIENT_SECRET`
 - `GOOGLE_DOCS_REFRESH_TOKEN`
 - `GOOGLE_DOCS_ACCESS_TOKEN` (optional fallback)
+
+Recommended OAuth scopes for full auto-discovery:
+
+- `https://www.googleapis.com/auth/documents.readonly`
+- `https://www.googleapis.com/auth/drive.metadata.readonly`
 
 The scripts automatically check:
 
