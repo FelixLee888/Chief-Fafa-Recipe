@@ -49,6 +49,11 @@ const TYPE_KEYWORDS = {
 };
 
 const URL_RE = /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/g;
+const COOK_TIME_HINT_RE = /\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|烤|煮|炸|蒸|炒|焗|炆|煎)\b/i;
+const REST_TIME_HINT_RE = /\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)\b/i;
+const DURATION_RANGE_RE =
+  /(\d+(?:\.\d+)?)\s*(?:-|–|—|to|~|～)\s*(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
+const DURATION_SINGLE_RE = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
 const FIELD_PATTERNS = {
   prepTime: [
     /(?:^|\b)prep(?:aration)?(?:\s*time)?\s*[:：\-]?\s*([^|;\n]+?)(?=\b(?:cook(?:ing)?(?:\s*time)?|total(?:\s*time)?|servings?|yield|serves?)\b|$)/i,
@@ -535,6 +540,127 @@ function extractRecipeFields(text) {
   return { prepTime, cookTime, totalTime, servings };
 }
 
+function durationToMinutes(amount, unit) {
+  const n = Number(amount);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  const u = String(unit || '').toLowerCase();
+  if (u.includes('hour') || u === 'hr' || u === 'hrs' || u === 'h' || u.includes('小時') || u.includes('小时') || u.includes('鐘頭') || u.includes('钟头')) {
+    return Math.round(n * 60);
+  }
+  return Math.round(n);
+}
+
+function extractLineDurationMinutes(line) {
+  const text = String(line || '');
+  let total = 0;
+  let matched = false;
+
+  for (const match of text.matchAll(DURATION_RANGE_RE)) {
+    const start = Number(match[1]);
+    const end = Number(match[2]);
+    const unit = match[3];
+    if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+    const avg = (start + end) / 2;
+    total += durationToMinutes(avg, unit);
+    matched = true;
+  }
+
+  // Prevent double counting ranges when single-value regex also matches their tail.
+  const scrubbed = text.replace(DURATION_RANGE_RE, ' ');
+  for (const match of scrubbed.matchAll(DURATION_SINGLE_RE)) {
+    const amount = Number(match[1]);
+    const unit = match[2];
+    if (!Number.isFinite(amount)) continue;
+    total += durationToMinutes(amount, unit);
+    matched = true;
+  }
+
+  if (/\bovernight\b/i.test(text)) {
+    total += 8 * 60;
+    matched = true;
+  }
+
+  return matched ? total : 0;
+}
+
+function formatDuration(minutes) {
+  const rounded = Math.max(0, Math.round(minutes / 5) * 5);
+  if (rounded <= 0) return '';
+  if (rounded < 60) return `${rounded} min`;
+  const hours = Math.floor(rounded / 60);
+  const mins = rounded % 60;
+  if (mins === 0) return `${hours} hr`;
+  return `${hours} hr ${mins} min`;
+}
+
+function inferTimeFields(text, instructions) {
+  const lines = [];
+  const seen = new Set();
+
+  const pushLine = (value) => {
+    const clean = String(value || '').trim();
+    if (!clean) return;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    lines.push(clean);
+  };
+
+  const instructionLines = Array.isArray(instructions)
+    ? instructions.filter((item) => {
+        const clean = String(item || '').trim();
+        return clean && !/^see source url for full method\.?$/i.test(clean);
+      })
+    : [];
+
+  if (instructionLines.length > 0) {
+    for (const item of instructionLines) {
+      pushLine(item);
+    }
+  } else {
+    for (const line of String(text || '').split('\n')) {
+      const clean = stripListPrefix(line);
+      if (!clean) continue;
+      if (clean.length > 220) continue;
+      if (/\d/.test(clean) && /(min|minute|hour|hr|分鐘|分钟|小時|小时|overnight)/i.test(clean)) {
+        pushLine(clean);
+      }
+    }
+  }
+
+  let prepMinutes = 0;
+  let cookMinutes = 0;
+  let restMinutes = 0;
+
+  for (const line of lines) {
+    const minutes = extractLineDurationMinutes(line);
+    if (minutes <= 0) continue;
+
+    if (COOK_TIME_HINT_RE.test(line)) {
+      cookMinutes += minutes;
+      continue;
+    }
+    if (REST_TIME_HINT_RE.test(line)) {
+      restMinutes += minutes;
+      continue;
+    }
+    prepMinutes += minutes;
+  }
+
+  if (prepMinutes === 0 && lines.length > 0 && (cookMinutes > 0 || restMinutes > 0)) {
+    const estimated = Math.min(40, Math.max(10, Math.round((lines.length * 2) / 5) * 5));
+    prepMinutes = estimated;
+  }
+
+  const totalMinutes = prepMinutes + cookMinutes + restMinutes;
+
+  return {
+    prepTime: formatDuration(prepMinutes),
+    cookTime: formatDuration(cookMinutes),
+    totalTime: formatDuration(totalMinutes)
+  };
+}
+
 function ingredientsFromText(text) {
   const lines = String(text || '').split('\n').map((line) => line.trim());
   const out = [];
@@ -620,6 +746,8 @@ async function main() {
       const summary = summaryFromText(text);
       const searchable = `${title} ${summary} ${text}`.toLowerCase();
       const fields = extractRecipeFields(text);
+      const instructions = instructionsFromText(text);
+      const inferredTimes = inferTimeFields(text, instructions);
 
       report.push({
         status: 'ok',
@@ -639,12 +767,12 @@ async function main() {
         summary,
         cuisine: inferCategory(searchable, CUISINE_KEYWORDS, 'Global'),
         type: inferCategory(searchable, TYPE_KEYWORDS, 'Main Course'),
-        prepTime: fields.prepTime || 'TBD',
-        cookTime: fields.cookTime || 'TBD',
-        totalTime: fields.totalTime || 'TBD',
+        prepTime: fields.prepTime || inferredTimes.prepTime || 'TBD',
+        cookTime: fields.cookTime || inferredTimes.cookTime || 'TBD',
+        totalTime: fields.totalTime || inferredTimes.totalTime || 'TBD',
         servings: fields.servings || 'TBD',
         ingredients: ingredientsFromText(text),
-        instructions: instructionsFromText(text),
+        instructions,
         tags: [],
         image: images[0] || '',
         sourceUrl: originalUrl,
