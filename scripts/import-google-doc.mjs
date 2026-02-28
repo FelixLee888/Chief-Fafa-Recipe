@@ -79,6 +79,14 @@ const TAG_KEYWORDS = [
   '芝麻'
 ];
 
+const COMMENT_SECTION_START_RE =
+  /(?:^\s*\d+\s+comments?\s*$|\b(?:leave a comment|post a comment|view comments?)\b|(?:發佈留言|发表评论|留言|評論|评论|回覆|回應|回应))/i;
+const SOCIAL_SHARE_RE =
+  /(?:blogthis|share this|share on|share to|email this|pin(?:terest)?|facebook|twitter|分享至|分享到|以電子郵件傳送這篇文章|回覆\s*刪除|回复\s*删除)/i;
+const COMMENT_AUTHOR_RE =
+  /^[\w\u3400-\u9fff][\w\u3400-\u9fff .,'’\-]{0,48}\s+\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日.*$/u;
+const COMMENT_BODY_RE = /\b(?:thanks for sharing|great post|anonymous said|留下評論|发表留言)\b/i;
+
 function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
@@ -244,6 +252,50 @@ function normalizeText(text) {
     .trim();
 }
 
+function isCommentOrSocialLine(line) {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+  if (SOCIAL_SHARE_RE.test(clean)) return true;
+  if (COMMENT_AUTHOR_RE.test(clean)) return true;
+  if (COMMENT_BODY_RE.test(clean)) return true;
+  if (/^(?:匿名|anonymous)$/i.test(clean)) return true;
+  if (/^(?:reply|delete|回覆|回复|刪除|删除)$/i.test(clean)) return true;
+  return false;
+}
+
+function isCommentSectionStart(line) {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+  if (SOCIAL_SHARE_RE.test(clean)) return true;
+  return COMMENT_SECTION_START_RE.test(clean);
+}
+
+function sanitizeDocumentText(rawText) {
+  const lines = normalizeText(rawText).split('\n');
+  const out = [];
+  let inCommentZone = false;
+
+  for (const rawLine of lines) {
+    const line = String(rawLine || '').trim();
+    if (!line) {
+      if (!inCommentZone && out.length > 0 && out[out.length - 1] !== '') {
+        out.push('');
+      }
+      continue;
+    }
+
+    if (inCommentZone) continue;
+    if (isCommentSectionStart(line)) {
+      inCommentZone = true;
+      continue;
+    }
+    if (isCommentOrSocialLine(line)) continue;
+    out.push(line);
+  }
+
+  return normalizeText(out.join('\n'));
+}
+
 function matchLabel(line, patterns) {
   for (const pattern of patterns) {
     const match = line.match(pattern);
@@ -268,7 +320,7 @@ function cleanHeading(line) {
 }
 
 function splitRecipeBlocks(text) {
-  const normalized = normalizeText(text);
+  const normalized = sanitizeDocumentText(text);
   const lines = normalized.split('\n');
   const blocks = [];
   let current = null;
@@ -421,6 +473,13 @@ function parseBlock(block) {
     const line = rawLine.trim();
     if (!line) continue;
 
+    if (isCommentSectionStart(line)) {
+      break;
+    }
+    if (isCommentOrSocialLine(line)) {
+      continue;
+    }
+
     const imageMarker = line.match(IMAGE_MARKER_RE);
     if (imageMarker) {
       recipe.imageRefs.push(imageMarker[1]);
@@ -559,6 +618,12 @@ function normalizeRecipe(recipe, index, imagesByRef, fallbackImages) {
   const markerImage = recipe.imageRefs.map((ref) => imagesByRef[ref]).find(Boolean) || '';
   const fallbackImage = fallbackImages.length > 0 ? fallbackImages[Math.min(index, fallbackImages.length - 1)] : '';
   const image = recipe.image || markerImage || fallbackImage;
+  const cleanedIngredients = recipe.ingredients
+    .map((item) => String(item || '').trim())
+    .filter((item) => item && !isCommentOrSocialLine(item));
+  const cleanedInstructions = recipe.instructions
+    .map((item) => String(item || '').trim())
+    .filter((item) => item && !isCommentOrSocialLine(item));
 
   return {
     title,
@@ -570,8 +635,8 @@ function normalizeRecipe(recipe, index, imagesByRef, fallbackImages) {
     cookTime: recipe.cookTime || 'TBD',
     totalTime: recipe.totalTime || 'TBD',
     servings: recipe.servings || 'TBD',
-    ingredients: recipe.ingredients.filter(Boolean),
-    instructions: recipe.instructions.filter(Boolean),
+    ingredients: cleanedIngredients,
+    instructions: cleanedInstructions,
     tags: recipe.tags || [],
     image
   };
@@ -838,7 +903,7 @@ async function main() {
     skipImages
   });
 
-  const blocks = splitRecipeBlocks(source.text);
+  const blocks = splitRecipeBlocks(sanitizeDocumentText(source.text));
   const recipes = blocks
     .map(parseBlock)
     .map((recipe, index) => normalizeRecipe(recipe, index, source.imagesByRef, source.fallbackImages))

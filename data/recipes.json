@@ -2,9 +2,12 @@
   "site": {
     "title": "Chief Fafa's Recipe",
     "description": "Modern, searchable recipe collection with auto-categorized cuisine and meal types.",
-    "generatedAt": "2026-02-27T19:11:35.162Z",
-    "source": "google-doc-batch:8",
-    "sourceType": "docs-api-batch",
+    "generatedAt": "2026-02-28T20:14:40.889Z",
+    "source": "google-doc-drive:10",
+    "sourceType": "docs-api-drive-list",
+    "discoveredDocCount": 10,
+    "processedDocCount": 10,
+    "skippedDocCount": 0,
     "locales": [
       "en",
       "zh-Hant",
@@ -12,6 +15,51 @@
     ]
   },
   "recipes": [
+    {
+      "title": "Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this",
+      "slug": "earl-grey-matcha-basque-cheesecake-happy-new-year-everyone-it-s-the-first-day-of",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Dessert",
+      "prepTime": "TBD",
+      "cookTime": "TBD",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "See source URL for full ingredients list."
+      ],
+      "instructions": [
+        "See source URL for full method."
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1xaZHl2HViJCuik6SlOw0nvFJlT7EJ0R-S62zEjdRrRU-01.jpg",
+      "sourceUrl": "https://www.instagram.com/reel/DS-lDHEjMMX/?igsh=MWxybXM4YWcxcXo3NQ==",
+      "googleDocUrl": "https://docs.google.com/document/d/1xaZHl2HViJCuik6SlOw0nvFJlT7EJ0R-S62zEjdRrRU/edit"
+    },
+    {
+      "title": "I love cooking sea cucumber—not only for its rich nutritional value, but also for its versatility in creati",
+      "slug": "i-love-cooking-sea-cucumber-not-only-for-its-rich-nutritional-value-but-also-for",
+      "summary": "Chief Fafa Recipe Note",
+      "cuisine": "Global",
+      "type": "Dinner",
+      "prepTime": "TBD",
+      "cookTime": "sea cucumber—not only for its rich nutritional valu",
+      "totalTime": "TBD",
+      "servings": "TBD",
+      "ingredients": [
+        "See source URL for full ingredients list."
+      ],
+      "instructions": [
+        "I love cooking sea cucumber—not only for its rich nutritional value, but also for its versatility in creating so many different dishes.",
+        "This time, I made Braised Sea Cucumber with Leeks. The aroma of the leek oil was absolutely irresistible 🤤",
+        "海參除咗營養豐富，更可以有唔同的煮法，好高可塑性，今次試玩「蔥燒日本遼參」，雖然花功夫，但它誘人的蔥油香味，難以抗拒🤤",
+        "#braisedseacucumberwithleek"
+      ],
+      "tags": [],
+      "image": "/assets/recipe-images/1c1JLGT9M3VTADhNphxkNM4A3iW7NcYk4LD90i0ogyRA-01.jpg",
+      "sourceUrl": "https://www.instagram.com/p/DU6uBmhjKTqhqdMYsN0_2zLvJXesexO8m9TvqA0/?igsh=MXgzanhxN2Z3bTB0bA==",
+      "googleDocUrl": "https://docs.google.com/document/d/1c1JLGT9M3VTADhNphxkNM4A3iW7NcYk4LD90i0ogyRA/edit"
+    },
     {
       "title": "MASAの料理",
       "slug": "masa",
@@ -23,7 +71,7 @@
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "Not clearly detected from source."
+        "See source URL for full ingredients list."
       ],
       "instructions": [
         "零失敗！經典香蕉蛋糕/Classic Banana Bread| MASAの料理",
@@ -53,7 +101,7 @@
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "Not clearly detected from source."
+        "See source URL for full ingredients list."
       ],
       "instructions": [
         "冷凍常備的蔥油餅也能變身美味佳餚！簡單創意料理，早餐、午餐、下酒菜通通搞定！",
@@ -67,7 +115,15 @@
         "醬油 Soy sauce－1/2大匙",
         "蠔油 Oyster sauce—1/2大匙",
         "肉桂粉 Cinnamon powder—1/2小匙",
-        "白胡椒粉 White pepper—1/2小匙"
+        "白胡椒粉 White pepper—1/2小匙",
+        "白酒 White wine—30cc",
+        "牛絞肉 Ground beef—150g",
+        "◆歡迎合作/Contact：bigway1688@gmail.com",
+        "WeChat ID：sunnywung723",
+        "＊料理の名前＆作り方はあくまでも自己流なのでご了承ください",
+        "＊料理名稱&做法不一定正式or傳統, 是從自己的想法&經驗來分享的",
+        "鍋具：THERMOS 膳魔師厚鑄耐摩不沾鍋20cm, 24cm",
+        "鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm"
       ],
       "tags": [],
       "image": "/assets/recipe-images/1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE-01.jpg",
@@ -85,7 +141,7 @@
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "Not clearly detected from source."
+        "See source URL for full ingredients list."
       ],
       "instructions": [
         "長崎風蜂蜜蛋糕 Castella Honey Cake｜MASAの料理",
@@ -115,7 +171,7 @@
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "Not clearly detected from source."
+        "See source URL for full ingredients list."
       ],
       "instructions": [
         "「我很喜歡吃肉絲炒麵，但一定要兩面金黃，中間還有麵心才好吃。今時今日吃的肉絲炒麵，大多是炸出來的，吃到中間更是沒有味道的。」名廚Ricky慨嘆地說。",
@@ -141,7 +197,30 @@
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "Not clearly detected from source."
+        "蘿蔔肉 1200克",
+        "Turnip flesh 1200g",
+        "清水 300克",
+        "Water 300g",
+        "鹽 12克",
+        "Salt 12g",
+        "糖 20克",
+        "Sugar 20g",
+        "雞粉 12克",
+        "Chicken stock 12g",
+        "黑椒碎 5克",
+        "Black pepper 5g",
+        "粘米粉 300克",
+        "Rice flour 300g",
+        "臘腸 2條",
+        "Chinese sausage 2pc",
+        "膶腸 2條",
+        "Liver sausage 2pc",
+        "蝦米 60克",
+        "Dried shrimp 60g",
+        "豬油 60克",
+        "Lard 60g",
+        "乾蔥絲 60克",
+        "Dried shallot 60g"
       ],
       "instructions": [
         "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!! 蘿蔔糕 Turnip rice cake 材料 (Ingredients) ： 蘿蔔肉 1200克 Turnip flesh 1200g 清水 300克 (煮蘿蔔用) Water 300g (for cooking turnip sticks) 鹽 12克 Salt 12g 糖 20克 Sugar 20g 雞粉 12克 Chicken stock 12g 黑椒碎 5克 Black pepper 5g 粘米粉 300克 Rice flour 300g 清水 300克 (開粘米粉) Water 300g (Mixed with rice flour) 臘腸 2條 Chinese sausage 2pc 膶腸 2條 Liver sausage 2pc 蝦米 60克 Dried shrimp 60g 豬油 60克 Lard 60g 乾蔥絲 60克 Dried shallot 60g #Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #臘腸 #膶腸 #鵝肝腸 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipricecake"
@@ -158,22 +237,34 @@
       "cuisine": "Global",
       "type": "Dessert",
       "prepTime": "TBD",
-      "cookTime": "TBD",
+      "cookTime": "turnip)",
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "白蘿蔔600克",
+        "白蘿蔔 600克",
         "Turnip 600g",
-        "菜油40克",
+        "菜油 40克",
         "Vegetable oil 40g",
         "櫻花蝦 15克",
         "Sakura shrimp 15g",
         "乾蔥 50克",
         "Shallot 50g",
-        "清水 150克 (煮蘿蔔用)",
-        "Water 150g (Cook turnip)",
+        "清水 150克",
+        "Water 150g",
         "黑胡椒粉 2克",
-        "Black pepper powder 2g"
+        "Black pepper powder 2g",
+        "粘米粉 125克",
+        "Rice flour 125g",
+        "糖 8克",
+        "Sugar 8g",
+        "鹽 8克",
+        "Salt 8g",
+        "雞粉 8克",
+        "Chicken stock 8g",
+        "清水 100克",
+        "Water 100g",
+        "Mixed with rice flour)",
+        "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #櫻花蝦 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipcake"
       ],
       "instructions": [
         "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
@@ -193,16 +284,16 @@
       "slug": "black-sesame-cotton-sponge-cake",
       "summary": "Chief Fafa Recipe Note",
       "cuisine": "Global",
-      "type": "Dinner",
+      "type": "Dessert",
       "prepTime": "TBD",
       "cookTime": "TBD",
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "ml corn oil（玉米油油） 65g （1/2 cup) plain flour（普通面粉） 1 tbsp corn starch （玉米粉） 50g （1/2 cup) ground black sesame （黑芝麻粉） 1 whole egg （全蛋） 5 egg yolks （蛋黄） 70ml milk （牛奶） 5 egg whites （蛋白) 1/4 tsp salt（盐） 95g (1/3 cup + 1 tbsp) caster sugar （细砂糖） Special thanks to oven sponsor Firenzzi Learn more on their social media: FB page: https://www.facebook.com/firenzzimalaysia/ (main) Instagram page: https://www.instagram.com/firenzzi_mys/ (newly made)"
+        "See source URL for full ingredients list."
       ],
       "instructions": [
-        "► Facebook Page: https://www.facebook.com/KathrineKwaBakingTutorial/?epa=SEARCH_BOX ► Instagram: https://www.instagram.com/katherinekwa/ ► Support my recipe book :https://kathrinekwa.com/ Ingredients : 70ml corn oil（玉米油油） 65g （1/2 cup) plain flour（普通面粉） 1 tbsp corn starch （玉米粉） 50g （1/2 cup) ground black sesame （黑芝麻粉） 1 whole egg （全蛋） 5 egg yolks （蛋黄） 70ml milk （牛奶） 5 egg whites （蛋白) 1/4 tsp salt（盐） 95g (1/3 cup + 1 tbsp) caster sugar （细砂糖） Special thanks to oven sponsor Firenzzi Learn more on their social media: FB page: https://www.facebook.com/firenzzimalaysia/ (main) Instagram page: https://www.instagram.com/firenzzi_mys/ (newly made)"
+        "See source URL for full method."
       ],
       "tags": [],
       "image": "/assets/recipe-images/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4-01.jpg",
@@ -213,39 +304,17 @@
       "title": "號外：KC廚房",
       "slug": "kc",
       "summary": "Chief Fafa Recipe Note",
-      "cuisine": "Mexican",
-      "type": "Dinner",
+      "cuisine": "Global",
+      "type": "Main Course",
       "prepTime": "TBD",
       "cookTime": "TBD",
       "totalTime": "TBD",
       "servings": "TBD",
       "ingredients": [
-        "難易度：",
-        "需時：",
-        "吃熱的，一小時可以了；吃凍的，多四小時冷藏時間",
-        "十粒奘，正好",
-        "鮑汁：",
-        "鮑魚水 （ 即在罐內所有浸著鮑魚的汁 ）成罐",
-        "日本清酒 300毫升（ 即係細細支的一支 ）",
-        "蠔油 90克（ 兩茶匙咁上下，多少少或少少少唔會世界末日 ）",
-        "日本醬油 80毫升（ 即係五湯匙左右 ）",
-        "千萬不要順手倒去浸著鮑魚的水",
-        "味醂 50毫升( 即係三湯匙卦? )",
-        "糖 35克（ 即係三茶匙左右 ）"
+        "See source URL for full ingredients list."
       ],
       "instructions": [
-        "先將清酒及同等份量的清水倒進一重身的煲子內，大火將之燒滾至聞起來沒有刺鼻的酒精味道為止；",
-        "依次序將鮑魚水、醬油、味碄、糖、蠔油、麻油全數「 隊 」下煲中，再大火燒至全滾（ 小心滾瀉！ ）；",
-        "用這個方法做的鮑魚雖然做法簡單，但質地軟熟糯口又富鮑魚香味，最重要的就是味道濃郁得來不膩，保證大家吃不停口。有朋友問能不能換上鮮鮑，個人覺得新鮮鮑魚一受熱來肉質就變韌，以此方法浸煮花的時間長之餘也未必可以做到如此好的口感。加上罐頭鮑魚內的鮑魚水是這道小吃的關鍵材料之一，如果用鮮鮑大家可以用雞湯代替，不過鮑魚的鮮香味就沒有那麼濃郁了。",
-        "好了，要自煮這一份清酒鮑魚成本是多少？南非罐頭鮑魚十隻奘大約是三百幾，不計燈油火蠟人工時間都要近三十多元一只。貴嗎？我可說是不便宜的，而看到此你或會省起 車品品老闆娘的干邑溏心鮑魚 12只才賣$438是何其的超值（ 請按此重溫 ）。不過佳節當前能跟家人及朋友一起分享美味的清酒鮑魚，又確實是人生一大快事。",
-        "人生在世求什麼？但憑可以跟身邊人及親友吃餐好的，無論世界是否在今天終結也是最快樂的事，你說是嗎？",
-        "以電子郵件傳送這篇文章 BlogThis！ 分享至 X 分享至 Facebook 分享到 Pinterest",
-        "Beef No Guy 2012年12月22日 凌晨4:43",
-        "Thanks for sharing your receipe! Looks splendid! We have a high end Cantonese seafood restaurant here that sells their own brand of canned abalone, and on top of that, already braised with sauces, so just re-heating it is all you would need to do, about 10 to 12 small pieces per can, either from Taiwan or South Africa. There are Caucasian/Americans who had this brand, but as part of their dinner banquet dish, who complained the abalone was too metallic tasting and aweful/not worth the money, but I did not have this problem when I ate them at home.",
-        "I might purchase a can or two from HK during my upcoming trip. Do you have any brand recommendations? Also can you recommend where I would buy a good XO sauce, if not from Lei Gardens? Thanks again.",
-        "Thalia 2012年12月22日 下午2:26",
-        "做得好靚啊!一定HIT爆!試過冇哂威士忌,拔蘭地,落RUM,又有微小的分別呢!",
-        "匿名 2012年12月27日 上午10:46"
+        "See source URL for full method."
       ],
       "tags": [],
       "image": "/assets/recipe-images/1vcIKTOgG5zmorL6kb6ZhwQZCvQltcTHH-Xdrj6knYBE-01.jpg",

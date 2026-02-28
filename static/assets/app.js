@@ -1,4 +1,96 @@
 (() => {
+  function initHeroCoverCycle() {
+    const heroCover = document.querySelector('[data-hero-cover]');
+    const heroVideo = heroCover ? heroCover.querySelector('[data-hero-video]') : null;
+    if (!heroCover || !heroVideo) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    const configuredMs = Number.parseInt(heroCover.dataset.heroInterval || '9000', 10);
+    const intervalMs = Number.isFinite(configuredMs) ? Math.max(4000, configuredMs) : 9000;
+
+    let disabled = false;
+    let isPlaying = false;
+    let timer = null;
+
+    function clearTimer() {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+    }
+
+    function resetPlayback() {
+      heroCover.classList.remove('is-playing');
+      isPlaying = false;
+      try {
+        heroVideo.pause();
+        heroVideo.currentTime = 0;
+      } catch {
+        // no-op
+      }
+    }
+
+    function scheduleNextCycle() {
+      clearTimer();
+      if (disabled) return;
+      timer = window.setTimeout(playCycle, intervalMs);
+    }
+
+    function playCycle() {
+      if (disabled || isPlaying || document.hidden) {
+        scheduleNextCycle();
+        return;
+      }
+
+      isPlaying = true;
+      heroCover.classList.add('is-playing');
+
+      try {
+        heroVideo.currentTime = 0;
+      } catch {
+        // no-op
+      }
+
+      const playPromise = heroVideo.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          disabled = true;
+          clearTimer();
+          resetPlayback();
+        });
+      }
+    }
+
+    heroVideo.addEventListener('ended', () => {
+      heroCover.classList.remove('is-playing');
+      isPlaying = false;
+      scheduleNextCycle();
+    });
+
+    heroVideo.addEventListener('error', () => {
+      disabled = true;
+      clearTimer();
+      resetPlayback();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearTimer();
+        resetPlayback();
+        return;
+      }
+      if (!disabled) {
+        scheduleNextCycle();
+      }
+    });
+
+    scheduleNextCycle();
+  }
+
+  initHeroCoverCycle();
+
   const searchInput = document.querySelector('#recipe-search');
   const cards = Array.from(document.querySelectorAll('.recipe-card'));
   const filters = Array.from(document.querySelectorAll('.filter-btn'));

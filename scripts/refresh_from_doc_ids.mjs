@@ -51,6 +51,21 @@ const TYPE_KEYWORDS = {
 const URL_RE = /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/g;
 const COOK_TIME_HINT_RE = /\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|烤|煮|炸|蒸|炒|焗|炆|煎)\b/i;
 const REST_TIME_HINT_RE = /\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)\b/i;
+const COMMENT_SECTION_START_RE =
+  /(?:^\s*\d+\s+comments?\s*$|\b(?:leave a comment|post a comment|view comments?)\b|(?:發佈留言|发表评论|留言|評論|评论|回覆|回應|回应))/i;
+const SOCIAL_SHARE_RE =
+  /(?:blogthis|share this|share on|share to|email this|pin(?:terest)?|facebook|twitter|分享至|分享到|以電子郵件傳送這篇文章|回覆\s*刪除|回复\s*删除)/i;
+const COMMENT_AUTHOR_RE =
+  /^[\w\u3400-\u9fff][\w\u3400-\u9fff .,'’\-]{0,48}\s+\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日.*$/u;
+const COMMENT_BODY_RE = /\b(?:thanks for sharing|great post|anonymous said|留下評論|发表留言)\b/i;
+const INGREDIENT_SECTION_ANY_RE = /(?:ingredients?|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i;
+const INGREDIENT_SECTION_LINE_RE = /^(ingredients?|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i;
+const INSTRUCTION_SECTION_LINE_RE = /^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i;
+const INGREDIENT_STOP_INLINE_RE = /(?:\b(?:instructions?|method|steps?|directions?)\b|做法|作法|手順|作り方|https?:\/\/|#[\p{L}\p{N}_-]+)/iu;
+const INGREDIENT_INLINE_ITEM_RE =
+  /([A-Za-z\u00C0-\u024F\u3400-\u9fff][A-Za-z0-9\u00C0-\u024F\u3400-\u9fff'’()\/,&.+\- ]{0,72}?)\s*(\d+(?:\.\d+)?)\s*(kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)/giu;
+const INGREDIENT_PLACEHOLDER_RE =
+  /^(?:not clearly detected from source\.?|see source url for full ingredients list\.?|n\/a|none|tbd)$/i;
 const DURATION_RANGE_RE =
   /(\d+(?:\.\d+)?)\s*(?:-|–|—|to|~|～)\s*(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
 const DURATION_SINGLE_RE = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
@@ -304,6 +319,116 @@ function normalizeText(text) {
     .trim();
 }
 
+function isCommentOrSocialLine(line) {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+  if (SOCIAL_SHARE_RE.test(clean)) return true;
+  if (COMMENT_AUTHOR_RE.test(clean)) return true;
+  if (COMMENT_BODY_RE.test(clean)) return true;
+  if (/^(?:匿名|anonymous)$/i.test(clean)) return true;
+  if (/^(?:reply|delete|回覆|回复|刪除|删除)$/i.test(clean)) return true;
+  return false;
+}
+
+function isCommentSectionStart(line) {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+  if (SOCIAL_SHARE_RE.test(clean)) return true;
+  return COMMENT_SECTION_START_RE.test(clean);
+}
+
+function sanitizeDocumentText(rawText) {
+  const lines = normalizeText(rawText).split('\n');
+  const out = [];
+  let inCommentZone = false;
+
+  for (const rawLine of lines) {
+    const line = String(rawLine || '').trim();
+    if (!line) {
+      if (!inCommentZone && out.length > 0 && out[out.length - 1] !== '') {
+        out.push('');
+      }
+      continue;
+    }
+
+    if (inCommentZone) continue;
+    if (isCommentSectionStart(line)) {
+      inCommentZone = true;
+      continue;
+    }
+    if (isCommentOrSocialLine(line)) continue;
+    out.push(line);
+  }
+
+  return normalizeText(out.join('\n'));
+}
+
+function normalizeIngredientName(value) {
+  let out = String(value || '')
+    .replace(/^\s*[:：,，;；.\-–—()（）\[\]]+/, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\b(?:ingredients?|material)\b/gi, '')
+    .replace(/(?:材料|食材)\s*$/u, '');
+
+  // Keep only the ingredient token when a previous note leaks before ")".
+  if (out.includes(')')) {
+    const tail = out.split(')').pop()?.trim();
+    if (tail) out = tail;
+  }
+
+  out = out.replace(/^\([^)]*\)\s*/, '').trim();
+  return out;
+}
+
+function extractIngredientItemsFromSegment(segment) {
+  const clean = String(segment || '')
+    .replace(/\r?\n/g, ' ')
+    .replace(URL_RE, ' ')
+    .replace(/#[\p{L}\p{N}_-]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!clean) return [];
+
+  const out = [];
+  const seen = new Set();
+
+  for (const match of clean.matchAll(INGREDIENT_INLINE_ITEM_RE)) {
+    const rawName = normalizeIngredientName(match[1]);
+    const qty = String(match[2] || '').trim();
+    const unit = String(match[3] || '').trim();
+
+    if (!rawName || !qty || !unit) continue;
+    if (rawName.length > 80) continue;
+    if (isCommentOrSocialLine(rawName)) continue;
+    if (INGREDIENT_PLACEHOLDER_RE.test(rawName)) continue;
+
+    const item = `${rawName} ${qty}${unit}`.replace(/\s+/g, ' ').trim();
+    const key = item.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(item);
+    }
+    if (out.length >= 80) break;
+  }
+
+  return out;
+}
+
+function extractIngredientSegment(text) {
+  const raw = String(text || '');
+  const start = raw.match(INGREDIENT_SECTION_ANY_RE);
+  if (!start || start.index === undefined) return '';
+
+  let segment = raw.slice(start.index + start[0].length);
+  const stop = segment.search(INGREDIENT_STOP_INLINE_RE);
+  if (stop >= 0) {
+    segment = segment.slice(0, stop);
+  }
+
+  return segment.trim();
+}
+
 function extractTextAndImageRefs(docJson) {
   const chunks = [];
   const imageRefs = [];
@@ -472,7 +597,7 @@ function summaryFromText(text) {
   const firstParagraph = String(text || '')
     .split('\n')
     .map((line) => line.trim())
-    .find((line) => line && !/^https?:\/\//i.test(line));
+    .find((line) => line && !/^https?:\/\//i.test(line) && !isCommentOrSocialLine(line));
 
   if (!firstParagraph) return 'Recipe imported from Google Doc.';
   return firstParagraph.slice(0, 600);
@@ -511,7 +636,7 @@ function extractRecipeFields(text) {
   const lines = String(text || '')
     .split('\n')
     .map((line) => stripListPrefix(line))
-    .filter(Boolean);
+    .filter((line) => line && !isCommentOrSocialLine(line));
 
   const candidates = [];
   const seen = new Set();
@@ -615,12 +740,14 @@ function inferTimeFields(text, instructions) {
 
   if (instructionLines.length > 0) {
     for (const item of instructionLines) {
+      if (isCommentOrSocialLine(item)) continue;
       pushLine(item);
     }
   } else {
     for (const line of String(text || '').split('\n')) {
       const clean = stripListPrefix(line);
       if (!clean) continue;
+      if (isCommentOrSocialLine(clean)) continue;
       if (clean.length > 220) continue;
       if (/\d/.test(clean) && /(min|minute|hour|hr|分鐘|分钟|小時|小时|overnight)/i.test(clean)) {
         pushLine(clean);
@@ -664,22 +791,64 @@ function inferTimeFields(text, instructions) {
 function ingredientsFromText(text) {
   const lines = String(text || '').split('\n').map((line) => line.trim());
   const out = [];
+  const seen = new Set();
   let inSection = false;
+  const pushOut = (value) => {
+    const clean = stripListPrefix(String(value || '').trim());
+    if (!clean || isCommentOrSocialLine(clean)) return;
+    if (INGREDIENT_PLACEHOLDER_RE.test(clean)) return;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(clean);
+  };
 
   for (const line of lines) {
-    if (/^(ingredients?|材料|食材)(?:\s*[:：]|\s+|$)/i.test(line)) {
-      inSection = true;
+    if (isCommentSectionStart(line) || isCommentOrSocialLine(line)) {
+      if (inSection) break;
       continue;
     }
-    if (/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
+
+    if (INGREDIENT_SECTION_LINE_RE.test(line)) {
+      inSection = true;
+      const remainder = line.replace(INGREDIENT_SECTION_LINE_RE, '').trim();
+      if (remainder) {
+        const parsedInline = extractIngredientItemsFromSegment(remainder);
+        if (parsedInline.length > 0) {
+          for (const item of parsedInline) pushOut(item);
+        } else {
+          pushOut(remainder);
+        }
+      }
+      continue;
+    }
+    if (INSTRUCTION_SECTION_LINE_RE.test(line)) {
       if (inSection) break;
       continue;
     }
     if (!inSection) continue;
 
-    const cleaned = stripListPrefix(line);
-    if (cleaned) out.push(cleaned);
+    const parsedInline = extractIngredientItemsFromSegment(line);
+    if (parsedInline.length > 0) {
+      for (const item of parsedInline) pushOut(item);
+    } else {
+      pushOut(line);
+    }
     if (out.length >= 60) break;
+  }
+
+  if (out.length === 0) {
+    const inlineFromSection = extractIngredientItemsFromSegment(extractIngredientSegment(text));
+    if (inlineFromSection.length >= 3) {
+      return inlineFromSection.slice(0, 60);
+    }
+  }
+
+  if (out.length === 1 && out[0].length > 160) {
+    const parsedInline = extractIngredientItemsFromSegment(out[0]);
+    if (parsedInline.length >= 3) {
+      return parsedInline.slice(0, 60);
+    }
   }
 
   if (out.length === 0) return ['See source URL for full ingredients list.'];
@@ -692,6 +861,11 @@ function instructionsFromText(text) {
   let inSection = false;
 
   for (const line of lines) {
+    if (isCommentSectionStart(line) || isCommentOrSocialLine(line)) {
+      if (inSection) break;
+      continue;
+    }
+
     if (/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
       inSection = true;
       continue;
@@ -739,15 +913,16 @@ async function main() {
     try {
       const docJson = await fetchDoc(docId, token);
       const { images, text } = await extractImagesForDoc(docId, docJson, token);
-      const urls = extractUrls(text);
+      const cleanText = sanitizeDocumentText(text);
+      const urls = extractUrls(cleanText);
       const originalUrl = pickOriginalUrl(urls);
 
-      const title = titleFromDocName(docJson.title, text);
-      const summary = summaryFromText(text);
-      const searchable = `${title} ${summary} ${text}`.toLowerCase();
-      const fields = extractRecipeFields(text);
-      const instructions = instructionsFromText(text);
-      const inferredTimes = inferTimeFields(text, instructions);
+      const title = titleFromDocName(docJson.title, cleanText);
+      const summary = summaryFromText(cleanText);
+      const searchable = `${title} ${summary} ${cleanText}`.toLowerCase();
+      const fields = extractRecipeFields(cleanText);
+      const instructions = instructionsFromText(cleanText);
+      const inferredTimes = inferTimeFields(cleanText, instructions);
 
       report.push({
         status: 'ok',
@@ -771,7 +946,7 @@ async function main() {
         cookTime: fields.cookTime || inferredTimes.cookTime || 'TBD',
         totalTime: fields.totalTime || inferredTimes.totalTime || 'TBD',
         servings: fields.servings || 'TBD',
-        ingredients: ingredientsFromText(text),
+        ingredients: ingredientsFromText(cleanText),
         instructions,
         tags: [],
         image: images[0] || '',
