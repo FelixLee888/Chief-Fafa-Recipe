@@ -61,6 +61,8 @@ Default behavior:
 - `GOOGLE_DOCS_DRIVE_QUERY` (optional Drive API query override; default is all non-trashed Google Docs)
 - `GOOGLE_DOCS_MAX_DOCS` (optional limit, useful for testing)
 - `GOOGLE_DOCS_DRIVE_PAGE_SIZE` (optional page size for Drive listing, default `200`)
+- `RECIPE_TRANSLATE_ENABLED` (`1` or `0`, default `1`)
+- `RECIPE_TRANSLATE_MODEL` (default `gpt-4.1-mini`)
 
 ## Google Docs OAuth Env
 
@@ -113,6 +115,7 @@ In `Settings` -> `Secrets and variables` -> `Actions`, add:
 - `GOOGLE_DOCS_CLIENT_SECRET`
 - `GOOGLE_DOCS_REFRESH_TOKEN`
 - `GOOGLE_DOCS_ACCESS_TOKEN` (optional fallback)
+- `OPENAI_API_KEY` (optional but recommended for EN/ZH/JA recipe translation)
 
 Alternative legacy names are also supported:
 

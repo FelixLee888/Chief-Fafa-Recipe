@@ -7,9 +7,11 @@ const DEFAULT_EXTERNAL_ENV = '/Users/felixlee/Documents/ChiefFaFaBot/.env';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DOCS_API_BASE = 'https://docs.googleapis.com/v1/documents';
 const GOOGLE_DRIVE_FILES_API = 'https://www.googleapis.com/drive/v3/files';
+const OPENAI_CHAT_COMPLETIONS_API = 'https://api.openai.com/v1/chat/completions';
 const IMAGE_STATIC_DIR = path.resolve('static/assets/recipe-images');
 const OUTPUT_RECIPES = path.resolve('data/recipes.json');
 const OUTPUT_REPORT = path.resolve('data/doc-assets.json');
+const SUPPORTED_LOCALES = ['en', 'zh-Hant', 'ja'];
 
 const LEGACY_DOC_IDS = [
   '1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM',
@@ -196,6 +198,227 @@ function pickEnv(loaded, keys) {
     if (loadedVal) return loadedVal;
   }
   return '';
+}
+
+function normalizeLocale(value, fallback = 'en') {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return fallback;
+
+  if (raw === 'en' || raw.startsWith('en-') || raw.includes('english')) return 'en';
+  if (raw === 'ja' || raw.startsWith('ja-') || raw.includes('japanese') || raw.includes('日本')) return 'ja';
+  if (
+    raw === 'zh' ||
+    raw.startsWith('zh-') ||
+    raw.includes('chinese') ||
+    raw.includes('繁體') ||
+    raw.includes('繁体') ||
+    raw.includes('traditional chinese')
+  ) {
+    return 'zh-Hant';
+  }
+
+  return fallback;
+}
+
+function parseBoolean(value, fallback = false) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return fallback;
+  if (['1', 'true', 'yes', 'y', 'on'].includes(raw)) return true;
+  if (['0', 'false', 'no', 'n', 'off'].includes(raw)) return false;
+  return fallback;
+}
+
+function scriptCounts(text) {
+  const sample = String(text || '').slice(0, 8000);
+  const hiraKata = (sample.match(/[\u3040-\u30ff]/g) || []).length;
+  const cjk = (sample.match(/[\u3400-\u9fff]/g) || []).length;
+  const latin = (sample.match(/[A-Za-z]/g) || []).length;
+  return { hiraKata, cjk, latin };
+}
+
+function detectRecipeLanguage({ title = '', summary = '', ingredients = [], instructions = [], rawText = '' }) {
+  const sample = [title, summary, ...ingredients.slice(0, 20), ...instructions.slice(0, 20), rawText.slice(0, 3000)]
+    .join('\n')
+    .trim();
+
+  if (!sample) return 'en';
+
+  const counts = scriptCounts(sample);
+  if (counts.hiraKata >= 3) return 'ja';
+
+  if (counts.cjk > 0) {
+    const jpHints = (sample.match(/(?:の|です|ます|ません|材料|作り方|手順|しょうゆ|みりん|ごま|にんにく|ねぎ|レシピ|料理)/g) || []).length;
+    const zhHints = (sample.match(/(?:的|了|和|在|把|做法|步驟|步骤|食材|醬|酱|蔥|葱|雞|鸡|豬|猪|分鐘|分钟|小時|小时|料理)/g) || []).length;
+    if (jpHints > zhHints) return 'ja';
+    return 'zh-Hant';
+  }
+
+  if (counts.latin > 0) return 'en';
+  return 'en';
+}
+
+function resolveTranslationConfig(args, loadedEnv) {
+  const explicit = args.translate;
+  const enabled =
+    explicit === undefined
+      ? parseBoolean(process.env.RECIPE_TRANSLATE_ENABLED || loadedEnv.RECIPE_TRANSLATE_ENABLED, true)
+      : parseBoolean(explicit, true);
+
+  const apiKey = pickEnv(loadedEnv, ['OPENAI_API_KEY']);
+  const model =
+    String(args['translate-model'] || process.env.RECIPE_TRANSLATE_MODEL || loadedEnv.RECIPE_TRANSLATE_MODEL || 'gpt-4.1-mini').trim();
+
+  return {
+    enabled,
+    apiKey,
+    model,
+    cache: new Map()
+  };
+}
+
+function localeLabel(locale) {
+  if (locale === 'ja') return 'Japanese';
+  if (locale === 'zh-Hant') return 'Traditional Chinese';
+  return 'English';
+}
+
+function safeString(value, fallback = '') {
+  const out = String(value || '').trim();
+  return out || fallback;
+}
+
+function normalizeLineArray(value, fallback = []) {
+  if (Array.isArray(value)) {
+    const out = value.map((item) => String(item || '').trim()).filter(Boolean);
+    if (out.length > 0) return out;
+  }
+  if (typeof value === 'string') {
+    const out = value
+      .split(/\r?\n/)
+      .map((line) => stripListPrefix(line))
+      .map((line) => String(line || '').trim())
+      .filter(Boolean);
+    if (out.length > 0) return out;
+  }
+  return Array.isArray(fallback) ? fallback : [];
+}
+
+function parseAssistantJson(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return null;
+
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const candidate = fenced ? fenced[1].trim() : raw;
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    return null;
+  }
+}
+
+async function translateRecipeContent(source, sourceLocale, targetLocale, translationConfig) {
+  const sourcePayload = {
+    title: safeString(source.title),
+    summary: safeString(source.summary),
+    ingredients: Array.isArray(source.ingredients) ? source.ingredients.slice(0, 120) : [],
+    instructions: Array.isArray(source.instructions) ? source.instructions.slice(0, 120) : []
+  };
+
+  if (targetLocale === sourceLocale) {
+    return sourcePayload;
+  }
+
+  if (!translationConfig.enabled || !translationConfig.apiKey) {
+    return sourcePayload;
+  }
+
+  const cacheKey = JSON.stringify({ s: sourceLocale, t: targetLocale, p: sourcePayload });
+  if (translationConfig.cache.has(cacheKey)) {
+    return translationConfig.cache.get(cacheKey);
+  }
+
+  const systemPrompt = [
+    'You are an expert recipe translator.',
+    `Translate from ${localeLabel(sourceLocale)} to ${localeLabel(targetLocale)}.`,
+    'Preserve numbers, units, ingredient amounts, and cooking times exactly.',
+    'Keep ingredients and instructions as arrays with the same order as input.',
+    'Do not invent missing details.',
+    'Return ONLY valid JSON with keys: title, summary, ingredients, instructions.'
+  ].join(' ');
+
+  const response = await fetch(OPENAI_CHAT_COMPLETIONS_API, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${translationConfig.apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: translationConfig.model,
+      temperature: 0.1,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: JSON.stringify({
+            source_language: sourceLocale,
+            target_language: targetLocale,
+            recipe: sourcePayload
+          })
+        }
+      ]
+    })
+  });
+
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = body?.error?.message || `translation request failed (${response.status})`;
+    throw new Error(detail);
+  }
+
+  const content = body?.choices?.[0]?.message?.content;
+  const parsed = parseAssistantJson(content);
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error('translation response is not valid JSON');
+  }
+
+  const translated = {
+    title: safeString(parsed.title, sourcePayload.title),
+    summary: safeString(parsed.summary, sourcePayload.summary),
+    ingredients: normalizeLineArray(parsed.ingredients, sourcePayload.ingredients),
+    instructions: normalizeLineArray(parsed.instructions, sourcePayload.instructions)
+  };
+
+  if (!translated.title) translated.title = sourcePayload.title;
+  if (!translated.summary) translated.summary = sourcePayload.summary;
+  if (translated.ingredients.length === 0) translated.ingredients = sourcePayload.ingredients;
+  if (translated.instructions.length === 0) translated.instructions = sourcePayload.instructions;
+
+  translationConfig.cache.set(cacheKey, translated);
+  return translated;
+}
+
+async function buildRecipeTranslations(recipe, sourceLocale, translationConfig) {
+  const normalizedSource = normalizeLocale(sourceLocale, 'en');
+  const sourcePayload = {
+    title: safeString(recipe.title),
+    summary: safeString(recipe.summary),
+    ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
+    instructions: Array.isArray(recipe.instructions) ? recipe.instructions : []
+  };
+
+  const translations = {};
+  for (const locale of SUPPORTED_LOCALES) {
+    try {
+      translations[locale] = await translateRecipeContent(sourcePayload, normalizedSource, locale, translationConfig);
+    } catch (error) {
+      process.stderr.write(
+        `Warning: translation failed (${normalizedSource} -> ${locale}): ${error?.message || 'unknown error'}\n`
+      );
+      translations[locale] = sourcePayload;
+    }
+  }
+  return translations;
 }
 
 async function resolveDocsAccessToken(loaded) {
@@ -1102,6 +1325,13 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   const loadedEnv = await loadEnv(args);
   const token = await resolveDocsAccessToken(loadedEnv);
+  const translationConfig = resolveTranslationConfig(args, loadedEnv);
+
+  if (translationConfig.enabled && !translationConfig.apiKey) {
+    process.stderr.write(
+      'Warning: OPENAI_API_KEY is not set. Recipe translations will fall back to source language text.\n'
+    );
+  }
 
   const resolved = await resolveDocEntries(args, loadedEnv, token);
   const docEntries = resolved.entries;
@@ -1130,6 +1360,13 @@ async function main() {
       const searchable = `${title} ${summary} ${cleanText}`.toLowerCase();
       const fields = extractRecipeFields(cleanText);
       const inferredTimes = inferTimeFields(cleanText, instructions);
+      const sourceLanguage = detectRecipeLanguage({
+        title,
+        summary,
+        ingredients,
+        instructions,
+        rawText: cleanText
+      });
 
       report.push({
         status: 'ok',
@@ -1137,13 +1374,14 @@ async function main() {
         listedName: entry.name || '',
         listedModifiedTime: entry.modifiedTime || '',
         title: docJson.title || '',
+        detectedLanguage: sourceLanguage,
         googleDocUrl: canonicalDocUrl(docId),
         originalUrl,
         images,
         candidateUrls: urls.slice(0, 30)
       });
 
-      recipes.push({
+      const recipeBase = {
         title,
         slug: slugify(title) || docId.toLowerCase(),
         summary,
@@ -1159,6 +1397,14 @@ async function main() {
         image: images[0] || '',
         sourceUrl: originalUrl,
         googleDocUrl: canonicalDocUrl(docId)
+      };
+
+      const translations = await buildRecipeTranslations(recipeBase, sourceLanguage, translationConfig);
+
+      recipes.push({
+        ...recipeBase,
+        sourceLanguage,
+        translations
       });
     } catch (error) {
       const message = error?.message || 'unknown error';

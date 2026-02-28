@@ -203,6 +203,24 @@ function localizeType(locale, type) {
   return localizeValue(locale, type, TYPE_I18N);
 }
 
+function localizedRecipeContent(recipe, locale) {
+  const localeMap = recipe?.translations && typeof recipe.translations === 'object' ? recipe.translations : null;
+  const translated = localeMap && localeMap[locale] && typeof localeMap[locale] === 'object' ? localeMap[locale] : null;
+
+  if (!translated) return recipe;
+
+  const ingredients = Array.isArray(translated.ingredients) && translated.ingredients.length > 0 ? translated.ingredients : recipe.ingredients;
+  const instructions = Array.isArray(translated.instructions) && translated.instructions.length > 0 ? translated.instructions : recipe.instructions;
+
+  return {
+    ...recipe,
+    title: String(translated.title || recipe.title || ''),
+    summary: String(translated.summary || recipe.summary || ''),
+    ingredients,
+    instructions
+  };
+}
+
 function indexUrl(locale) {
   return withBasePath(`/${locale}/index.html`);
 }
@@ -253,6 +271,7 @@ function languageSwitcher(locale, page) {
 
 function recipeCard(locale, recipe) {
   const labels = LOCALES[locale];
+  const view = localizedRecipeContent(recipe, locale);
   const cuisine = localizeCuisine(locale, recipe.cuisine);
   const type = localizeType(locale, recipe.type);
 
@@ -261,24 +280,34 @@ function recipeCard(locale, recipe) {
     .map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`)
     .join('');
 
-  const searchable = [recipe.title, recipe.summary, recipe.cuisine, recipe.type, recipe.tags.join(' '), recipe.ingredients?.join(' ') || '']
+  const searchable = [
+    view.title,
+    view.summary,
+    recipe.title,
+    recipe.summary,
+    recipe.cuisine,
+    recipe.type,
+    recipe.tags.join(' '),
+    view.ingredients?.join(' ') || '',
+    recipe.ingredients?.join(' ') || ''
+  ]
     .join(' ')
     .toLowerCase();
 
   const image = recipe.image
-    ? `<figure class="recipe-card__image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(recipe.title)}" loading="lazy" decoding="async"></figure>`
+    ? `<figure class="recipe-card__image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(view.title)}" loading="lazy" decoding="async"></figure>`
     : '<div class="recipe-card__image recipe-card__image--empty" aria-hidden="true"></div>';
 
   return `
     <article class="recipe-card" data-search="${escapeHtml(searchable)}" data-cuisine="${escapeHtml(cuisine)}" data-type="${escapeHtml(type)}">
-      <a class="recipe-card__link" href="${recipeUrl(locale, recipe.slug)}" aria-label="View ${escapeHtml(recipe.title)}">
+      <a class="recipe-card__link" href="${recipeUrl(locale, recipe.slug)}" aria-label="View ${escapeHtml(view.title)}">
         ${image}
         <div class="recipe-card__meta">
           <span>${escapeHtml(cuisine)}</span>
           <span>${escapeHtml(type)}</span>
         </div>
-        <h3>${escapeHtml(recipe.title)}</h3>
-        <p>${escapeHtml(recipe.summary)}</p>
+        <h3>${escapeHtml(view.title)}</h3>
+        <p>${escapeHtml(view.summary)}</p>
         <div class="recipe-card__time">${escapeHtml(labels.total)}: ${escapeHtml(recipe.totalTime || 'TBD')}</div>
         ${
           recipe.sourceUrl
@@ -297,26 +326,30 @@ function itemListSchema(recipes, locale) {
     '@type': 'ItemList',
     name: "Chief Fafa's Recipe",
     inLanguage: locale,
-    itemListElement: recipes.map((recipe, index) => ({
+    itemListElement: recipes.map((recipe, index) => {
+      const view = localizedRecipeContent(recipe, locale);
+      return {
       '@type': 'ListItem',
       position: index + 1,
-      name: recipe.title,
+      name: view.title,
       url: recipeUrl(locale, recipe.slug)
-    }))
+      };
+    })
   };
 }
 
 function recipeSchema(recipe, locale) {
+  const view = localizedRecipeContent(recipe, locale);
   const output = {
     '@context': 'https://schema.org',
     '@type': 'Recipe',
-    name: recipe.title,
-    description: recipe.summary,
+    name: view.title,
+    description: view.summary,
     inLanguage: locale,
     recipeCuisine: recipe.cuisine,
     recipeCategory: recipe.type,
-    recipeIngredient: recipe.ingredients,
-    recipeInstructions: recipe.instructions.map((step) => ({
+    recipeIngredient: view.ingredients,
+    recipeInstructions: view.instructions.map((step) => ({
       '@type': 'HowToStep',
       text: step
     })),
@@ -340,6 +373,7 @@ function recipeSchema(recipe, locale) {
 
 function buildIndexHtml({ site, recipes, locale }) {
   const labels = LOCALES[locale];
+  const localizedRecipes = recipes.map((recipe) => localizedRecipeContent(recipe, locale));
 
   const cuisines = [...new Set(recipes.map((recipe) => localizeCuisine(locale, recipe.cuisine)))].sort();
   const types = [...new Set(recipes.map((recipe) => localizeType(locale, recipe.type)))].sort();
@@ -355,7 +389,9 @@ function buildIndexHtml({ site, recipes, locale }) {
   const cards = recipes.map((recipe) => recipeCard(locale, recipe)).join('');
 
   const listSchema = JSON.stringify(itemListSchema(recipes, locale));
-  const embeddedData = JSON.stringify(recipes.map(({ slug, title, cuisine, type, tags, summary, ingredients }) => ({ slug, title, cuisine, type, tags, summary, ingredients })));
+  const embeddedData = JSON.stringify(
+    localizedRecipes.map(({ slug, title, cuisine, type, tags, summary, ingredients }) => ({ slug, title, cuisine, type, tags, summary, ingredients }))
+  );
   const canonical = indexUrl(locale);
 
   return `<!doctype html>
@@ -448,16 +484,17 @@ function buildIndexHtml({ site, recipes, locale }) {
 
 function buildRecipeHtml({ site, recipe, locale }) {
   const labels = LOCALES[locale];
+  const view = localizedRecipeContent(recipe, locale);
   const schema = JSON.stringify(recipeSchema(recipe, locale));
 
-  const ingredients = recipe.ingredients.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
-  const steps = recipe.instructions.map((step) => `<li>${escapeHtml(step)}</li>`).join('');
+  const ingredients = view.ingredients.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
+  const steps = view.instructions.map((step) => `<li>${escapeHtml(step)}</li>`).join('');
   const tags = recipe.tags.map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`).join('');
   const cuisine = localizeCuisine(locale, recipe.cuisine);
   const type = localizeType(locale, recipe.type);
 
   const image = recipe.image
-    ? `<figure class="recipe-hero-image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(recipe.title)}" loading="eager" decoding="async"></figure>`
+    ? `<figure class="recipe-hero-image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(view.title)}" loading="eager" decoding="async"></figure>`
     : '';
 
   const sourceLinks = `
@@ -482,11 +519,11 @@ function buildRecipeHtml({ site, recipe, locale }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(recipe.title)} | ${escapeHtml(site.title)}</title>
-  <meta name="description" content="${escapeHtml(recipe.summary)}">
+  <title>${escapeHtml(view.title)} | ${escapeHtml(site.title)}</title>
+  <meta name="description" content="${escapeHtml(view.summary)}">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="${escapeHtml(recipe.title)}">
-  <meta property="og:description" content="${escapeHtml(recipe.summary)}">
+  <meta property="og:title" content="${escapeHtml(view.title)}">
+  <meta property="og:description" content="${escapeHtml(view.summary)}">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="${escapeHtml(locale)}">
   ${recipe.image ? `<meta property="og:image" content="${escapeHtml(siteScopedUrl(recipe.image))}">` : ''}
@@ -516,13 +553,13 @@ function buildRecipeHtml({ site, recipe, locale }) {
       <span>/</span>
       <span>${escapeHtml(cuisine)}</span>
       <span>/</span>
-      <span>${escapeHtml(recipe.title)}</span>
+      <span>${escapeHtml(view.title)}</span>
     </nav>
 
     <article>
       <p class="eyebrow">${escapeHtml(cuisine)} • ${escapeHtml(type)}</p>
-      <h1>${escapeHtml(recipe.title)}</h1>
-      <p class="recipe-summary">${escapeHtml(recipe.summary)}</p>
+      <h1>${escapeHtml(view.title)}</h1>
+      <p class="recipe-summary">${escapeHtml(view.summary)}</p>
       ${image}
       ${sourceLinks}
 
