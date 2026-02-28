@@ -7,10 +7,18 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
-    const configuredMs = Number.parseInt(heroCover.dataset.heroInterval || '9000', 10);
-    const intervalMs = Number.isFinite(configuredMs) ? Math.max(4000, configuredMs) : 9000;
+    // Ensure mobile Safari treats this as an inline muted video.
+    heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
+    heroVideo.playsInline = true;
+    heroVideo.setAttribute('playsinline', '');
+    heroVideo.setAttribute('webkit-playsinline', '');
+
+    const configuredMs = Number.parseInt(heroCover.dataset.heroInterval || '3000', 10);
+    const intervalMs = Number.isFinite(configuredMs) ? Math.max(3000, configuredMs) : 3000;
 
     let disabled = false;
+    let waitingForInteraction = false;
     let isPlaying = false;
     let timer = null;
 
@@ -38,8 +46,12 @@
       timer = window.setTimeout(playCycle, intervalMs);
     }
 
-    function playCycle() {
+    function playCycle(force = false) {
       if (disabled || isPlaying || document.hidden) {
+        scheduleNextCycle();
+        return;
+      }
+      if (waitingForInteraction && !force) {
         scheduleNextCycle();
         return;
       }
@@ -55,7 +67,23 @@
 
       const playPromise = heroVideo.play();
       if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {
+        playPromise.catch((error) => {
+          const message = String(error?.message || '').toLowerCase();
+          const name = String(error?.name || '');
+          const blockedByAutoplay =
+            name === 'NotAllowedError' ||
+            name === 'AbortError' ||
+            message.includes('notallowed') ||
+            message.includes('user gesture') ||
+            message.includes('interact');
+
+          if (blockedByAutoplay) {
+            waitingForInteraction = true;
+            resetPlayback();
+            scheduleNextCycle();
+            return;
+          }
+
           disabled = true;
           clearTimer();
           resetPlayback();
@@ -85,6 +113,17 @@
         scheduleNextCycle();
       }
     });
+
+    const onInteraction = () => {
+      if (disabled) return;
+      if (!waitingForInteraction) return;
+      waitingForInteraction = false;
+      playCycle(true);
+    };
+
+    document.addEventListener('touchstart', onInteraction, { passive: true });
+    document.addEventListener('click', onInteraction, { passive: true });
+    document.addEventListener('keydown', onInteraction, { passive: true });
 
     scheduleNextCycle();
   }
