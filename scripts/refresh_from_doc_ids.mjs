@@ -49,6 +49,26 @@ const TYPE_KEYWORDS = {
 };
 
 const URL_RE = /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/g;
+const FIELD_PATTERNS = {
+  prepTime: [
+    /(?:^|\b)prep(?:aration)?(?:\s*time)?\s*[:：\-]?\s*([^|;\n]+?)(?=\b(?:cook(?:ing)?(?:\s*time)?|total(?:\s*time)?|servings?|yield|serves?)\b|$)/i,
+    /(?:^|[\s(（])(?:準備時間|准备时间|備料時間|备料时间|預備時間|预备时间)\s*[:：\-]?\s*([^|;\n]+?)(?=(?:烹調時間|烹调时间|總時間|总时间|份量|人份|食用人數|食用人数)|$)/i
+  ],
+  cookTime: [
+    /(?:^|\b)cook(?:ing)?(?:\s*time)?\s*[:：\-]?\s*([^|;\n]+?)(?=\b(?:total(?:\s*time)?|servings?|yield|serves?)\b|$)/i,
+    /(?:^|[\s(（])(?:烹調時間|烹调时间|料理時間|調理時間|烹飪時間|烹饪时间)\s*[:：\-]?\s*([^|;\n]+?)(?=(?:總時間|总时间|份量|人份|食用人數|食用人数)|$)/i
+  ],
+  totalTime: [
+    /(?:^|\b)total(?:\s*time)?\s*[:：\-]?\s*([^|;\n]+?)(?=\b(?:servings?|yield|serves?)\b|$)/i,
+    /(?:^|[\s(（])(?:總時間|总时间|所需時間|所需时间|全程時間|全程时间)\s*[:：\-]?\s*([^|;\n]+?)(?=(?:份量|人份|食用人數|食用人数)|$)/i
+  ],
+  servings: [
+    /(?:^|\b)(?:servings?|yield|portion(?:s)?|makes?)\s*[:：\-]?\s*([^|;\n]+)$/i,
+    /(?:^|\b)serves?\s+([0-9]+(?:\s*(?:-|–|—|~|to)\s*[0-9]+)?(?:\s*(?:people|persons|servings?))?)/i,
+    /(?:^|[\s(（])(?:份量|份數|份数|人份|可供|食用人數|食用人数)\s*[:：\-]?\s*([^|;\n]+)$/i,
+    /\b([0-9]+(?:\s*(?:-|–|—|~)\s*[0-9]+)?\s*(?:servings?|people|persons|人份|位份|人))\b/i
+  ]
+};
 
 function parseArgs(argv) {
   const args = {};
@@ -460,6 +480,61 @@ function stripListPrefix(line) {
     .trim();
 }
 
+function cleanFieldValue(value) {
+  return String(value || '')
+    .replace(/^[\s:：\-–—]+/, '')
+    .replace(/[|｜]+$/g, '')
+    .replace(/[，,;；。.\s]+$/, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+    .slice(0, 80);
+}
+
+function firstFieldMatch(candidates, patterns) {
+  for (const candidate of candidates) {
+    for (const pattern of patterns) {
+      const match = candidate.match(pattern);
+      if (!match || !match[1]) continue;
+      const value = cleanFieldValue(match[1]);
+      if (value) return value;
+    }
+  }
+  return '';
+}
+
+function extractRecipeFields(text) {
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => stripListPrefix(line))
+    .filter(Boolean);
+
+  const candidates = [];
+  const seen = new Set();
+  const pushCandidate = (value) => {
+    const clean = cleanFieldValue(value);
+    if (!clean) return;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    candidates.push(clean);
+  };
+
+  for (const line of lines) {
+    pushCandidate(line);
+    for (const segment of line.split(/[|｜•●]/)) {
+      pushCandidate(segment);
+    }
+  }
+  pushCandidate(String(text || '').replace(/\n+/g, ' | '));
+
+  const prepTime = firstFieldMatch(candidates, FIELD_PATTERNS.prepTime);
+  const cookTime = firstFieldMatch(candidates, FIELD_PATTERNS.cookTime);
+  const totalTime = firstFieldMatch(candidates, FIELD_PATTERNS.totalTime);
+  const servings = firstFieldMatch(candidates, FIELD_PATTERNS.servings);
+
+  return { prepTime, cookTime, totalTime, servings };
+}
+
 function ingredientsFromText(text) {
   const lines = String(text || '').split('\n').map((line) => line.trim());
   const out = [];
@@ -544,6 +619,7 @@ async function main() {
       const title = titleFromDocName(docJson.title, text);
       const summary = summaryFromText(text);
       const searchable = `${title} ${summary} ${text}`.toLowerCase();
+      const fields = extractRecipeFields(text);
 
       report.push({
         status: 'ok',
@@ -563,10 +639,10 @@ async function main() {
         summary,
         cuisine: inferCategory(searchable, CUISINE_KEYWORDS, 'Global'),
         type: inferCategory(searchable, TYPE_KEYWORDS, 'Main Course'),
-        prepTime: 'TBD',
-        cookTime: 'TBD',
-        totalTime: 'TBD',
-        servings: 'TBD',
+        prepTime: fields.prepTime || 'TBD',
+        cookTime: fields.cookTime || 'TBD',
+        totalTime: fields.totalTime || 'TBD',
+        servings: fields.servings || 'TBD',
         ingredients: ingredientsFromText(text),
         instructions: instructionsFromText(text),
         tags: [],
