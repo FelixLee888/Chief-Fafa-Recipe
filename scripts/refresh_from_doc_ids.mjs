@@ -453,6 +453,13 @@ function summaryFromText(text) {
   return firstParagraph.slice(0, 600);
 }
 
+function stripListPrefix(line) {
+  return String(line || '')
+    .replace(/^\s*[-*•]+\s*/, '')
+    .replace(/^\s*\(?[0-9]{1,3}\)?[.)、:：]\s+/, '')
+    .trim();
+}
+
 function ingredientsFromText(text) {
   const lines = String(text || '').split('\n').map((line) => line.trim());
   const out = [];
@@ -463,15 +470,15 @@ function ingredientsFromText(text) {
       inSection = true;
       continue;
     }
-    if (/^(instructions?|method|steps?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
+    if (/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
       if (inSection) break;
       continue;
     }
     if (!inSection) continue;
 
-    const cleaned = line.replace(/^[-*•0-9.)、\s]+/, '').trim();
+    const cleaned = stripListPrefix(line);
     if (cleaned) out.push(cleaned);
-    if (out.length >= 12) break;
+    if (out.length >= 60) break;
   }
 
   if (out.length === 0) return ['See source URL for full ingredients list.'];
@@ -490,9 +497,9 @@ function instructionsFromText(text) {
     }
     if (!inSection) continue;
 
-    const cleaned = line.replace(/^[-*•0-9.)、\s]+/, '').trim();
+    const cleaned = stripListPrefix(line);
     if (cleaned) out.push(cleaned);
-    if (out.length >= 12) break;
+    if (out.length >= 60) break;
   }
 
   if (out.length === 0) return ['See source URL for full method.'];
