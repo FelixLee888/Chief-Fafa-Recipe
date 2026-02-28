@@ -86,6 +86,19 @@ const SOCIAL_SHARE_RE =
 const COMMENT_AUTHOR_RE =
   /^[\w\u3400-\u9fff][\w\u3400-\u9fff .,'’\-]{0,48}\s+\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日.*$/u;
 const COMMENT_BODY_RE = /\b(?:thanks for sharing|great post|anonymous said|留下評論|发表留言)\b/i;
+const TITLE_PLACEHOLDER_RE =
+  /(?:<\s*image[^>]*>|image[_\s-]*attachment(?:_here)?|__\s*chief[_\s-]*fafa[_\s-]*payload\s*__|chief[_\s-]*fafa[_\s-]*payload|\[\[image:[^\]]+\]\]|["']?__\w+__["']?)/i;
+const TITLE_LABEL_RE =
+  /^(?:recipe\s*title|title|dish\s*name|recipe\s*name|recipe\s*heading|食譜標題|食谱标题|標題|标题)\s*[:：]\s*/i;
+const TITLE_STOP_RE =
+  /^(?:chief\s*fafa\s*recipe\s*note|recipe\s*note|untitled\s*recipe|video\s*(?:title|description)|see source url.*|not clearly detected from source.*|ingredients?|instructions?|method|steps?|\(?not provided.*\)?|recipe submitted as text|direct text input|source type|input source|text input|n\/a|none)$/i;
+const TITLE_META_LINE_RE =
+  /^(?:original\s*page\s*url|source\s*url|page\s*url|google\s*doc(?:ument)?\s*url|reference\s*url|video\s*url|media\s*url|recipe\s*title|author|description|caption|source\s*type|input\s*source|language|lang|cuisine|type|category)(?:\s*[:：].*)?$/i;
+const TITLE_META_VALUE_RE =
+  /^(?:global|chinese|japanese|korean|thai|filipino|indian|italian|french|mexican|mediterranean|american|dessert|dinner|lunch|breakfast|snack|appetizer|soup|salad|beverage|main course|english|en|ja|zh(?:-hant)?|繁體中文|日本語)$/i;
+const TITLE_STEP_LINE_RE = /^(?:\(?[0-9]{1,3}\)?[.)、:：]|step\s*[0-9]+|第\s*[0-9]+\s*步)/i;
+const TITLE_INGREDIENT_MEASURE_RE =
+  /\b[0-9]+(?:\.[0-9]+)?\s*(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b/i;
 
 function parseArgs(argv) {
   const args = {};
@@ -595,24 +608,133 @@ function slugify(value) {
     .slice(0, 80);
 }
 
-function normalizeTitle(title, summary) {
-  const cleanTitle = String(title || '').trim();
+function cleanTitleCandidate(value) {
+  return String(value || '')
+    .replace(/^Chief Fafa\s*-\s*/i, '')
+    .replace(/^#{1,3}\s+/, '')
+    .replace(TITLE_LABEL_RE, '')
+    .replace(/^\s*[-*•]+\s*/, '')
+    .replace(/^\s*["'“”‘’`]+|["'“”‘’`]+\s*$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function looksLikeMetadataValue(value) {
+  const clean = cleanTitleCandidate(value);
+  if (!clean) return true;
+  if (TITLE_META_LINE_RE.test(clean)) return true;
+  if (TITLE_META_VALUE_RE.test(clean)) return true;
+  if (/^\(?.{0,56}(?:not provided|unavailable|missing|n\/a).{0,56}\)?$/i.test(clean)) return true;
+  if (/^[\p{L}\p{N}\s/-]{1,48}[:：]$/u.test(clean)) return true;
+  if (/\b(?:source|url|language|cuisine|category|type|image|attachment|payload|detected|input)\b/i.test(clean) && clean.split(/\s+/).length <= 8) {
+    return true;
+  }
+  return false;
+}
+
+function isUsableRecipeTitle(value) {
+  const clean = cleanTitleCandidate(value);
+  if (!clean) return false;
+  if (clean.length < 3 || clean.length > 140) return false;
+  if (!/[\p{L}\p{N}]/u.test(clean)) return false;
+  if (/^https?:\/\//i.test(clean)) return false;
+  if (TITLE_PLACEHOLDER_RE.test(clean)) return false;
+  if (TITLE_STOP_RE.test(clean)) return false;
+  if (looksLikeMetadataValue(clean)) return false;
+  if (TITLE_STEP_LINE_RE.test(clean)) return false;
+  if (isCommentOrSocialLine(clean) || isCommentSectionStart(clean)) return false;
+  if (isSectionLabel(clean)) return false;
+  if (TITLE_INGREDIENT_MEASURE_RE.test(clean) && /\d/.test(clean)) return false;
+  return true;
+}
+
+function inferTitleFromIngredients(ingredients = [], textBlob = '') {
+  const text = String(textBlob || '');
+
+  const knownDishes = [
+    { re: /sea\s*cucumber|海參|海参/iu, label: 'Sea Cucumber' },
+    { re: /turnip\s*cake|蘿蔔糕|萝卜糕/iu, label: 'Turnip Cake' },
+    { re: /cheesecake|芝士蛋糕|起司蛋糕/iu, label: 'Cheesecake' },
+    { re: /sponge\s*cake|棉花蛋糕|海綿蛋糕|海绵蛋糕/iu, label: 'Sponge Cake' },
+    { re: /fried\s*noodles?|炒麵|炒面/iu, label: 'Fried Noodles' }
+  ];
+
+  for (const dish of knownDishes) {
+    if (dish.re.test(text)) {
+      if (/\bbrais(?:e|ed|ing)\b|炆|燜|焖/iu.test(text)) {
+        return `Braised ${dish.label}`;
+      }
+      return `${dish.label} Recipe`;
+    }
+  }
+
+  const generic = new Set([
+    'salt', 'sugar', 'water', 'oil', 'soy sauce', 'dark soy sauce', 'light soy sauce', 'stock', 'chicken stock',
+    'pepper', 'white pepper', 'black pepper', 'wine', 'ginger', 'garlic', 'scallion', 'spring onion', 'cornstarch',
+    'flour', 'lard', 'butter', 'milk', 'cream', 'egg', 'eggs', '鹽', '盐', '糖', '水', '油', '胡椒', '黑胡椒', '白胡椒', '薑', '姜', '蒜'
+  ]);
+
+  let best = '';
+  let bestScore = 0;
+  for (const item of ingredients) {
+    const clean = cleanTitleCandidate(item).replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    if (!clean || clean.length > 60) continue;
+    if (TITLE_PLACEHOLDER_RE.test(clean)) continue;
+    if (TITLE_INGREDIENT_MEASURE_RE.test(clean) && /\d/.test(clean)) continue;
+    const key = clean.toLowerCase();
+    if (generic.has(key)) continue;
+
+    let score = 1;
+    if (/sea\s*cucumber|海參|海参|turnip|蘿蔔|萝卜|cake|noodle|麵|面|chicken|beef|pork|shrimp|fish|tofu/iu.test(clean)) score += 4;
+    if (text.toLowerCase().includes(key)) score += 1;
+    if (/[A-Za-z]/.test(clean) || /[\u3400-\u9fff]/u.test(clean)) score += 1;
+    if (clean.length >= 4 && clean.length <= 32) score += 1;
+
+    if (score > bestScore) {
+      bestScore = score;
+      best = clean;
+    }
+  }
+
+  if (!best) return '';
+  const english = /^[A-Za-z][A-Za-z\s'’\-]+$/.test(best) ? best.replace(/\b\w/g, (c) => c.toUpperCase()) : best;
+  if (/\bbrais(?:e|ed|ing)\b|炆|燜|焖/iu.test(text) && /^[A-Za-z]/.test(english)) {
+    return `Braised ${english}`;
+  }
+  return /^[A-Za-z]/.test(english) ? `${english} Recipe` : `${english} 食譜`;
+}
+
+function normalizeTitle(title, summary, ingredients = [], instructions = []) {
+  const cleanTitle = cleanTitleCandidate(title);
   const cleanSummary = String(summary || '').trim();
 
-  if (!cleanTitle) return cleanTitle;
+  if (isUsableRecipeTitle(cleanTitle)) return cleanTitle;
 
   if (/^video\s+(description|title)/i.test(cleanTitle) && cleanSummary) {
-    const candidate = cleanSummary.split(/\n|\||｜/)[0].trim();
-    if (candidate.length >= 4 && candidate.length <= 120) {
+    const candidate = cleanTitleCandidate(cleanSummary.split(/\n|\||｜/)[0]);
+    if (isUsableRecipeTitle(candidate)) return candidate;
+  }
+
+  if (cleanSummary) {
+    const firstSummaryLine = cleanTitleCandidate(cleanSummary.split(/\n|\||｜/)[0]);
+    if (isUsableRecipeTitle(firstSummaryLine)) return firstSummaryLine;
+  }
+
+  for (const line of instructions.slice(0, 12)) {
+    const candidate = cleanTitleCandidate(line);
+    if (isUsableRecipeTitle(candidate) && !TITLE_STEP_LINE_RE.test(line)) {
       return candidate;
     }
   }
 
-  return cleanTitle;
+  const inferred = inferTitleFromIngredients(ingredients, [cleanSummary, ...ingredients, ...instructions].join(' '));
+  if (inferred) return inferred;
+
+  return cleanTitle || 'Untitled Recipe';
 }
 
 function normalizeRecipe(recipe, index, imagesByRef, fallbackImages) {
-  const title = normalizeTitle(recipe.title || 'Untitled Recipe', recipe.summary);
+  const title = normalizeTitle(recipe.title || 'Untitled Recipe', recipe.summary, recipe.ingredients, recipe.instructions);
   const slug = slugify(title) || `recipe-${Math.random().toString(36).slice(2, 8)}`;
 
   const markerImage = recipe.imageRefs.map((ref) => imagesByRef[ref]).find(Boolean) || '';
@@ -620,10 +742,10 @@ function normalizeRecipe(recipe, index, imagesByRef, fallbackImages) {
   const image = recipe.image || markerImage || fallbackImage;
   const cleanedIngredients = recipe.ingredients
     .map((item) => String(item || '').trim())
-    .filter((item) => item && !isCommentOrSocialLine(item));
+    .filter((item) => item && !isCommentOrSocialLine(item) && !TITLE_PLACEHOLDER_RE.test(item));
   const cleanedInstructions = recipe.instructions
     .map((item) => String(item || '').trim())
-    .filter((item) => item && !isCommentOrSocialLine(item));
+    .filter((item) => item && !isCommentOrSocialLine(item) && !TITLE_PLACEHOLDER_RE.test(item));
 
   return {
     title,

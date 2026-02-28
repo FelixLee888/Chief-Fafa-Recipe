@@ -66,6 +66,19 @@ const INGREDIENT_INLINE_ITEM_RE =
   /([A-Za-z\u00C0-\u024F\u3400-\u9fff][A-Za-z0-9\u00C0-\u024F\u3400-\u9fff'’()\/,&.+\- ]{0,72}?)\s*(\d+(?:\.\d+)?)\s*(kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)/giu;
 const INGREDIENT_PLACEHOLDER_RE =
   /^(?:not clearly detected from source\.?|see source url for full ingredients list\.?|n\/a|none|tbd)$/i;
+const TITLE_PLACEHOLDER_RE =
+  /(?:<\s*image[^>]*>|image[_\s-]*attachment(?:_here)?|__\s*chief[_\s-]*fafa[_\s-]*payload\s*__|chief[_\s-]*fafa[_\s-]*payload|\[\[image:[^\]]+\]\]|["']?__\w+__["']?)/i;
+const TITLE_LABEL_RE =
+  /^(?:recipe\s*title|title|dish\s*name|recipe\s*name|recipe\s*heading|食譜標題|食谱标题|標題|标题)\s*[:：]\s*/i;
+const TITLE_STOP_RE =
+  /^(?:chief\s*fafa\s*recipe\s*note|recipe\s*note|untitled\s*recipe|video\s*(?:title|description)|see source url.*|not clearly detected from source.*|ingredients?|instructions?|method|steps?|\(?not provided.*\)?|recipe submitted as text|direct text input|source type|input source|text input|n\/a|none)$/i;
+const TITLE_STEP_LINE_RE = /^(?:\(?[0-9]{1,3}\)?[.)、:：]|step\s*[0-9]+|第\s*[0-9]+\s*步)/i;
+const TITLE_META_LINE_RE =
+  /^(?:original\s*page\s*url|source\s*url|page\s*url|google\s*doc(?:ument)?\s*url|reference\s*url|video\s*url|media\s*url|recipe\s*title|author|description|caption|source\s*type|input\s*source|language|lang|cuisine|type|category)(?:\s*[:：].*)?$/i;
+const TITLE_META_VALUE_RE =
+  /^(?:global|chinese|japanese|korean|thai|filipino|indian|italian|french|mexican|mediterranean|american|dessert|dinner|lunch|breakfast|snack|appetizer|soup|salad|beverage|main course|english|en|ja|zh(?:-hant)?|繁體中文|日本語)$/i;
+const TITLE_INGREDIENT_MEASURE_RE =
+  /\b[0-9]+(?:\.[0-9]+)?\s*(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b/i;
 const DURATION_RANGE_RE =
   /(\d+(?:\.\d+)?)\s*(?:-|–|—|to|~|～)\s*(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
 const DURATION_SINGLE_RE = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
@@ -585,19 +598,206 @@ function inferCategory(text, dictionary, fallback) {
   return best;
 }
 
-function titleFromDocName(name, text) {
-  const cleanName = String(name || '').trim().replace(/^Chief Fafa\s*-\s*/i, '').trim();
-  if (cleanName) return cleanName;
-
-  const firstLine = String(text || '').split('\n').map((line) => line.trim()).find(Boolean);
-  return firstLine || 'Untitled Recipe';
+function cleanTitleCandidate(value) {
+  return String(value || '')
+    .replace(/^Chief Fafa\s*-\s*/i, '')
+    .replace(/^#{1,3}\s+/, '')
+    .replace(TITLE_LABEL_RE, '')
+    .replace(/^\s*[-*•]+\s*/, '')
+    .replace(/^\s*["'“”‘’`]+|["'“”‘’`]+\s*$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
-function summaryFromText(text) {
+function isUsableRecipeTitle(title) {
+  const clean = cleanTitleCandidate(title);
+  if (!clean) return false;
+  if (clean.length < 3 || clean.length > 140) return false;
+  if (!/[\p{L}\p{N}]/u.test(clean)) return false;
+  if (/^https?:\/\//i.test(clean)) return false;
+  if (TITLE_PLACEHOLDER_RE.test(clean)) return false;
+  if (TITLE_STOP_RE.test(clean)) return false;
+  if (looksLikeMetadataValue(clean)) return false;
+  if (TITLE_STEP_LINE_RE.test(clean)) return false;
+  if (isCommentOrSocialLine(clean) || isCommentSectionStart(clean)) return false;
+  if (INGREDIENT_SECTION_LINE_RE.test(clean) || INSTRUCTION_SECTION_LINE_RE.test(clean)) return false;
+  if (TITLE_INGREDIENT_MEASURE_RE.test(clean) && /\d/.test(clean)) return false;
+  return true;
+}
+
+function looksLikeMetadataValue(value) {
+  const clean = cleanTitleCandidate(value);
+  if (!clean) return true;
+  if (TITLE_META_LINE_RE.test(clean)) return true;
+  if (TITLE_META_VALUE_RE.test(clean)) return true;
+  if (/^\(?.{0,56}(?:not provided|unavailable|missing|n\/a).{0,56}\)?$/i.test(clean)) return true;
+  if (/^[\p{L}\p{N}\s/-]{1,48}[:：]$/u.test(clean)) return true;
+  if (/\b(?:source|url|language|cuisine|category|type|image|attachment|payload|detected|input)\b/i.test(clean) && clean.split(/\s+/).length <= 8) {
+    return true;
+  }
+  return false;
+}
+
+function titleFromText(text) {
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  for (const line of lines) {
+    if (TITLE_STEP_LINE_RE.test(line)) continue;
+    const clean = cleanTitleCandidate(line.replace(/^\s*[-*•]+\s*/, ''));
+    if (isUsableRecipeTitle(clean)) return clean;
+  }
+  return '';
+}
+
+function inferTitleFromIngredients(ingredients, text) {
+  const textBlob = `${String(text || '')} ${Array.isArray(ingredients) ? ingredients.join(' ') : ''}`;
+  const lowerBlob = textBlob.toLowerCase();
+
+  const knownDishes = [
+    { re: /sea\s*cucumber|海參/iu, label: 'Sea Cucumber' },
+    { re: /turnip\s*cake|蘿蔔糕|萝卜糕/iu, label: 'Turnip Cake' },
+    { re: /cheesecake|芝士蛋糕|起司蛋糕/iu, label: 'Cheesecake' },
+    { re: /sponge\s*cake|棉花蛋糕|海綿蛋糕|海绵蛋糕/iu, label: 'Sponge Cake' },
+    { re: /fried\s*noodles?|炒麵|炒面/iu, label: 'Fried Noodles' }
+  ];
+
+  for (const dish of knownDishes) {
+    if (dish.re.test(textBlob)) {
+      if (/\bbrais(?:e|ed|ing)\b|炆|燜|焖/iu.test(textBlob)) {
+        return `Braised ${dish.label}`;
+      }
+      return `${dish.label} Recipe`;
+    }
+  }
+
+  const genericIngredients = new Set([
+    'salt',
+    'sugar',
+    'water',
+    'oil',
+    'soy sauce',
+    'dark soy sauce',
+    'light soy sauce',
+    'stock',
+    'chicken stock',
+    'pepper',
+    'white pepper',
+    'black pepper',
+    'wine',
+    'ginger',
+    'garlic',
+    'scallion',
+    'spring onion',
+    'cornstarch',
+    'flour',
+    'lard',
+    'butter',
+    'milk',
+    'cream',
+    'egg',
+    'eggs',
+    '鹽',
+    '盐',
+    '糖',
+    '水',
+    '油',
+    '胡椒',
+    '黑胡椒',
+    '白胡椒',
+    '薑',
+    '姜',
+    '蒜'
+  ]);
+
+  let best = '';
+  let bestScore = 0;
+  for (const item of Array.isArray(ingredients) ? ingredients : []) {
+    const clean = cleanTitleCandidate(item)
+      .replace(/\s*\([^)]*\)\s*/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    if (!clean || clean.length > 60) continue;
+    if (TITLE_PLACEHOLDER_RE.test(clean)) continue;
+    if (TITLE_STEP_LINE_RE.test(clean)) continue;
+    if (TITLE_INGREDIENT_MEASURE_RE.test(clean) && /\d/.test(clean)) continue;
+
+    const key = clean.toLowerCase();
+    if (genericIngredients.has(key)) continue;
+
+    let score = 1;
+    if (/sea\s*cucumber|海參|turnip|蘿蔔|萝卜|cake|noodle|麵|面|chicken|beef|pork|shrimp|fish|tofu/iu.test(clean)) {
+      score += 4;
+    }
+    if (lowerBlob.includes(key)) score += 1;
+    if (/[A-Za-z]/.test(clean) || /[\u3400-\u9fff]/u.test(clean)) score += 1;
+    if (clean.length >= 4 && clean.length <= 32) score += 1;
+
+    if (score > bestScore) {
+      bestScore = score;
+      best = clean;
+    }
+  }
+
+  if (best) {
+    const english = /^[A-Za-z][A-Za-z\s'’\-]+$/.test(best) ? best.replace(/\b\w/g, (c) => c.toUpperCase()) : best;
+    if (/\bbrais(?:e|ed|ing)\b|炆|燜|焖/iu.test(textBlob) && /^[A-Za-z]/.test(english)) {
+      return `Braised ${english}`;
+    }
+    return /^[A-Za-z]/.test(english) ? `${english} Recipe` : `${english} 食譜`;
+  }
+
+  return '';
+}
+
+function titleFromDocName(name, text, ingredients = []) {
+  const cleanName = cleanTitleCandidate(name);
+  if (isUsableRecipeTitle(cleanName)) return cleanName;
+
+  const fromText = titleFromText(text);
+  if (fromText) {
+    const ingredientKeys = new Set(
+      (Array.isArray(ingredients) ? ingredients : [])
+        .map((item) => cleanTitleCandidate(item).toLowerCase())
+        .filter(Boolean)
+    );
+    if (!ingredientKeys.has(fromText.toLowerCase())) {
+      return fromText;
+    }
+  }
+
+  const fromIngredients = inferTitleFromIngredients(ingredients, text);
+  if (fromIngredients) return fromIngredients;
+
+  return 'Untitled Recipe';
+}
+
+function summaryFromText(text, ingredients = [], title = '') {
+  const ingredientKeys = new Set(
+    (Array.isArray(ingredients) ? ingredients : [])
+      .map((item) => cleanTitleCandidate(item).toLowerCase())
+      .filter(Boolean)
+  );
+  const titleKey = cleanTitleCandidate(title).toLowerCase();
+
   const firstParagraph = String(text || '')
     .split('\n')
     .map((line) => line.trim())
-    .find((line) => line && !/^https?:\/\//i.test(line) && !isCommentOrSocialLine(line));
+    .find((line) => {
+      if (!line) return false;
+      if (/^https?:\/\//i.test(line)) return false;
+      if (isCommentOrSocialLine(line)) return false;
+      if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) return false;
+      if (looksLikeMetadataValue(line) || TITLE_STEP_LINE_RE.test(line)) return false;
+
+      const cleaned = cleanTitleCandidate(stripListPrefix(line)).toLowerCase();
+      if (!cleaned) return false;
+      if (cleaned === titleKey) return false;
+      if (ingredientKeys.has(cleaned)) return false;
+      return true;
+    });
 
   if (!firstParagraph) return 'Recipe imported from Google Doc.';
   return firstParagraph.slice(0, 600);
@@ -797,6 +997,9 @@ function ingredientsFromText(text) {
     const clean = stripListPrefix(String(value || '').trim());
     if (!clean || isCommentOrSocialLine(clean)) return;
     if (INGREDIENT_PLACEHOLDER_RE.test(clean)) return;
+    if (TITLE_PLACEHOLDER_RE.test(clean)) return;
+    if (TITLE_STOP_RE.test(clean)) return;
+    if (TITLE_STEP_LINE_RE.test(clean)) return;
     const key = clean.toLowerCase();
     if (seen.has(key)) return;
     seen.add(key);
@@ -873,7 +1076,10 @@ function instructionsFromText(text) {
     if (!inSection) continue;
 
     const cleaned = stripListPrefix(line);
-    if (cleaned) out.push(cleaned);
+    if (!cleaned) continue;
+    if (TITLE_PLACEHOLDER_RE.test(cleaned)) continue;
+    if (TITLE_STOP_RE.test(cleaned)) continue;
+    out.push(cleaned);
     if (out.length >= 60) break;
   }
 
@@ -917,11 +1123,12 @@ async function main() {
       const urls = extractUrls(cleanText);
       const originalUrl = pickOriginalUrl(urls);
 
-      const title = titleFromDocName(docJson.title, cleanText);
-      const summary = summaryFromText(cleanText);
+      const ingredients = ingredientsFromText(cleanText);
+      const instructions = instructionsFromText(cleanText);
+      const title = titleFromDocName(docJson.title, cleanText, ingredients);
+      const summary = summaryFromText(cleanText, ingredients, title);
       const searchable = `${title} ${summary} ${cleanText}`.toLowerCase();
       const fields = extractRecipeFields(cleanText);
-      const instructions = instructionsFromText(cleanText);
       const inferredTimes = inferTimeFields(cleanText, instructions);
 
       report.push({
@@ -946,7 +1153,7 @@ async function main() {
         cookTime: fields.cookTime || inferredTimes.cookTime || 'TBD',
         totalTime: fields.totalTime || inferredTimes.totalTime || 'TBD',
         servings: fields.servings || 'TBD',
-        ingredients: ingredientsFromText(cleanText),
+        ingredients,
         instructions,
         tags: [],
         image: images[0] || '',
