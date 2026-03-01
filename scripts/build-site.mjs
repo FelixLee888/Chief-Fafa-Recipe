@@ -138,6 +138,22 @@ const TYPE_I18N = {
   Beverage: { 'zh-Hant': '飲品', ja: 'ドリンク' },
   'Main Course': { 'zh-Hant': '主菜', ja: 'メイン' }
 };
+const PLACEHOLDER_INGREDIENT = 'See source URL for full ingredients list.';
+const PLACEHOLDER_METHOD = 'See source URL for full method.';
+const PLACEHOLDER_I18N = {
+  en: {
+    ingredient: PLACEHOLDER_INGREDIENT,
+    method: PLACEHOLDER_METHOD
+  },
+  'zh-Hant': {
+    ingredient: '請查看來源網址以獲得完整材料清單。',
+    method: '請查看來源網址以獲得完整做法。'
+  },
+  ja: {
+    ingredient: '材料の完全な一覧は元のURLをご確認ください。',
+    method: '作り方の全文は元のURLをご確認ください。'
+  }
+};
 
 function escapeHtml(value) {
   return String(value)
@@ -209,8 +225,16 @@ function localizedRecipeContent(recipe, locale) {
 
   if (!translated) return recipe;
 
-  const ingredients = Array.isArray(translated.ingredients) && translated.ingredients.length > 0 ? translated.ingredients : recipe.ingredients;
-  const instructions = Array.isArray(translated.instructions) && translated.instructions.length > 0 ? translated.instructions : recipe.instructions;
+  let ingredients = Array.isArray(translated.ingredients) && translated.ingredients.length > 0 ? translated.ingredients : recipe.ingredients;
+  let instructions = Array.isArray(translated.instructions) && translated.instructions.length > 0 ? translated.instructions : recipe.instructions;
+
+  const placeholder = PLACEHOLDER_I18N[locale] || PLACEHOLDER_I18N.en;
+  if (Array.isArray(ingredients) && ingredients.length === 1 && String(ingredients[0]).trim() === PLACEHOLDER_INGREDIENT) {
+    ingredients = [placeholder.ingredient];
+  }
+  if (Array.isArray(instructions) && instructions.length === 1 && String(instructions[0]).trim() === PLACEHOLDER_METHOD) {
+    instructions = [placeholder.method];
+  }
 
   return {
     ...recipe,

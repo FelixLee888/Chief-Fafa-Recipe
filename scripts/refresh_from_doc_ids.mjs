@@ -9,6 +9,7 @@ const GOOGLE_DOCS_API_BASE = 'https://docs.googleapis.com/v1/documents';
 const GOOGLE_DRIVE_FILES_API = 'https://www.googleapis.com/drive/v3/files';
 const GOOGLE_DRIVE_EXPORT_API = 'https://www.googleapis.com/drive/v3/files';
 const OPENAI_CHAT_COMPLETIONS_API = 'https://api.openai.com/v1/chat/completions';
+const GOOGLE_TRANSLATE_API = 'https://translate.googleapis.com/translate_a/single';
 const IMAGE_STATIC_DIR = path.resolve('static/assets/recipe-images');
 const OUTPUT_RECIPES = path.resolve('data/recipes.json');
 const OUTPUT_REPORT = path.resolve('data/doc-assets.json');
@@ -283,7 +284,8 @@ function resolveTranslationConfig(args, loadedEnv) {
     apiKey,
     model,
     ocrModel,
-    cache: new Map()
+    cache: new Map(),
+    lineCache: new Map()
   };
 }
 
@@ -325,6 +327,166 @@ function parseAssistantJson(text) {
   } catch {
     return null;
   }
+}
+
+function localeToGoogleLang(locale) {
+  const normalized = normalizeLocale(locale, 'en');
+  if (normalized === 'zh-Hant') return 'zh-TW';
+  if (normalized === 'ja') return 'ja';
+  return 'en';
+}
+
+function parseGoogleTranslatePayload(raw) {
+  const text = String(raw || '').trim().replace(/^\)\]\}'\s*/, '');
+  if (!text) return '';
+  const parsed = JSON.parse(text);
+  const chunks = Array.isArray(parsed?.[0]) ? parsed[0] : [];
+  const translated = chunks
+    .map((item) => String(item?.[0] || ''))
+    .join('')
+    .trim();
+  return translated;
+}
+
+async function translateTextViaGoogle(text, sourceLocale, targetLocale, translationConfig) {
+  const sourceText = String(text || '').trim();
+  if (!sourceText) return '';
+  if (targetLocale === sourceLocale) return sourceText;
+
+  const cacheKey = `${sourceLocale}::${targetLocale}::${sourceText}`;
+  if (translationConfig?.lineCache?.has(cacheKey)) {
+    return translationConfig.lineCache.get(cacheKey);
+  }
+
+  const sl = localeToGoogleLang(sourceLocale);
+  const tl = localeToGoogleLang(targetLocale);
+  const params = new URLSearchParams({
+    client: 'gtx',
+    sl,
+    tl,
+    dt: 't',
+    q: sourceText
+  });
+
+  const response = await fetch(`${GOOGLE_TRANSLATE_API}?${params.toString()}`, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`google translate request failed (${response.status})`);
+  }
+
+  const body = await response.text();
+  const translated = parseGoogleTranslatePayload(body);
+  const out = translated || sourceText;
+  if (translationConfig?.lineCache) {
+    translationConfig.lineCache.set(cacheKey, out);
+  }
+  return out;
+}
+
+async function translateLineArrayViaGoogle(lines, sourceLocale, targetLocale, translationConfig) {
+  const sourceLines = Array.isArray(lines) ? lines.map((line) => String(line || '').trim()).filter(Boolean) : [];
+  if (sourceLines.length === 0) return [];
+
+  const translated = new Array(sourceLines.length).fill('');
+  const concurrency = 6;
+
+  for (let i = 0; i < sourceLines.length; i += concurrency) {
+    const slice = sourceLines.slice(i, i + concurrency);
+    const batch = await Promise.all(
+      slice.map(async (line) => {
+        try {
+          return await translateTextViaGoogle(line, sourceLocale, targetLocale, translationConfig);
+        } catch {
+          return line;
+        }
+      })
+    );
+    for (let j = 0; j < batch.length; j += 1) {
+      translated[i + j] = String(batch[j] || '').trim() || sourceLines[i + j];
+    }
+  }
+
+  return translated;
+}
+
+async function translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, targetLocale, translationConfig) {
+  const systemPrompt = [
+    'You are an expert recipe translator.',
+    `Translate from ${localeLabel(sourceLocale)} to ${localeLabel(targetLocale)}.`,
+    'Preserve numbers, units, ingredient amounts, and cooking times exactly.',
+    'Keep ingredients and instructions as arrays with the same order as input.',
+    'Do not invent missing details.',
+    'Return ONLY valid JSON with keys: title, summary, ingredients, instructions.'
+  ].join(' ');
+
+  const response = await fetch(OPENAI_CHAT_COMPLETIONS_API, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${translationConfig.apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: translationConfig.model,
+      temperature: 0.1,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: JSON.stringify({
+            source_language: sourceLocale,
+            target_language: targetLocale,
+            recipe: sourcePayload
+          })
+        }
+      ]
+    })
+  });
+
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = body?.error?.message || `translation request failed (${response.status})`;
+    throw new Error(detail);
+  }
+
+  const content = body?.choices?.[0]?.message?.content;
+  const parsed = parseAssistantJson(content);
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error('translation response is not valid JSON');
+  }
+
+  const translated = {
+    title: safeString(parsed.title, sourcePayload.title),
+    summary: safeString(parsed.summary, sourcePayload.summary),
+    ingredients: normalizeLineArray(parsed.ingredients, sourcePayload.ingredients),
+    instructions: normalizeLineArray(parsed.instructions, sourcePayload.instructions)
+  };
+
+  if (!translated.title) translated.title = sourcePayload.title;
+  if (!translated.summary) translated.summary = sourcePayload.summary;
+  if (translated.ingredients.length === 0) translated.ingredients = sourcePayload.ingredients;
+  if (translated.instructions.length === 0) translated.instructions = sourcePayload.instructions;
+  return translated;
+}
+
+async function translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig) {
+  const [title, summary, ingredients, instructions] = await Promise.all([
+    translateTextViaGoogle(sourcePayload.title, sourceLocale, targetLocale, translationConfig).catch(() => sourcePayload.title),
+    translateTextViaGoogle(sourcePayload.summary, sourceLocale, targetLocale, translationConfig).catch(() => sourcePayload.summary),
+    translateLineArrayViaGoogle(sourcePayload.ingredients, sourceLocale, targetLocale, translationConfig),
+    translateLineArrayViaGoogle(sourcePayload.instructions, sourceLocale, targetLocale, translationConfig)
+  ]);
+
+  return {
+    title: safeString(title, sourcePayload.title),
+    summary: safeString(summary, sourcePayload.summary),
+    ingredients: normalizeLineArray(ingredients, sourcePayload.ingredients),
+    instructions: normalizeLineArray(instructions, sourcePayload.instructions)
+  };
 }
 
 function siteAssetToLocalPath(assetPath) {
@@ -411,7 +573,7 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
     return sourcePayload;
   }
 
-  if (!translationConfig.enabled || !translationConfig.apiKey) {
+  if (!translationConfig.enabled) {
     return sourcePayload;
   }
 
@@ -420,62 +582,35 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
     return translationConfig.cache.get(cacheKey);
   }
 
-  const systemPrompt = [
-    'You are an expert recipe translator.',
-    `Translate from ${localeLabel(sourceLocale)} to ${localeLabel(targetLocale)}.`,
-    'Preserve numbers, units, ingredient amounts, and cooking times exactly.',
-    'Keep ingredients and instructions as arrays with the same order as input.',
-    'Do not invent missing details.',
-    'Return ONLY valid JSON with keys: title, summary, ingredients, instructions.'
-  ].join(' ');
-
-  const response = await fetch(OPENAI_CHAT_COMPLETIONS_API, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${translationConfig.apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: translationConfig.model,
-      temperature: 0.1,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: JSON.stringify({
-            source_language: sourceLocale,
-            target_language: targetLocale,
-            recipe: sourcePayload
-          })
-        }
-      ]
-    })
-  });
-
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const detail = body?.error?.message || `translation request failed (${response.status})`;
-    throw new Error(detail);
+  if (!translationConfig.apiKey) {
+    try {
+      const translated = await translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig);
+      translationConfig.cache.set(cacheKey, translated);
+      return translated;
+    } catch {
+      return sourcePayload;
+    }
   }
 
-  const content = body?.choices?.[0]?.message?.content;
-  const parsed = parseAssistantJson(content);
-  if (!parsed || typeof parsed !== 'object') {
-    throw new Error('translation response is not valid JSON');
+  let translated = null;
+  try {
+    translated = await translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, targetLocale, translationConfig);
+  } catch (error) {
+    process.stderr.write(
+      `Warning: OpenAI translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
+    );
   }
 
-  const translated = {
-    title: safeString(parsed.title, sourcePayload.title),
-    summary: safeString(parsed.summary, sourcePayload.summary),
-    ingredients: normalizeLineArray(parsed.ingredients, sourcePayload.ingredients),
-    instructions: normalizeLineArray(parsed.instructions, sourcePayload.instructions)
-  };
-
-  if (!translated.title) translated.title = sourcePayload.title;
-  if (!translated.summary) translated.summary = sourcePayload.summary;
-  if (translated.ingredients.length === 0) translated.ingredients = sourcePayload.ingredients;
-  if (translated.instructions.length === 0) translated.instructions = sourcePayload.instructions;
+  if (!translated) {
+    try {
+      translated = await translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig);
+    } catch (error) {
+      process.stderr.write(
+        `Warning: Google fallback translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
+      );
+      translated = sourcePayload;
+    }
+  }
 
   translationConfig.cache.set(cacheKey, translated);
   return translated;
@@ -2048,7 +2183,7 @@ async function main() {
 
   if (translationConfig.enabled && !translationConfig.apiKey) {
     process.stderr.write(
-      'Warning: OPENAI_API_KEY is not set. Recipe translations will fall back to source language text.\n'
+      'Warning: OPENAI_API_KEY is not set. Using Google Translate fallback for recipe translations.\n'
     );
   }
 
