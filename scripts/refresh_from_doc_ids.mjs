@@ -7,6 +7,7 @@ const DEFAULT_EXTERNAL_ENV = '/Users/felixlee/Documents/ChiefFaFaBot/.env';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DOCS_API_BASE = 'https://docs.googleapis.com/v1/documents';
 const GOOGLE_DRIVE_FILES_API = 'https://www.googleapis.com/drive/v3/files';
+const GOOGLE_DRIVE_EXPORT_API = 'https://www.googleapis.com/drive/v3/files';
 const OPENAI_CHAT_COMPLETIONS_API = 'https://api.openai.com/v1/chat/completions';
 const IMAGE_STATIC_DIR = path.resolve('static/assets/recipe-images');
 const OUTPUT_RECIPES = path.resolve('data/recipes.json');
@@ -51,6 +52,7 @@ const TYPE_KEYWORDS = {
 };
 
 const URL_RE = /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/g;
+const YOUTUBE_HOST_RE = /(?:^|\.)youtube\.com$|(?:^|\.)youtu\.be$/i;
 const COOK_TIME_HINT_RE = /\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|烤|煮|炸|蒸|炒|焗|炆|煎)\b/i;
 const REST_TIME_HINT_RE = /\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)\b/i;
 const COMMENT_SECTION_START_RE =
@@ -68,6 +70,7 @@ const INGREDIENT_INLINE_ITEM_RE =
   /([A-Za-z\u00C0-\u024F\u3400-\u9fff][A-Za-z0-9\u00C0-\u024F\u3400-\u9fff'’()\/,&.+\- ]{0,72}?)\s*(\d+(?:\.\d+)?)\s*(kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)/giu;
 const INGREDIENT_PLACEHOLDER_RE =
   /^(?:not clearly detected from source\.?|see source url for full ingredients list\.?|n\/a|none|tbd)$/i;
+const METHOD_PLACEHOLDER_RE = /^(?:see source url for full method\.?|n\/a|none|tbd)$/i;
 const TITLE_PLACEHOLDER_RE =
   /(?:<\s*image[^>]*>|image[_\s-]*attachment(?:_here)?|__\s*chief[_\s-]*fafa[_\s-]*payload\s*__|chief[_\s-]*fafa[_\s-]*payload|\[\[image:[^\]]+\]\]|["']?__\w+__["']?)/i;
 const TITLE_LABEL_RE =
@@ -267,11 +270,14 @@ function resolveTranslationConfig(args, loadedEnv) {
   const apiKey = pickEnv(loadedEnv, ['OPENAI_API_KEY']);
   const model =
     String(args['translate-model'] || process.env.RECIPE_TRANSLATE_MODEL || loadedEnv.RECIPE_TRANSLATE_MODEL || 'gpt-4.1-mini').trim();
+  const ocrModel =
+    String(args['ocr-model'] || process.env.RECIPE_OCR_MODEL || loadedEnv.RECIPE_OCR_MODEL || model || 'gpt-4.1-mini').trim();
 
   return {
     enabled,
     apiKey,
     model,
+    ocrModel,
     cache: new Map()
   };
 }
@@ -314,6 +320,78 @@ function parseAssistantJson(text) {
   } catch {
     return null;
   }
+}
+
+function siteAssetToLocalPath(assetPath) {
+  const normalized = String(assetPath || '').trim();
+  if (!normalized.startsWith('/assets/')) return '';
+  const relative = normalized.replace(/^\//, '');
+  return path.resolve(relative.startsWith('assets/') ? `static/${relative}` : `static/assets/${relative}`);
+}
+
+async function extractRecipeFromImageWithOpenAI(localImagePath, translationConfig) {
+  const apiKey = String(translationConfig?.apiKey || '').trim();
+  if (!apiKey || !localImagePath) return null;
+
+  let bytes;
+  try {
+    bytes = await fs.readFile(localImagePath);
+  } catch {
+    return null;
+  }
+
+  const ext = path.extname(localImagePath).toLowerCase();
+  const mime = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+  const dataUri = `data:${mime};base64,${bytes.toString('base64')}`;
+
+  const prompt = [
+    'Extract recipe information from this image.',
+    'Return ONLY JSON with keys: title, summary, ingredients, instructions.',
+    'ingredients and instructions must be arrays of strings.',
+    'Do not invent missing content.',
+    'If text is not visible, return empty arrays.'
+  ].join(' ');
+
+  const response = await fetch(OPENAI_CHAT_COMPLETIONS_API, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: translationConfig.ocrModel || translationConfig.model || 'gpt-4.1-mini',
+      temperature: 0,
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: dataUri } }
+          ]
+        }
+      ]
+    })
+  });
+
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = body?.error?.message || `ocr request failed (${response.status})`;
+    throw new Error(detail);
+  }
+
+  const content = body?.choices?.[0]?.message?.content;
+  const parsed = parseAssistantJson(content);
+  if (!parsed || typeof parsed !== 'object') return null;
+
+  const ingredients = normalizeLineArray(parsed.ingredients, []);
+  const instructions = normalizeLineArray(parsed.instructions, []);
+  return {
+    title: safeString(parsed.title),
+    summary: safeString(parsed.summary),
+    ingredients,
+    instructions
+  };
 }
 
 async function translateRecipeContent(source, sourceLocale, targetLocale, translationConfig) {
@@ -668,6 +746,50 @@ function extractIngredientSegment(text) {
 function extractTextAndImageRefs(docJson) {
   const chunks = [];
   const imageRefs = [];
+  const inlineObjectMaps = [];
+  const contentBlocks = [];
+
+  function addDocumentContent(docNode) {
+    const content = docNode?.body?.content;
+    if (Array.isArray(content) && content.length > 0) {
+      contentBlocks.push(content);
+    }
+    if (docNode?.inlineObjects && typeof docNode.inlineObjects === 'object') {
+      inlineObjectMaps.push(docNode.inlineObjects);
+    }
+  }
+
+  function walkTabs(tabs) {
+    if (!Array.isArray(tabs)) return;
+    for (const tab of tabs) {
+      const docTab = tab?.documentTab;
+      if (docTab) addDocumentContent(docTab);
+      if (Array.isArray(tab?.childTabs) && tab.childTabs.length > 0) {
+        walkTabs(tab.childTabs);
+      }
+    }
+  }
+
+  const hasTabs = Array.isArray(docJson?.tabs) && docJson.tabs.length > 0;
+  if (hasTabs) {
+    walkTabs(docJson.tabs);
+    if (contentBlocks.length === 0) {
+      addDocumentContent(docJson);
+    }
+  } else {
+    addDocumentContent(docJson);
+  }
+
+  if (Array.isArray(docJson?.__extraTabDocs) && docJson.__extraTabDocs.length > 0) {
+    for (const extraDoc of docJson.__extraTabDocs) {
+      const extraHasTabs = Array.isArray(extraDoc?.tabs) && extraDoc.tabs.length > 0;
+      if (extraHasTabs) {
+        walkTabs(extraDoc.tabs);
+      } else {
+        addDocumentContent(extraDoc);
+      }
+    }
+  }
 
   function walk(content) {
     if (!Array.isArray(content)) return;
@@ -696,14 +818,21 @@ function extractTextAndImageRefs(docJson) {
     }
   }
 
-  walk(docJson?.body?.content || []);
-  return { text: normalizeText(chunks.join('')), imageRefs };
+  for (const block of contentBlocks) {
+    walk(block);
+  }
+
+  return { text: normalizeText(chunks.join('')), imageRefs, inlineObjectMaps };
 }
 
-function getImageUri(docJson, inlineObjectId) {
-  const obj = docJson?.inlineObjects?.[inlineObjectId]?.inlineObjectProperties?.embeddedObject;
-  const props = obj?.imageProperties;
-  return String(props?.contentUri || props?.sourceUri || '').trim();
+function getImageUri(inlineObjectMaps, inlineObjectId) {
+  for (const map of inlineObjectMaps || []) {
+    const obj = map?.[inlineObjectId]?.inlineObjectProperties?.embeddedObject;
+    const props = obj?.imageProperties;
+    const uri = String(props?.contentUri || props?.sourceUri || '').trim();
+    if (uri) return uri;
+  }
+  return '';
 }
 
 function mimeToExt(mime, url) {
@@ -735,6 +864,22 @@ async function downloadImage(url, token) {
   return { bytes, mime };
 }
 
+async function exportDocPlainText(docId, token) {
+  const mimeType = encodeURIComponent('text/plain');
+  const url = `${GOOGLE_DRIVE_EXPORT_API}/${encodeURIComponent(docId)}/export?mimeType=${mimeType}`;
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    const detail = body ? body.slice(0, 240) : `export api error (${response.status})`;
+    throw new Error(detail);
+  }
+
+  return normalizeText(await response.text());
+}
+
 async function extractImagesForDoc(docId, docJson, token) {
   await fs.mkdir(IMAGE_STATIC_DIR, { recursive: true });
 
@@ -751,7 +896,7 @@ async function extractImagesForDoc(docId, docJson, token) {
   const images = [];
 
   for (let i = 0; i < refs.length; i += 1) {
-    const uri = getImageUri(docJson, refs[i]);
+    const uri = getImageUri(extracted.inlineObjectMaps, refs[i]);
     if (!uri) continue;
 
     try {
@@ -795,6 +940,64 @@ function pickOriginalUrl(urls) {
   });
 
   return preferred[0] || urls[0] || '';
+}
+
+function isYoutubeUrl(url) {
+  try {
+    const host = new URL(String(url || '')).hostname.toLowerCase();
+    return YOUTUBE_HOST_RE.test(host);
+  } catch {
+    return false;
+  }
+}
+
+function decodeJsonEscaped(value) {
+  const raw = String(value || '');
+  if (!raw) return '';
+  try {
+    return JSON.parse(`"${raw.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`);
+  } catch {
+    return raw
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\r')
+      .replace(/\\t/g, '\t')
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, '\\');
+  }
+}
+
+function extractYoutubeDescriptionFromHtml(html) {
+  const raw = String(html || '');
+  if (!raw) return '';
+
+  const shortDescMatch = raw.match(/"shortDescription":"((?:[^"\\]|\\.)*)"/);
+  if (shortDescMatch && shortDescMatch[1]) {
+    return decodeJsonEscaped(shortDescMatch[1]).trim();
+  }
+
+  const descMatch = raw.match(/"description"\s*:\s*\{"simpleText"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (descMatch && descMatch[1]) {
+    return decodeJsonEscaped(descMatch[1]).trim();
+  }
+
+  return '';
+}
+
+async function fetchSourceDescription(sourceUrl) {
+  if (!isYoutubeUrl(sourceUrl)) return '';
+
+  const response = await fetch(sourceUrl, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`source page request failed (${response.status})`);
+  }
+
+  const html = await response.text();
+  return normalizeText(extractYoutubeDescriptionFromHtml(html));
 }
 
 function slugify(value) {
@@ -1310,15 +1513,270 @@ function instructionsFromText(text) {
   return out;
 }
 
-async function fetchDoc(docId, token) {
-  const url = `${GOOGLE_DOCS_API_BASE}/${encodeURIComponent(docId)}`;
-  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const detail = body?.error?.message || `docs api error (${response.status})`;
-    throw new Error(detail);
+function cleanSourceLine(line) {
+  return String(line || '')
+    .replace(/^[\s\-*•·▪▫►▶◆◇🔸🔹🔶🔷]+/u, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function ingredientsFromSourceDescription(text) {
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => cleanSourceLine(line))
+    .filter(Boolean);
+
+  const out = [];
+  const seen = new Set();
+  let inSection = false;
+  let startedByLabel = false;
+
+  for (const rawLine of lines) {
+    const line = stripListPrefix(rawLine);
+    if (!line) continue;
+    if (isCommentOrSocialLine(line)) continue;
+    if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) continue;
+    if (/^https?:\/\//i.test(line)) continue;
+
+    if (/^(ingredients?|ingredient list|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i.test(line)) {
+      inSection = true;
+      startedByLabel = true;
+      const rest = line.replace(/^(ingredients?|ingredient list|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i, '').trim();
+      if (rest) {
+        const key = rest.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          out.push(rest);
+        }
+      }
+      continue;
+    }
+
+    if (/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
+      if (inSection) break;
+      continue;
+    }
+
+    // Fallback mode: collect obvious ingredient-style lines even without heading.
+    if (!inSection) {
+      if (
+        /^([0-9]+(?:[./][0-9]+)?\s*(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b)/i.test(line) ||
+        /\b(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b/i.test(line)
+      ) {
+        inSection = true;
+      } else {
+        continue;
+      }
+    }
+
+    const key = line.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(line);
+    if (out.length >= 80) break;
   }
-  return body;
+
+  if (startedByLabel && out.length === 0) return [];
+  return out;
+}
+
+function instructionsFromSourceDescription(text) {
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => cleanSourceLine(line))
+    .filter(Boolean);
+
+  const out = [];
+  let inSection = false;
+
+  for (const rawLine of lines) {
+    const line = stripListPrefix(rawLine);
+    if (!line) continue;
+    if (isCommentOrSocialLine(line)) continue;
+    if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) continue;
+    if (/^https?:\/\//i.test(line)) continue;
+
+    if (/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
+      inSection = true;
+      const rest = line.replace(/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i, '').trim();
+      if (rest) out.push(rest);
+      continue;
+    }
+
+    if (inSection) {
+      out.push(line);
+      if (out.length >= 80) break;
+      continue;
+    }
+  }
+
+  // Fallback: if there is no explicit section, only accept numbered-step lines.
+  if (out.length === 0) {
+    const numbered = lines
+      .map((line) => stripListPrefix(line))
+      .filter((line) => /^\(?[0-9]{1,3}\)?[.)、:：]\s*/.test(line) || /^step\s*[0-9]+/i.test(line));
+    if (numbered.length >= 2) {
+      return numbered.map((line) => stripListPrefix(line)).filter(Boolean).slice(0, 80);
+    }
+  }
+
+  return out;
+}
+
+function isPlaceholderIngredients(items) {
+  if (!Array.isArray(items) || items.length === 0) return true;
+  if (items.length > 1) return false;
+  return INGREDIENT_PLACEHOLDER_RE.test(String(items[0] || '').trim());
+}
+
+function isPlaceholderInstructions(items) {
+  if (!Array.isArray(items) || items.length === 0) return true;
+  if (items.length > 1) return false;
+  return METHOD_PLACEHOLDER_RE.test(String(items[0] || '').trim());
+}
+
+function isGenericSummary(summary) {
+  const clean = String(summary || '').trim();
+  if (!clean) return true;
+  if (/^video link$/i.test(clean)) return true;
+  if (/^recipe imported from google doc\.?$/i.test(clean)) return true;
+  if (/^see source url/i.test(clean)) return true;
+  return false;
+}
+
+async function fetchDoc(docId, token) {
+  const baseVariants = [
+    { includeTabsContent: 'true', suggestionsViewMode: 'SUGGESTIONS_INLINE' },
+    { suggestionsViewMode: 'SUGGESTIONS_INLINE' },
+    { includeTabsContent: 'true' },
+    {}
+  ];
+
+  async function fetchVariant(paramsObj) {
+    const params = new URLSearchParams(paramsObj);
+    const query = params.toString();
+    const url = `${GOOGLE_DOCS_API_BASE}/${encodeURIComponent(docId)}${query ? `?${query}` : ''}`;
+    const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const detail = body?.error?.message || `docs api error (${response.status})`;
+      throw new Error(detail);
+    }
+    return body;
+  }
+
+  let bestDoc = null;
+  let bestScore = -1;
+  let lastError = '';
+
+  for (const variant of baseVariants) {
+    try {
+      const body = await fetchVariant(variant);
+      const score = estimateDocTextLength(body);
+      if (score > bestScore) {
+        bestScore = score;
+        bestDoc = body;
+      }
+    } catch (error) {
+      lastError = error?.message || 'docs api error';
+    }
+  }
+
+  if (!bestDoc) {
+    throw new Error(lastError || 'docs api error');
+  }
+
+  // Some documents store recipe text in non-default tabs. Pull each tab explicitly.
+  const tabIds = collectTabIds(bestDoc);
+  if (tabIds.length > 1) {
+    const extraTabDocs = [];
+    for (const tabId of tabIds) {
+      try {
+        const tabDoc = await fetchVariant({
+          includeTabsContent: 'true',
+          suggestionsViewMode: 'SUGGESTIONS_INLINE',
+          tabId
+        });
+        extraTabDocs.push(tabDoc);
+      } catch {
+        // Best-effort per tab.
+      }
+    }
+    if (extraTabDocs.length > 0) {
+      bestDoc.__extraTabDocs = extraTabDocs;
+    }
+  }
+
+  return bestDoc;
+}
+
+function estimateDocTextLength(docJson) {
+  let total = 0;
+
+  function walkContent(content) {
+    if (!Array.isArray(content)) return;
+    for (const node of content) {
+      if (node?.paragraph?.elements) {
+        for (const el of node.paragraph.elements) {
+          const text = String(el?.textRun?.content || '');
+          total += text.trim().length;
+        }
+      }
+      if (Array.isArray(node?.table?.tableRows)) {
+        for (const row of node.table.tableRows) {
+          for (const cell of row.tableCells || []) {
+            walkContent(cell.content || []);
+          }
+        }
+      }
+      if (node?.tableOfContents?.content) {
+        walkContent(node.tableOfContents.content);
+      }
+    }
+  }
+
+  function walkTabs(tabs) {
+    if (!Array.isArray(tabs)) return;
+    for (const tab of tabs) {
+      if (tab?.documentTab?.body?.content) {
+        walkContent(tab.documentTab.body.content);
+      }
+      if (Array.isArray(tab?.childTabs) && tab.childTabs.length > 0) {
+        walkTabs(tab.childTabs);
+      }
+    }
+  }
+
+  if (Array.isArray(docJson?.tabs) && docJson.tabs.length > 0) {
+    walkTabs(docJson.tabs);
+  }
+  if (docJson?.body?.content) {
+    walkContent(docJson.body.content);
+  }
+
+  return total;
+}
+
+function collectTabIds(docJson) {
+  const out = [];
+  const seen = new Set();
+
+  function walkTabs(tabs) {
+    if (!Array.isArray(tabs)) return;
+    for (const tab of tabs) {
+      const tabId = String(tab?.tabProperties?.tabId || '').trim();
+      if (tabId && !seen.has(tabId)) {
+        seen.add(tabId);
+        out.push(tabId);
+      }
+      if (Array.isArray(tab?.childTabs) && tab.childTabs.length > 0) {
+        walkTabs(tab.childTabs);
+      }
+    }
+  }
+
+  walkTabs(docJson?.tabs || []);
+  return out;
 }
 
 async function main() {
@@ -1353,19 +1811,106 @@ async function main() {
       const urls = extractUrls(cleanText);
       const originalUrl = pickOriginalUrl(urls);
 
-      const ingredients = ingredientsFromText(cleanText);
-      const instructions = instructionsFromText(cleanText);
-      const title = titleFromDocName(docJson.title, cleanText, ingredients);
-      const summary = summaryFromText(cleanText, ingredients, title);
-      const searchable = `${title} ${summary} ${cleanText}`.toLowerCase();
-      const fields = extractRecipeFields(cleanText);
-      const inferredTimes = inferTimeFields(cleanText, instructions);
+      let sourceDescription = '';
+      let sourceDescriptionUsed = false;
+      let exportTextUsed = false;
+      let imageOcrUsed = false;
+      let parserText = cleanText;
+
+      let ingredients = ingredientsFromText(parserText);
+      let instructions = instructionsFromText(parserText);
+      let title = titleFromDocName(docJson.title, parserText, ingredients);
+      let summary = summaryFromText(parserText, ingredients, title);
+
+      // Some docs have incomplete body text via Docs API; retry using Drive plain-text export.
+      if (isPlaceholderIngredients(ingredients) || isPlaceholderInstructions(instructions) || isGenericSummary(summary)) {
+        try {
+          const exportedText = sanitizeDocumentText(await exportDocPlainText(docId, token));
+          if (exportedText && exportedText.length > parserText.length + 32) {
+            parserText = exportedText;
+            exportTextUsed = true;
+            ingredients = ingredientsFromText(parserText);
+            instructions = instructionsFromText(parserText);
+            title = titleFromDocName(docJson.title, parserText, ingredients);
+            summary = summaryFromText(parserText, ingredients, title);
+          }
+        } catch (error) {
+          process.stderr.write(`Warning: export fallback skipped for ${docId} (${error?.message || 'unknown error'})\n`);
+        }
+      }
+
+      // If doc content is sparse (e.g., only video link), pull recipe text from source page.
+      if ((isPlaceholderIngredients(ingredients) || isPlaceholderInstructions(instructions) || isGenericSummary(summary)) && originalUrl) {
+        try {
+          sourceDescription = await fetchSourceDescription(originalUrl);
+        } catch (error) {
+          process.stderr.write(`Warning: source fetch skipped for ${docId} (${error?.message || 'unknown error'})\n`);
+        }
+      }
+
+      if (sourceDescription) {
+        const fromSourceIngredients = ingredientsFromSourceDescription(sourceDescription);
+        const fromSourceInstructions = instructionsFromSourceDescription(sourceDescription);
+
+        if (Array.isArray(fromSourceIngredients) && fromSourceIngredients.length > 0 && !isPlaceholderIngredients(fromSourceIngredients)) {
+          ingredients = fromSourceIngredients;
+          sourceDescriptionUsed = true;
+        }
+        if (Array.isArray(fromSourceInstructions) && fromSourceInstructions.length > 0 && !isPlaceholderInstructions(fromSourceInstructions)) {
+          instructions = fromSourceInstructions;
+          sourceDescriptionUsed = true;
+        }
+
+        if (isGenericSummary(summary)) {
+          const sourceSummary = summaryFromText(sourceDescription, ingredients, title);
+          if (sourceSummary && !isGenericSummary(sourceSummary)) {
+            summary = sourceSummary;
+          }
+        }
+
+        if (!isUsableRecipeTitle(title) || /^untitled recipe$/i.test(title)) {
+          const sourceTitle = titleFromDocName('', sourceDescription, ingredients);
+          if (isUsableRecipeTitle(sourceTitle)) {
+            title = sourceTitle;
+          }
+        }
+      }
+
+      if ((isPlaceholderIngredients(ingredients) || isPlaceholderInstructions(instructions)) && images[0]) {
+        const imagePath = siteAssetToLocalPath(images[0]);
+        try {
+          const ocr = await extractRecipeFromImageWithOpenAI(imagePath, translationConfig);
+          if (ocr) {
+            if (Array.isArray(ocr.ingredients) && ocr.ingredients.length > 0 && !isPlaceholderIngredients(ocr.ingredients)) {
+              ingredients = ocr.ingredients;
+              imageOcrUsed = true;
+            }
+            if (Array.isArray(ocr.instructions) && ocr.instructions.length > 0 && !isPlaceholderInstructions(ocr.instructions)) {
+              instructions = ocr.instructions;
+              imageOcrUsed = true;
+            }
+            if (isGenericSummary(summary) && ocr.summary) {
+              summary = ocr.summary;
+            }
+            if ((!isUsableRecipeTitle(title) || /^untitled recipe$/i.test(title)) && ocr.title && isUsableRecipeTitle(ocr.title)) {
+              title = ocr.title;
+            }
+          }
+        } catch (error) {
+          process.stderr.write(`Warning: image OCR skipped for ${docId} (${error?.message || 'unknown error'})\n`);
+        }
+      }
+
+      const combinedText = sourceDescription ? `${parserText}\n${sourceDescription}` : parserText;
+      const searchable = `${title} ${summary} ${combinedText}`.toLowerCase();
+      const fields = extractRecipeFields(combinedText);
+      const inferredTimes = inferTimeFields(combinedText, instructions);
       const sourceLanguage = detectRecipeLanguage({
         title,
         summary,
         ingredients,
         instructions,
-        rawText: cleanText
+        rawText: combinedText
       });
 
       report.push({
@@ -1378,6 +1923,9 @@ async function main() {
         googleDocUrl: canonicalDocUrl(docId),
         originalUrl,
         images,
+        exportTextUsed,
+        sourceDescriptionUsed,
+        imageOcrUsed,
         candidateUrls: urls.slice(0, 30)
       });
 
