@@ -20,6 +20,40 @@ Modern static recipe site with:
 - `static/assets/*`: Frontend JS/CSS and extracted recipe images.
 - `site/*`: Generated static website output.
 
+## Infrastructure Diagram
+
+```mermaid
+flowchart LR
+  A["Google Drive API<br/>(Doc auto-list + pagination)"]
+  B["Google Docs API<br/>(Doc body + metadata)"]
+  C["OAuth Secrets<br/>GitHub / .env"]
+  D["Refresh Pipeline<br/>scripts/refresh_from_doc_ids.mjs"]
+  E["doc-assets.json<br/>(doc/image/source report)"]
+  F["recipes.json<br/>(normalized + categorized + translated)"]
+  G["Static Builder<br/>scripts/build-site.mjs"]
+  H["site/<br/>localized static pages"]
+  I["GitHub Action<br/>refresh-docs-gh-pages.yml"]
+  J["gh-pages branch"]
+  K["GitHub Pages<br/>felixlee888.github.io/Chief-Fafa-Recipe"]
+  L["Local Refresh Service<br/>scripts/refresh_service.mjs"]
+
+  C --> D
+  A --> D
+  B --> D
+  D --> E
+  D --> F
+  F --> G
+  G --> H
+  H --> J
+  I --> D
+  I --> G
+  I --> J
+  J --> K
+  L --> D
+  L --> G
+  L --> H
+```
+
 ## One-Time Manual Refresh
 
 ```bash
