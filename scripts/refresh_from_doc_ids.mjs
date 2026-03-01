@@ -928,6 +928,30 @@ function canonicalDocUrl(docId) {
   return `https://docs.google.com/document/d/${docId}/edit`;
 }
 
+function extractDocIdFromUrl(url) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  const match = raw.match(/\/d\/([a-zA-Z0-9_-]{20,})/);
+  return match ? match[1] : '';
+}
+
+async function loadExistingRecipeByDocId() {
+  try {
+    const raw = await fs.readFile(OUTPUT_RECIPES, 'utf8');
+    const parsed = JSON.parse(raw);
+    const list = Array.isArray(parsed?.recipes) ? parsed.recipes : [];
+    const map = new Map();
+    for (const item of list) {
+      const docId = extractDocIdFromUrl(item?.googleDocUrl);
+      if (!docId) continue;
+      map.set(docId, item);
+    }
+    return map;
+  } catch {
+    return new Map();
+  }
+}
+
 function extractUrls(text) {
   const matches = text.match(URL_RE) || [];
   const normalized = matches
@@ -1875,6 +1899,7 @@ async function main() {
   const token = await resolveDocsAccessToken(loadedEnv);
   const translationConfig = resolveTranslationConfig(args, loadedEnv);
   const debugDocId = String(args['debug-doc-id'] || process.env.RECIPE_DEBUG_DOC_ID || loadedEnv.RECIPE_DEBUG_DOC_ID || '').trim();
+  const existingRecipeByDocId = await loadExistingRecipeByDocId();
 
   if (translationConfig.enabled && !translationConfig.apiKey) {
     process.stderr.write(
@@ -2085,6 +2110,28 @@ async function main() {
         sourceUrl: originalUrl,
         googleDocUrl: canonicalDocUrl(docId)
       };
+
+      const previous = existingRecipeByDocId.get(docId);
+      if (previous && typeof previous === 'object') {
+        const prevIngredients = Array.isArray(previous.ingredients) ? previous.ingredients : [];
+        const prevInstructions = Array.isArray(previous.instructions) ? previous.instructions : [];
+        const prevSummary = String(previous.summary || '').trim();
+        const prevTitle = String(previous.title || '').trim();
+
+        if (isPlaceholderIngredients(recipeBase.ingredients) && !isPlaceholderIngredients(prevIngredients)) {
+          recipeBase.ingredients = prevIngredients.slice(0, 120);
+        }
+        if (isPlaceholderInstructions(recipeBase.instructions) && !isPlaceholderInstructions(prevInstructions)) {
+          recipeBase.instructions = prevInstructions.slice(0, 120);
+        }
+        if (isGenericSummary(recipeBase.summary) && prevSummary && !isGenericSummary(prevSummary)) {
+          recipeBase.summary = prevSummary;
+        }
+        if ((!isUsableRecipeTitle(recipeBase.title) || /^untitled recipe$/i.test(recipeBase.title)) && isUsableRecipeTitle(prevTitle)) {
+          recipeBase.title = prevTitle;
+          recipeBase.slug = slugify(prevTitle) || recipeBase.slug;
+        }
+      }
 
       const translations = await buildRecipeTranslations(recipeBase, sourceLanguage, translationConfig);
 
