@@ -2,7 +2,7 @@
   "site": {
     "title": "Chef Fafa's Recipe",
     "description": "Modern, searchable recipe collection with auto-categorized cuisine and meal types.",
-    "generatedAt": "2026-03-01T12:09:14.452Z",
+    "generatedAt": "2026-03-01T13:17:55.994Z",
     "source": "google-doc-drive:10",
     "sourceType": "docs-api-drive-list",
     "discoveredDocCount": 10,
@@ -73,18 +73,18 @@
             "Cut scallions into sections.",
             "Heat lard in a wok, deep-fry scallion sections until golden, then remove.",
             "In the same wok, add chicken broth, light soy sauce, sugar, and cooking wine, steam for about 8-10 minutes.",
-            "In another wok, add oil, ginger slices, scallion slices, and coriander stems to make scallion oil.",
+            "Heat another wok with oil, add ginger slices, scallion slices, and coriander stems to make scallion oil.",
             "Blanch sea cucumber in boiling water for about 2 minutes.",
             "Return the fried scallion oil with remaining ginger and scallion to the wok, add star anise, cooking wine, and light soy sauce, stir-fry until fragrant, then add chicken broth to make the base soup.",
-            "Add back the soup from step 3, thicken with cornstarch slurry, and finally drizzle scallion oil over the dish.",
+            "Add back the soup from step 3, thicken with cornstarch slurry, and finally drizzle scallion oil on the plate.",
             "Cut scallions into sections.",
             "Heat lard in a wok, deep-fry scallion sections until golden, then remove.",
             "In the same wok, add chicken broth, light soy sauce, sugar, and cooking wine, steam for about 8-10 minutes.",
-            "In another wok, add oil, ginger slices, scallion slices, and coriander stems to make scallion oil.",
+            "Heat another wok with oil, add ginger slices, scallion slices, and coriander stems to make scallion oil.",
             "Blanch sea cucumber in boiling water for about 2 minutes.",
             "Return the fried scallion oil with remaining ginger and scallion to the wok, add star anise, cooking wine, and light soy sauce, stir-fry until fragrant, then add chicken broth to make the base soup.",
-            "In the wok, add sugar to caramelize, then add sea cucumber, scallion oil, cooking wine, light soy sauce, and base soup, simmer on low heat for about 10 minutes, then season with white pepper and dark soy sauce.",
-            "Add back the soup from step 3, thicken with cornstarch slurry, and finally drizzle scallion oil over the dish."
+            "In the wok, add sugar and caramelize, then add sea cucumber, scallion oil, cooking wine, light soy sauce, and base soup, simmer on low heat for about 10 minutes, then season with white pepper and dark soy sauce.",
+            "Add back the soup from step 3, thicken with cornstarch slurry, and finally drizzle scallion oil on the plate."
           ]
         },
         "zh-Hant": {
@@ -134,16 +134,16 @@
             "鍋にラードを入れ、ネギの段を黄金色になるまで揚げ、取り出す。",
             "同じ鍋に鶏スープ、生抽、砂糖、酒を加え、約8〜10分蒸す。",
             "別の鍋に油を入れ、生姜のスライス、ネギのスライス、香菜の頭を加えて葱油を作る。",
-            "ナマコを先に約2分間湯通しする。",
-            "揚げた葱油の残りの生姜とネギを鍋に戻し、八角、酒、生抽を加えて香りを出し、その後鶏スープを加えてベーススープを作る。",
+            "ナマコを先に約2分湯通しする。",
+            "揚げた葱油の残りの生姜とネギを鍋に戻し、八角、酒、生抽を加えて香りが出るまで炒め、鶏スープを加えてベーススープを作る。",
             "ステップ3のスープを戻し、片栗粉水でとろみをつけ、最後に葱油をかけて皿に盛る。",
             "長ネギを段切りにする。",
             "鍋にラードを入れ、ネギの段を黄金色になるまで揚げ、取り出す。",
             "同じ鍋に鶏スープ、生抽、砂糖、酒を加え、約8〜10分蒸す。",
             "別の鍋に油を入れ、生姜のスライス、ネギのスライス、香菜の頭を加えて葱油を作る。",
-            "ナマコを先に約2分間湯通しする。",
-            "揚げた葱油の残りの生姜とネギを鍋に戻し、八角、酒、生抽を加えて香りを出し、その後鶏スープを加えてベーススープを作る。",
-            "鍋に砂糖を入れてカラメル色に炒め、ナマコ、葱油、酒、生抽、ベーススープを加え、弱火で約10分煮込み、最後に白胡椒と老抽で味を調える。",
+            "ナマコを先に約2分湯通しする。",
+            "揚げた葱油の残りの生姜とネギを鍋に戻し、八角、酒、生抽を加えて香りが出るまで炒め、鶏スープを加えてベーススープを作る。",
+            "鍋に砂糖を入れてカラメル色になるまで炒め、ナマコ、葱油、酒、生抽、ベーススープを加え、弱火で約10分煮込み、最後に白胡椒と老抽で味を調える。",
             "ステップ3のスープを戻し、片栗粉水でとろみをつけ、最後に葱油をかけて皿に盛る。"
           ]
         }
@@ -209,19 +209,19 @@
             "Sesame oil 1 tablespoon",
             "Water 300 ml",
             "Preparation:",
-            "Only one thing needs to be prepared in advance, which is to make several dense horizontal and vertical cuts on the bottom of the abalone. This is not for appearance, because canned abalone is already cooked and will not \"bloom\" during stewing, but to help the abalone absorb flavor faster. Also, be gentle when cutting; splitting the abalone in half is minor, but cutting your hand is a big problem.",
+            "Only one thing needs to be prepared in advance, which is to make several dense horizontal and vertical cuts on the bottom of the abalone. This is not for appearance, because canned abalone is already cooked and will not \"flower\" during simmering, but to help the abalone absorb flavor faster. Also, be gentle when cutting; splitting the abalone in half is minor, but cutting your hand is a big problem.",
             "This is how to cut"
           ],
           "instructions": [
             "First, pour the sake and an equal amount of water into a heavy pot, bring to a boil over high heat until the sharp alcohol smell disappears;",
-            "Add abalone water, soy sauce, mirin, sugar, oyster sauce, and sesame oil into the pot in order, then bring to a full boil over high heat (be careful of boiling over!);",
-            "Put the abalone into the boiling sauce, bring to a full boil again, then reduce to the lowest heat to continue stewing;",
-            "After stewing for half an hour, you will smell the abalone fragrance in the room. After one hour, the sauce will reduce to about half. At this time, the abalone color darkens, indicating it is done;",
-            "Remove the abalone. For hot eating, serve immediately. For cold eating, let it cool, drizzle some sauce on it, seal with cling film, and refrigerate for three hours before eating;",
-            "Do not discard the leftover sauce from cooking the abalone. As you know, it is the essence and flavor. It can be used to braise shiitake mushrooms and goose feet, or simply used as a noodle sauce. Seal it in an airtight bag and freeze; it can be kept for several weeks without problem.",
-            "This time I found out I ran out of oyster sauce at home, so I just added a bit more soy sauce and sugar to enhance the flavor, which is fine. At the end of cooking, you can add a little dark soy sauce to make the abalone look more flavorful (yes, just \"look\" more flavorful, but sometimes people are superficial and associate darker food with stronger taste). You can also add some strong liquor like cognac or brandy to add aroma variation. I have a lot of whiskey at home, so I added whiskey, which works just as well.",
-            "Although this method is simple, the abalone texture is soft, tender, and rich in abalone aroma. Most importantly, the flavor is rich but not greasy, guaranteed to keep you eating nonstop. Some friends asked if fresh abalone can be used. Personally, fresh abalone becomes tough when heated, and this long stewing method may not achieve such a good texture. Also, the abalone water in canned abalone is a key ingredient for this dish. If using fresh abalone, you can substitute chicken broth, but the abalone flavor will not be as rich.",
-            "So, how much does it cost to cook this sake abalone yourself? Ten cans of South African canned abalone cost about 300+ HKD, not counting electricity, labor, and time, it’s about 30+ HKD per piece. Expensive? I would say it’s not cheap. Seeing this, you might appreciate the value of the shop owner’s cognac soft-boiled abalone 12 pieces for only $438 (please click here to review). However, during the festive season, sharing delicious sake abalone with family and friends is truly one of life’s great pleasures.",
+            "In order, add the abalone water, soy sauce, mirin, sugar, oyster sauce, and sesame oil all into the pot, then bring to a full boil over high heat (be careful of boiling over!);",
+            "Put the abalone into the boiling sauce, bring to a full boil again, then reduce to the lowest heat to continue simmering;",
+            "Simmer for about half an hour until the room smells of abalone, and by one hour the sauce will have reduced to about half. At this time, the abalone color will darken, indicating it is done;",
+            "Remove the abalone. For hot serving, eat immediately. For cold serving, let cool, drizzle a little sauce on top, seal with cling film, and refrigerate for three hours before eating;",
+            "Do not discard the leftover sauce from cooking the abalone. As you know, it is the essence and flavor. It can be used to braise shiitake mushrooms and goose feet, or simply to toss noodles, which is also delicious. Seal it in a vacuum bag and freeze; it can be kept for several weeks without problem.",
+            "This time I found out I ran out of oyster sauce at home, so I just added a bit more soy sauce and sugar to enhance the flavor, which is fine. At the end of cooking, you can add a little dark soy sauce to make the abalone look more flavorful (yes, just \"look\" more flavorful, but sometimes people are superficial and associate darker food with stronger taste). You can also add some spirits like cognac or brandy to add aroma variation. I have a lot of whiskey at home, so I added whiskey, which works just as well.",
+            "Although this method is simple, the abalone texture is soft, tender, and rich in abalone aroma. Most importantly, the flavor is rich but not greasy, guaranteed to keep you eating. Some friends asked if fresh abalone can be used. Personally, fresh abalone becomes tough when heated, and this long simmering method may not achieve such good texture. Also, the abalone water in canned abalone is a key ingredient in this snack. If using fresh abalone, you can substitute chicken broth, but the abalone flavor will not be as strong.",
+            "So, how much does it cost to cook this sake abalone yourself? Ten cans of South African canned abalone cost about three hundred plus HKD, not counting utilities and labor, it’s about over thirty HKD each. Expensive? I would say it’s not cheap. Seeing this, you might save up for the cognac soft-boiled abalone 12 pieces for only $438, which is very good value (please click here to review). However, during the festive season, sharing delicious sake abalone with family and friends is truly one of life’s great pleasures.",
             "What do we seek in life? Simply to enjoy a good meal with those around us and loved ones. Whether the world ends today or not, that is the happiest thing, don’t you agree?"
           ]
         },
@@ -263,29 +263,29 @@
           "ingredients": [
             "十粒奘、ちょうど良い",
             "鮑汁：",
-            "鮑の水（缶内の鮑を浸している汁）1缶分",
+            "鮑の水（缶内の鮑が浸かっている汁）1缶分",
             "日本酒 300ミリリットル",
             "オイスターソース 90グラム",
             "日本醤油 80ミリリットル",
-            "絶対に鮑を浸している水を捨てないでください",
+            "絶対に鮑の浸かっている水を捨てないでください",
             "みりん 50ミリリットル",
             "砂糖 35グラム",
             "ごま油 大さじ1",
             "水 300ミリリットル",
             "事前準備：",
-            "事前に準備することはただ一つ、鮑の底部に縦横に細かく切り込みを入れることです。これは見た目のためではなく、缶詰の鮑は既に加熱済みで煮込んでも「花開く」ことはないため、味を早く染み込ませるためです。切る際は慎重に、鮑を半分に切ってしまうと大変です。",
+            "事前に準備することはただ一つ、鮑の底部に縦横に細かく切り込みを入れることです。これは見た目のためではなく、缶詰の鮑は既に加熱済みで煮込んでも「花開く」ことはないため、味を早く染み込ませるためです。切る際は手を傷つけないように注意してください。鮑を半分に切るのは小さな問題ですが、手を切るのは大問題です。",
             "このように切ります"
           ],
           "instructions": [
             "まず日本酒と同量の水を厚手の鍋に入れ、強火で沸騰させてアルコール臭がなくなるまで加熱する；",
             "順番に鮑の水、醤油、みりん、砂糖、オイスターソース、ごま油を全て鍋に入れ、再び強火で沸騰させる（吹きこぼれに注意！）；",
-            "鮑を沸騰した醤油だれに入れ、再度沸騰したら最弱火にして煮続ける；",
-            "このまま30分ほど煮込むと鮑の香りが部屋中に広がり、1時間でたれが半量ほどに煮詰まり、鮑の色が濃くなれば完成；",
+            "鮑を沸騰した醤油だれに入れ、再び沸騰したら最弱火にして煮続ける；",
+            "このまま30分ほど煮込むと鮑の香りが部屋に広がり、1時間でたれが半分ほどに煮詰まる。鮑の色が濃くなれば完成；",
             "鮑を取り出し、温かく食べたい場合はすぐに食べられます。冷たく食べたい場合は冷まし、少しタレをかけてラップで密封し、冷蔵庫の下段で3時間冷やしてから食べる；",
-            "煮た後のタレは捨てないでください。これは味のエッセンスです。椎茸と鵝掌（ガチョウの足）を煮るのに使ったり、シンプルに麺にかけても美味しいです。密封袋に入れて冷凍庫で数週間保存可能です；",
-            "今回調理中にオイスターソースが切れていたため、代わりに醤油と砂糖を少し多めに入れて味を調整しました。調理の最後に老抽（濃口醤油）を少し加えると鮑の色が濃くなり、見た目の味わいが増します（あくまで見た目ですが）。また、コニャックやブランデーなどの蒸留酒を加えて香りの変化を楽しむこともできます。我が家はウイスキーが多いのでウイスキーを加えましたが、効果は同じです；",
-            "この方法で作る鮑は簡単ですが、柔らかくもちもちした食感で鮑の香りが豊かです。味は濃厚ながらもくどくなく、食べ続けられます。友人から生鮑に変えられるかと聞かれましたが、生鮑は加熱すると硬くなるため、この方法で長時間煮込んでも同じ食感は得られません。缶詰の鮑の水はこの料理の重要な材料の一つで、生鮑の場合は鶏スープで代用できますが、鮑の鮮やかな香りは薄くなります；",
-            "さて、この清酒鮑を自分で作るコストは？南アフリカ産の缶詰鮑10粒で約300元、光熱費や人件費を除いても一つあたり30元近くかかります。高いですか？決して安くはありません。この記事を読んで、車品品の店主のコニャック溏心鮑12個が438ドルで売られているのがいかにお得か分かるでしょう（リンク参照）。しかし、祝祭の時に家族や友人と一緒に美味しい清酒鮑を分かち合うことは人生の大きな喜びです；",
+            "煮た後のタレは捨てないでください。味のエキスが詰まっています。椎茸と鵝掌（ガチョウの足）を煮るのに使ったり、麺にかけても美味しいです。密封袋に入れて冷凍庫で数週間保存可能です。",
+            "今回調理中にオイスターソースが切れていたため、代わりに醤油と砂糖を少し多めに入れて味を調整しました。調理の最後に老抽（濃口醤油）を少し加えると鮑の色が濃くなり、見た目の味わいが増します（あくまで見た目ですが）。また、コニャックやブランデーなどのスピリッツを加えて香りを変えることもできます。家にはウイスキーが多かったのでウイスキーを入れましたが、効果は同じです。",
+            "この方法で作った鮑は簡単ですが、柔らかくもちもちした食感で鮑の香りが豊かです。味は濃厚ながらしつこくなく、食べ始めると止まりません。友人から生鮑に変えられるか聞かれましたが、生鮑は加熱すると硬くなるため、この方法で長時間煮込んでも同じ食感は出せません。缶詰の鮑の水はこの料理の重要な材料の一つです。生鮑を使う場合は鶏スープで代用できますが、鮑の鮮やかな香りは薄くなります。",
+            "さて、この清酒鮑を自分で作るコストはいくらでしょうか？南アフリカ産の缶詰鮑10粒で約300元、光熱費や人件費を含めると1粒あたり30元以上かかります。高いですか？決して安くはありませんが、この記事を読んで車品品の店主のコニャック溏心鮑12粒が438ドルで売られているのを見ると非常にお得です（リンクを参照）。しかし、祝祭の時に家族や友人と一緒に美味しい清酒鮑を分かち合うことは人生の大きな喜びです。",
             "人生で求めるものは何でしょうか？それは身近な人や親友と美味しい食事を共にすることです。たとえ世界が今日終わろうとも、それが最も幸せなことだと思いませんか？"
           ]
         }
@@ -326,7 +326,7 @@
       "image": "/assets/recipe-images/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4-01.jpg",
       "sourceUrl": "https://www.youtube.com/watch?si=fhfNJPgJtO4gcArZ&v=j4lKXjkUkp4&feature=youtu.be",
       "googleDocUrl": "https://docs.google.com/document/d/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4/edit",
-      "sourceLanguage": "zh-Hant",
+      "sourceLanguage": "en",
       "translations": {
         "en": {
           "title": "Black Sesame Cotton Sponge Cake",
@@ -354,28 +354,28 @@
           ]
         },
         "zh-Hant": {
-          "title": "Black Sesame Cotton Sponge Cake",
-          "summary": "Video link",
+          "title": "黑芝麻棉花海綿蛋糕",
+          "summary": "影片連結",
           "ingredients": [
-            "70ml corn oil（玉米油油）",
-            "65g （1/2 cup) plain flour（普通面粉）",
-            "1 tbsp corn starch （玉米粉）",
-            "50g （1/2 cup) ground black sesame （黑芝麻粉）",
-            "1 whole egg （全蛋）",
-            "5 egg yolks （蛋黄）",
-            "70ml milk （牛奶）",
-            "5 egg whites （蛋白)",
-            "1/4 tsp salt（盐）",
-            "95g (1/3 cup + 1 tbsp) caster sugar （细砂糖）"
+            "70ml 玉米油",
+            "65g （1/2 杯）普通面粉",
+            "1 湯匙 玉米粉",
+            "50g （1/2 杯）黑芝麻粉",
+            "1 顆 全蛋",
+            "5 顆 蛋黃",
+            "70ml 牛奶",
+            "5 顆 蛋白",
+            "1/4 茶匙 鹽",
+            "95g （1/3 杯 + 1 湯匙）細砂糖"
           ],
           "instructions": [
-            "Preheat oven to 150C and line a cake pan with baking paper.",
-            "Whisk oil and milk until smooth, then mix in egg yolks and black sesame mixture.",
-            "Sift in flour (and starch if used), then fold gently until no dry pockets remain.",
-            "Whip egg whites with sugar (and salt if used) to medium peaks.",
-            "Fold meringue into batter in 2-3 additions without deflating the foam.",
-            "Pour into pan, tap out large bubbles, and bake in a gentle water bath until set.",
-            "Cool before unmolding and slice to serve."
+            "預熱烤箱至150°C，並在蛋糕模內鋪上烘焙紙。",
+            "將油和牛奶攪拌均勻，然後加入蛋黃和黑芝麻混合物攪拌。",
+            "篩入麵粉（及玉米粉如使用），輕輕摺拌至無乾粉。",
+            "將蛋白與糖（及鹽如使用）打至中等硬性發泡。",
+            "將蛋白霜分2-3次摺入麵糊中，避免消泡。",
+            "倒入模具，輕敲以排出大氣泡，並放入水浴中以溫和方式烘烤至凝固。",
+            "冷卻後脫模，切片享用。"
           ]
         },
         "ja": {
@@ -391,15 +391,15 @@
             "70ml 牛乳（牛奶）",
             "卵白 5個分（蛋白）",
             "小さじ1/4 塩（盐）",
-            "95g（1/3カップ＋大さじ1）グラニュー糖（细砂糖）"
+            "95g（1/3カップ＋大さじ1）グラニュー糖（細砂糖）"
           ],
           "instructions": [
             "オーブンを150℃に予熱し、ケーキ型にベーキングペーパーを敷く。",
             "油と牛乳を滑らかになるまで泡立て、卵黄と黒ごまの混合物を加えて混ぜる。",
-            "薄力粉（使用する場合はコーンスターチも）をふるい入れ、乾いた粉がなくなるまで優しく混ぜる。",
-            "卵白に砂糖（使用する場合は塩も）を加え、中くらいの角が立つまで泡立てる。",
+            "薄力粉（使用する場合はコーンスターチも）をふるい入れ、乾いた部分がなくなるまで優しく混ぜる。",
+            "卵白を砂糖（使用する場合は塩も）と共に中くらいの角が立つまで泡立てる。",
             "メレンゲを2～3回に分けて生地に泡を潰さないようにさっくりと混ぜ込む。",
-            "型に流し入れ、大きな気泡を抜き、湯煎で優しく焼き固まるまで焼く。",
+            "型に流し入れ、大きな気泡を抜いてから、湯煎で優しく焼き固まるまで焼く。",
             "冷ましてから型から外し、スライスして提供する。"
           ]
         }
@@ -451,39 +451,39 @@
       "image": "/assets/recipe-images/1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0-01.jpg",
       "sourceUrl": "https://www.youtube.com/watch?v=6I8K0cWc0LU",
       "googleDocUrl": "https://docs.google.com/document/d/1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0/edit",
-      "sourceLanguage": "zh-Hant",
+      "sourceLanguage": "en",
       "translations": {
         "en": {
-          "title": "Ricky's Classroom: All Thanks to This Secret Celebrity Chef’s Turnip Cake Recipe",
-          "summary": "Lunar New Year is approaching, and it's time to make turnip cake again. This year, Ricky has improved the recipe with simple ingredients: turnip, sakura shrimp, shallots, and some seasonings. The preparation is easy, so even kitchen beginners can make it effortlessly. The taste is definitely not inferior to the usual turnip cakes with preserved meat.",
+          "title": "Ricky教室 全靠呢個秘訣Celebrity chef’s turnip cake recipe",
+          "summary": "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
           "ingredients": [
-            "White turnip 600g",
+            "白蘿蔔600克",
             "Turnip 600g",
+            "菜油40克",
             "Vegetable oil 40g",
-            "Vegetable oil 40g",
+            "櫻花蝦 15克",
             "Sakura shrimp 15g",
-            "Sakura shrimp 15g",
+            "乾蔥 50克",
             "Shallot 50g",
-            "Shallot 50g",
+            "清水 150克 (煮蘿蔔用)",
             "Water 150g (Cook turnip)",
-            "Water 150g (Cook turnip)",
+            "黑胡椒粉 2克",
             "Black pepper powder 2g",
-            "Black pepper powder 2g",
+            "粘米粉 125克",
             "Rice flour 125g",
-            "Rice flour 125g",
+            "糖 8克",
             "Sugar 8g",
-            "Sugar 8g",
+            "鹽 8克",
             "Salt 8g",
-            "Salt 8g",
+            "雞粉 8克",
             "Chicken stock 8g",
-            "Chicken stock 8g",
-            "Water 100g",
+            "清水 100克 (開粘米粉)",
             "Water 100g",
             "(Mixed with rice flour)"
           ],
           "instructions": [
-            "Lunar New Year is approaching, and it's time to make turnip cake again. This year, Ricky has improved the recipe with simple ingredients: turnip, sakura shrimp, shallots, and some seasonings. The preparation is easy, so even kitchen beginners can make it effortlessly. The taste is definitely not inferior to the usual turnip cakes with preserved meat.",
-            "Chinese Turnip Cake 2.0",
+            "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
+            "Chinese Turnip Cake2.0",
             "Water 150g (Cook turnip)",
             "Black pepper powder 2g",
             "(Mixed with rice flour)"
@@ -526,35 +526,35 @@
           ]
         },
         "ja": {
-          "title": "Ricky教室 全靠この秘訣Celebrity chef’s turnip cake recipe",
-          "summary": "もうすぐ旧正月で、また大根餅を作る時期です。今年Rickyはレシピを改良し、材料はシンプルで、大根、桜えび、エシャロットといくつかの調味料だけです。しかも作り方も簡単で、料理初心者でも気軽に作れ、味は通常の臘味入り大根餅に決して劣りません。",
+          "title": "Ricky教室 全靠呢個秘訣Celebrity chef’s turnip cake recipe",
+          "summary": "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
           "ingredients": [
-            "白大根600グラム",
+            "白蘿蔔600グラム",
             "Turnip 600g",
-            "菜種油40グラム",
+            "菜油40グラム",
             "Vegetable oil 40g",
-            "桜えび15グラム",
+            "櫻花蝦 15グラム",
             "Sakura shrimp 15g",
-            "エシャロット50グラム",
+            "乾蔥 50グラム",
             "Shallot 50g",
-            "水150グラム（大根を煮る用）",
+            "清水 150グラム (煮蘿蔔用)",
             "Water 150g (Cook turnip)",
-            "黒胡椒粉2グラム",
+            "黒胡椒粉 2グラム",
             "Black pepper powder 2g",
-            "もち米粉125グラム",
+            "粘米粉 125グラム",
             "Rice flour 125g",
-            "砂糖8グラム",
+            "砂糖 8グラム",
             "Sugar 8g",
-            "塩8グラム",
+            "塩 8グラム",
             "Salt 8g",
-            "鶏がらスープの素8グラム",
+            "鶏粉 8グラム",
             "Chicken stock 8g",
-            "水100グラム（もち米粉を溶く用）",
+            "清水 100グラム (開粘米粉用)",
             "Water 100g",
             "(Mixed with rice flour)"
           ],
           "instructions": [
-            "もうすぐ旧正月で、また大根餅を作る時期です。今年Rickyはレシピを改良し、材料はシンプルで、大根、桜えび、エシャロットといくつかの調味料だけです。しかも作り方も簡単で、料理初心者でも気軽に作れ、味は通常の臘味入り大根餅に決して劣りません。",
+            "もうすぐ旧正月で、蘿蔔糕を作る時期です。今年Rickyはレシピを改良し、材料はシンプルで、蘿蔔、櫻花蝦、乾蔥といくつかの調味料だけです。作り方も簡単で、料理初心者でも簡単に作れ、味は通常の臘味入り蘿蔔糕に劣りません。",
             "Chinese Turnip Cake2.0",
             "Water 150g (Cook turnip)",
             "Black pepper powder 2g",
@@ -597,7 +597,7 @@
           ],
           "instructions": [
             "\"I really like eating shredded pork fried noodles, but they must be golden on both sides with a soft noodle core in the middle to taste good. Nowadays, most shredded pork fried noodles are deep-fried, and the middle part ends up tasteless,\" lamented the famous chef Ricky.",
-            "To make delicious shredded pork fried noodles, you must first work on the noodle cake. He said the most important step is to season the boiled noodles with light soy sauce before pan-frying. \"Use an appropriate amount of oil to slowly pan-fry the surface of the noodles until crispy. Never use a lot of oil to deep-fry them just to save time,\" he said with a smile.",
+            "To make delicious shredded pork fried noodles, first focus on the noodle cake. He said the most important step is to season the boiled noodles with light soy sauce before pan-frying. \"Use an appropriate amount of oil to slowly pan-fry the surface of the noodles until crispy. Never use too much oil to deep-fry them just to save time,\" he said with a smile.",
             "He recommends using pork neck meat instead of lean meat because lean meat often becomes dry and tough after stir-frying, but pork neck meat avoids these problems.",
             "The secret to preventing the sauce from clumping is to mix the chicken broth with cornstarch first, then immediately pour it into the stir-fried ingredients and slowly cook until it boils. The resulting sauce will not have lumps and will have just the right thickness.",
             "Finally, place the noodles on top of the cooked ingredients. \"This way, when serving, the sauce will not make the golden crispy noodle cake soggy. Crispy outside and soft inside shredded pork fried noodles are the best,\" he said while eating."
@@ -619,16 +619,16 @@
         },
         "ja": {
           "title": "Ricky教室 肉絲炒麺 必ず外はカリカリ中は柔らかくが王道!!",
-          "summary": "「私は肉絲炒麺が大好きですが、必ず両面が黄金色で、中心に麺の芯があるのが美味しいです。今の時代に食べる肉絲炒麺は、ほとんど揚げたもので、中心まで味がないことが多いです。」と名シェフのRickyは嘆きました。",
+          "summary": "「私は肉絲炒麺が大好きですが、必ず両面が黄金色で、中に麺の芯があるのが美味しいです。今の時代に食べる肉絲炒麺は、ほとんどが揚げたもので、中まで味がないことが多いです。」と名シェフRickyは嘆きました。",
           "ingredients": [
-            "完全な材料リストは元のURLをご参照ください。"
+            "See source URL for full ingredients list."
           ],
           "instructions": [
-            "「私は肉絲炒麺が大好きですが、必ず両面が黄金色で、中心に麺の芯があるのが美味しいです。今の時代に食べる肉絲炒麺は、ほとんど揚げたもので、中心まで味がないことが多いです。」と名シェフのRickyは嘆きました。",
+            "「私は肉絲炒麺が大好きですが、必ず両面が黄金色で、中に麺の芯があるのが美味しいです。今の時代に食べる肉絲炒麺は、ほとんどが揚げたもので、中まで味がないことが多いです。」と名シェフRickyは嘆きました。",
             "肉絲炒麺を美味しく作るには、まず麺の餅に手間をかけることが重要です。彼は茹でた麺に生醤油で味付けしてから焼くのが一番大切だと言います。「適量の油を使い、ゆっくりと麺の表面をカリカリに焼きます。速さを求めて油を多く入れて揚げるのは絶対にダメです。」と彼は笑いながら話しました。",
-            "彼は脂身のある豚の首肉を赤身肉の代わりに使うことを勧めています。赤身肉は炒めると乾燥して硬くなりがちですが、豚の首肉ならその問題がありません。",
-            "とろみが固まらない秘訣は、鶏スープと片栗粉を先に混ぜてから、すぐに炒めた具材に入れてゆっくり煮立たせることです。こうするととろみが粒にならず、濃度もちょうど良くなります。",
-            "最後に麺を炒めた具材の上に乗せます。「こうすることで、とろみが両面黄金色の麺餅を柔らかくしてしまうのを防げます。外はカリカリ中は柔らかい肉絲炒麺こそが王道です。」と彼は食べながら語りました。"
+            "彼は脂身のある豚の首肉を使うことを勧めています。なぜなら、脂身のない肉は炒めると乾燥して硬くなりがちですが、豚の首肉ならその問題がありません。",
+            "とろみが固まらない秘訣は、鶏スープと片栗粉を先に混ぜ合わせてから、すぐに炒めた具材に入れ、ゆっくりと煮立たせることです。こうすると、とろみが粒にならず、濃度もちょうど良くなります。",
+            "最後に麺を炒めた具材の上にのせます。「こうすることで、とろみが両面黄金色の麺餅を柔らかくするのを防げます。外はカリカリ中は柔らかい肉絲炒麺こそが王道です。」と彼は食べながら話しました。"
           ]
         }
       }
@@ -670,10 +670,10 @@
       "sourceLanguage": "ja",
       "translations": {
         "en": {
-          "title": "Nagasaki-style Castella Honey Cake｜MASA's Cooking",
-          "summary": "Nagasaki-style Castella Honey Cake｜MASA's Cooking",
+          "title": "Nagasaki-style Honey Cake Castella｜MASA's Cooking",
+          "summary": "Nagasaki-style Honey Cake Castella Honey Cake｜MASA's Cooking",
           "ingredients": [
-            "Nagasaki-style Castella Honey Cake｜MASA's Cooking ◆MASA channel subscription↓ https://www.youtube.com/masaabc1 ◆Recipe↓ Nagasaki-style Castella Honey Cake Traditional Castella 1 piece (13x15x5cm)",
+            "Nagasaki-style Honey Cake Castella Honey Cake｜MASA's Cooking ◆MASA channel subscription↓ https://www.youtube.com/masaabc1 ◆Recipe↓ Nagasaki-style Honey Cake Traditional Castella 1 piece (13x15x5cm)",
             "Egg—4 pieces",
             "Sugar—100g",
             "Mirin—25g",
@@ -690,17 +690,17 @@
             "Salad oil: TAISUN 369 Blend Oil",
             "Cookware: THERMOS thick cast abrasion-resistant non-stick pan 20cm, 24cm",
             "Cookware: THERMOS Apple Original Flavor single-handle soup pot 18cm",
-            "BGM: Amacha Music Workshop MusMus OtoLogic Pocket Sound DOVA-SYNDROME PremiumBeat: -Studio Le Bus -Joe Sacco -Kyon -Smithereens",
+            "BGM: Amacha Music Studio MusMus OtoLogic Pocket Sound DOVA-SYNDROME PremiumBeat: -Studio Le Bus -Joe Sacco -Kyon -Smithereens",
             "Materials: Irasutoya"
           ],
           "instructions": [
-            "Nagasaki-style Castella Honey Cake｜MASA's Cooking",
+            "Nagasaki-style Honey Cake Castella Honey Cake｜MASA's Cooking",
             "Bread flour—100g",
             "Cinnamon powder",
             "◆Contact for collaboration: bigway1688@gmail.com",
             "WeChat ID: sunnywung723",
             "＊The dish name & method are my own style, please understand",
-            "＊The dish name & method are not necessarily formal or traditional, shared from my own ideas & experience",
+            "＊The dish name & method are not necessarily formal or traditional, shared from my own ideas & experience. Please understand in advance.",
             "Salad oil: TAISUN 369 Blend Oil",
             "Cookware: THERMOS thick cast abrasion-resistant non-stick pan 20cm, 24cm",
             "Cookware: THERMOS Apple Original Flavor single-handle soup pot 18cm"
@@ -872,9 +872,9 @@
           "title": "蔥油餅也能這樣做？4款超簡單創意料理大公開！",
           "summary": "冷凍常備的蔥油餅也能變身美味佳餚！簡單創意料理，早餐、午餐、下酒菜通通搞定！",
           "ingredients": [
-            "食譜標題：蔥油餅也能這樣做？4款超簡單創意料理大公開！",
-            "影片食譜標題：蔥油餅也能這樣做？4款超簡單創意料理大公開！",
-            "冷凍常備的蔥油餅也能變身美味佳餚！簡單創意料理，早餐、午餐、下酒菜通通搞定！ ◆MASA頻道訂閱↓ https://www.youtube.com/masaabc1 ◆食譜↓ 4種口味蔥影片披薩 雙重配料蔥油餅2品 [2片份] 蔥油餅 Scallion pancakes—2片 【照燒雞】 雞腿肉 Chicken thigh—1片 洋蔥 Onion—1/4個 清酒 Sake—1大匙 味醂 Mirin—1大匙 糖 Sugar—1小匙 醬油 Soy sauce—1大匙 披薩起司 Pizza cheese—50g 美乃滋 Mayonnaise—2小匙 蔥花 Scallion 【滷肉味】 豬絞肉 Ground pork—150g 洋蔥 Onion—1/4個 生辣椒 Chili pepper—1支 清酒 Sake—1大匙 紅糖 Brown sugar—2小匙 醬油 Soy sauce－1/2大匙 蠔油 Oyster sauce—1/2大匙 水 Water—100cc 肉桂粉 Cinnamon powder—1/2小匙 白胡椒粉 White pepper—1/2小匙 香菜 Cilantro 披薩起司 Pizza cheese—50g 【蝦子奶醬】 蝦仁 Prawns—3片 烏魚子 Karasumi—2片 奶油 Butter—10g 麵粉 Flour—10g 牛奶 Milk—200cc 白酒 White wine—30cc 起司 Cheese—30g 【牛絞肉&蔬菜乾咖哩醬】 牛絞肉 Ground beef—150g 牛番茄 Tomato—1顆 高麗菜 Cabbage—80g 水 Water—100cc House爪哇咖哩中辣—1塊 #MASA #蔥油餅 #雞蛋 #披薩 #雞肉 #豬肉 #MASACooking #pizza #chicken #egg ◆歡迎合作/Contact：bigway1688@gmail.com WeChat ID：sunnywung723 ＊料理名稱&做法不一定正式或傳統，是從自己的想法與經驗分享，請各位事先諒解。*ˊᵕˋ)੭ ●鍋具：THERMOS 膳魔師厚鑄耐磨不沾鍋20cm, 24cm ●鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm ●BGM：甘茶の音楽工房 MusMus OtoLogic ポケットサウンド DOVA-SYNDROME ●素材：いらすとや",
+            "Recipe Title: 蔥油餅也能這樣做？4款超簡單創意料理大公開！",
+            "Video recipe captured: 蔥油餅也能這樣做？4款超簡單創意料理大公開！.",
+            "冷凍常備的蔥油餅也能變身美味佳餚！簡單創意料理，早餐、午餐、下酒菜通通搞定！ ◆MASA頻道訂閱↓ https://www.youtube.com/masaabc1 ◆食譜↓ 4種口味蔥影片披薩 ダブルトッピングネギパンケーキ２品 [2片份] 蔥油餅 Scallion pancakes—2片 【照燒雞】 雞腿肉 Chicken thigh—1片 洋蔥 Onion—1/4個 清酒 Sake—1大匙 味醂 Mirin—1大匙 糖 Sugar—1小匙 醬油 Soy sauce—1大匙 披薩起司 Pizza cheese—50g 美乃滋 Mayonnaise—2小匙 蔥花 Scallion 【滷肉味】 豬絞肉 Ground pork—150g 洋蔥 Onion—1/4個 生辣椒 Chili pepper—1支 清酒 Sake—1大匙 紅糖 Brown sugar—2小匙 醬油 Soy sauce－1/2大匙 蠔油 Oyster sauce—1/2大匙 水 Water—100cc 肉桂粉 Cinnamon powder—1/2小匙 白胡椒粉 White pepper—1/2小匙 香菜 Cilantro 披薩起司 Pizza cheese—50g 【蝦子奶醬】 蝦仁 Prawns—3片 烏魚子 Karasumi—2片 奶油 Butter—10g 麵粉 Flour—10g 牛奶 Milk—200cc 白酒 White wine—30cc 起司 Cheese—30g 【牛絞肉&蔬菜乾咖哩醬】 牛絞肉 Ground beef—150g 牛番茄 Tomato—1顆 高麗菜 Cabbage—80g 水 Water—100cc House爪哇咖哩中辣—1塊 #MASA #蔥油餅 #雞蛋 #披薩 #雞肉 #豬肉 #MASACooking #pizza #chicken #egg ◆歡迎合作/Contact：bigway1688@gmail.com WeChat ID：sunnywung723 ＊料理の名前＆作り方はあくまでも自己流なのでご了承ください ＊料理名稱&做法不一定正式or傳統, 是從自己的想法&經驗來分享的 請各位事先諒解。*ˊᵕˋ)੭ ●鍋具：THERMOS 膳魔師厚鑄耐摩不沾鍋20cm, 24cm ●鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm ●BGM： 甘茶の音楽工房 MusMus OtoLogic ポケットサウンド DOVA-SYNDROME ●素材：いらすとや",
             "蔥油餅 Scallion pancakes—2片",
             "雞腿肉 Chicken thigh—1片",
             "披薩起司 Pizza cheese—50g",
@@ -889,7 +889,7 @@
             "白酒 White wine—30cc",
             "牛絞肉 Ground beef—150g",
             "◆歡迎合作/Contact：bigway1688@gmail.com",
-            "鍋具：THERMOS 膳魔師厚鑄耐磨不沾鍋20cm, 24cm",
+            "鍋具：THERMOS 膳魔師厚鑄耐摩不沾鍋20cm, 24cm",
             "鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm"
           ],
           "instructions": [
@@ -909,8 +909,9 @@
             "牛絞肉 Ground beef—150g",
             "◆歡迎合作/Contact：bigway1688@gmail.com",
             "WeChat ID：sunnywung723",
-            "＊料理名稱&做法不一定正式或傳統，是從自己的想法與經驗分享，請各位事先諒解",
-            "鍋具：THERMOS 膳魔師厚鑄耐磨不沾鍋20cm, 24cm",
+            "＊料理の名前＆作り方はあくまでも自己流なのでご了承ください",
+            "＊料理名稱&做法不一定正式or傳統, 是從自己的想法&經驗來分享的",
+            "鍋具：THERMOS 膳魔師厚鑄耐摩不沾鍋20cm, 24cm",
             "鍋具：THERMOS 蘋果原味鍋單柄湯鍋18cm"
           ]
         },
@@ -1002,18 +1003,18 @@
       "translations": {
         "en": {
           "title": "MASA's Cooking",
-          "summary": "Zero failure! Classic Banana Bread | MASA's Cooking",
+          "summary": "Zero Failure! Classic Banana Bread | MASA's Cooking",
           "ingredients": [
-            "Zero failure! Classic Banana Bread | MASA's Cooking ◆MASA channel subscription↓ https://www.youtube.com/masaabc1 ◆Recipe↓ Classic Banana Bread / バナナブレッド [1 serving] Banana—2 pcs Eggs—1 pc Butter—70g Nuts—50g Sugar—60g Cake flour—150g Baking powder—5g #MASA #cake #banana #baking #simplebaking #MASAcooking #banana #cake ◆Contact for collaboration: bigway1688@gmail.com WeChat ID: sunnywung723 ＊The dish name & method are my own style, please understand ＊The dish name & method are not necessarily formal or traditional, shared from my own ideas & experience. Please understand in advance. *ˊᵕˋ)੭ ●Salad oil: TAISUN 369 Blend Oil ●Cookware: THERMOS thick cast abrasion-resistant non-stick pan 20cm, 24cm ●Cookware: THERMOS Apple Original flavor single-handle soup pot 18cm ●BGM: 甘茶の音楽工房 MusMus OtoLogic ポケットサウンド DOVA-SYNDROME PremiumBeat: -Studio Le Bus -Joe Sacco -Kyon -Smithereens ●Materials: いらすとや",
+            "Zero Failure! Classic Banana Bread | MASA's Cooking ◆MASA Channel Subscription ↓ https://www.youtube.com/masaabc1 ◆Recipe ↓ Classic Banana Bread / バナナブレッド [1 serving] Banana—2 pcs Eggs—1 pc Butter—70g Nuts—50g Sugar—60g Cake flour—150g Baking powder—5g #MASA #cake #banana #baking #simplebaking #MASAcooking #banana #cake ◆Contact for collaboration: bigway1688@gmail.com WeChat ID: sunnywung723 ＊The dish name & method are my own style, please understand ＊The dish name & method are not necessarily formal or traditional, shared from my own ideas & experience. Please understand in advance. *ˊᵕˋ)੭ ●Salad oil: TAISUN 369 Blend Oil ●Cookware: THERMOS thick cast abrasion-resistant non-stick pan 20cm, 24cm ●Cookware: THERMOS Apple Original Flavor single-handle soup pot 18cm ●BGM: 甘茶の音楽工房 MusMus OtoLogic ポケットサウンド DOVA-SYNDROME PremiumBeat: -Studio Le Bus -Joe Sacco -Kyon -Smithereens ●Materials: いらすとや",
             "Cake flour—150g",
             "Baking powder—5g",
             "◆Contact for collaboration: bigway1688@gmail.com",
             "Salad oil: TAISUN 369 Blend Oil",
             "Cookware: THERMOS thick cast abrasion-resistant non-stick pan 20cm, 24cm",
-            "Cookware: THERMOS Apple Original flavor single-handle soup pot 18cm"
+            "Cookware: THERMOS Apple Original Flavor single-handle soup pot 18cm"
           ],
           "instructions": [
-            "Zero failure! Classic Banana Bread | MASA's Cooking",
+            "Zero Failure! Classic Banana Bread | MASA's Cooking",
             "Cake flour—150g",
             "Baking powder—5g",
             "◆Contact for collaboration: bigway1688@gmail.com",
@@ -1022,7 +1023,7 @@
             "＊The dish name & method are not necessarily formal or traditional, shared from my own ideas & experience",
             "Salad oil: TAISUN 369 Blend Oil",
             "Cookware: THERMOS thick cast abrasion-resistant non-stick pan 20cm, 24cm",
-            "Cookware: THERMOS Apple Original flavor single-handle soup pot 18cm"
+            "Cookware: THERMOS Apple Original Flavor single-handle soup pot 18cm"
           ]
         },
         "zh-Hant": {
@@ -1164,8 +1165,8 @@
           ]
         },
         "zh-Hant": {
-          "title": "伯爵抹茶巴斯克乳酪蛋糕 新年快樂，大家好 這是一年中的第一天，我做了這個",
-          "summary": "食譜標題：伯爵抹茶巴斯克乳酪蛋糕 新年快樂，大家好 這是一年中的第一天，我做了這個美麗的伯爵巴斯克乳酪蛋糕...",
+          "title": "伯爵抹茶巴斯克乳酪蛋糕 新年快樂，大家好，這是新年的第一天，我做了這個",
+          "summary": "食譜標題：伯爵抹茶巴斯克乳酪蛋糕 新年快樂，大家好，這是新年的第一天，我做了這個美麗的伯爵巴斯克乳酪蛋糕...",
           "ingredients": [
             "伯爵巴斯克乳酪蛋糕",
             "700克 奶油乳酪",
@@ -1182,18 +1183,18 @@
             "8克 吉利丁片",
             "300毫升 鮮奶油",
             "40克 糖",
-            "18公分 / 7英寸 蛋糕模"
+            "18公分 / 7英吋 蛋糕模"
           ],
           "instructions": [
-            "將鮮奶油加熱至剛冒蒸氣，加入7克散裝伯爵茶葉和香草，蓋上蓋子，浸泡10–15分鐘，過濾並冷卻。",
+            "將鮮奶油加熱至剛冒蒸氣，加入7克散裝伯爵茶葉和香草，蓋上，浸泡10–15分鐘，過濾並冷卻。",
             "預熱烤箱至220°C（430°F），上下火，中層架。",
             "將奶油乳酪和糖攪拌至順滑。",
-            "逐顆加入雞蛋，攪拌至剛混合。",
+            "逐一加入雞蛋，攪拌至剛結合。",
             "加入冷卻的伯爵奶油，輕輕混合。",
-            "篩入麵粉和玉米澱粉，稍微攪拌，然後將麵糊過濾倒入準備好的蛋糕模中。",
+            "篩入麵粉和玉米澱粉，稍微攪拌，然後將麵糊過濾倒入準備好的蛋糕模。",
             "烘烤35–45分鐘，直到表面深褐色且中心仍有彈性。",
             "冷卻30–60分鐘，然後冷藏過夜。",
-            "製作抹茶慕斯時，將吉利丁片浸泡在冷水中。",
+            "製作抹茶慕斯時，將吉利丁片浸泡於冷水中。",
             "將抹茶與80°C熱牛奶混合至順滑，然後加入軟化的吉利丁攪拌至溶解。",
             "將鮮奶油與糖打至軟性發泡，然後輕輕拌入抹茶混合物至順滑。",
             "倒在冷藏過的巴斯克乳酪蛋糕上，冷藏至少2小時。",
@@ -1202,7 +1203,7 @@
         },
         "ja": {
           "title": "アールグレイ抹茶バスクチーズケーキ 新年あけましておめでとうございます 今年の初日に作りました",
-          "summary": "レシピタイトル：アールグレイ抹茶バスクチーズケーキ 新年あけましておめでとうございます 今年の初日にこの美しいアールグレイバスクチーズケーキを作りました...",
+          "summary": "レシピタイトル：アールグレイ抹茶バスクチーズケーキ 新年あけましておめでとうございます 今年の初日にこの美しいアールグレイバスクチーズケーキを作りました",
           "ingredients": [
             "アールグレイバスクチーズケーキ",
             "クリームチーズ 700g",
@@ -1210,7 +1211,7 @@
             "バニラエキストラクト 小さじ1",
             "卵（大）4個",
             "生クリーム 300g",
-            "アールグレイの茶葉 7g",
+            "アールグレイ茶葉 7g",
             "薄力粉 15g",
             "コーンスターチ 15g",
             "抹茶ムース",
@@ -1222,16 +1223,16 @@
             "18cm / 7インチ ケーキ型"
           ],
           "instructions": [
-            "生クリームを蒸気が立つ直前まで温め、7gのアールグレイの茶葉とバニラを加え、蓋をして10～15分蒸らし、濾して冷ます。",
-            "オーブンを220℃（430°F）に予熱し、上下火、中段にラックをセットする。",
+            "生クリームを蒸気が立つ直前まで温め、7gのアールグレイ茶葉とバニラを加え、蓋をして10〜15分蒸らし、濾して冷ます。",
+            "オーブンを220°C（430°F）に予熱し、上下火、中段にラックをセットする。",
             "クリームチーズと砂糖を滑らかになるまで混ぜる。",
             "卵を一つずつ加え、その都度軽く混ぜ合わせる。",
             "冷ましたアールグレイクリームを加え、優しく混ぜる。",
             "薄力粉とコーンスターチをふるい入れ、手早く混ぜたら、生地を準備した型に濾し入れる。",
-            "中心が揺れる状態で深く焼き色がつくまで35～45分焼く。",
-            "30～60分冷まし、その後一晩冷蔵する。",
-            "抹茶ムースのために、ゼラチンシートを冷水に浸す。",
-            "抹茶を熱い牛乳（80℃）に溶かし、滑らかにしたら、柔らかくなったゼラチンを加えて溶かす。",
+            "中心が揺れるくらいで深く焼き色がつくまで35〜45分焼く。",
+            "30〜60分冷まし、その後一晩冷蔵する。",
+            "抹茶ムース用にゼラチンシートを冷水でふやかす。",
+            "抹茶を熱い牛乳（80°C）に溶かし、柔らかくなったゼラチンを加えて溶かす。",
             "生クリームと砂糖を柔らかい角が立つまで泡立て、抹茶液と優しく混ぜ合わせる。",
             "冷やしたバスクチーズケーキの上に流し入れ、最低2時間冷蔵する。",
             "抹茶パウダーをふりかけて提供する。"
@@ -1287,28 +1288,40 @@
       "image": "/assets/recipe-images/1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM-01.jpg",
       "sourceUrl": "https://www.youtube.com/watch?v=4nzjzwywVWI",
       "googleDocUrl": "https://docs.google.com/document/d/1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM/edit",
-      "sourceLanguage": "zh-Hant",
+      "sourceLanguage": "en",
       "translations": {
         "en": {
-          "title": "Ricky’s turnip cake lazy recipe updated version",
-          "summary": "Of course, making turnip cake is a must during the Lunar New Year. There are countless videos on making turnip cake, but traditional methods usually take a lot of time. No wonder many fans highly praise Ricky’s lazy version, which simplifies the process but the taste is as good as or better than the traditional method!!! Everyone might as well take the opportunity during the Lunar New Year to revisit Ricky’s lazy turnip cake recipe, it’s truly a treasure!!!",
+          "title": "Ricky教室 Ricky’s turnip cake lazy recipe updated version",
+          "summary": "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
           "ingredients": [
+            "蘿蔔肉 1200克",
             "Turnip flesh 1200g",
+            "清水 300克 (煮蘿蔔用)",
             "Water 300g (for cooking turnip sticks)",
+            "鹽 12克",
             "Salt 12g",
+            "糖 20克",
             "Sugar 20g",
+            "雞粉 12克",
             "Chicken stock 12g",
+            "黑椒碎 5克",
             "Black pepper 5g",
+            "粘米粉 300克",
             "Rice flour 300g",
+            "清水 300克 (開粘米粉)",
             "Water 300g (Mixed with rice flour)",
+            "臘腸 2條",
             "Chinese sausage 2pc",
+            "膶腸 2條",
             "Liver sausage 2pc",
-            "Dried shrimp 60g",
+            "蝦米 60克 Dried shrimp 60g",
+            "豬油 60克",
             "Lard 60g",
+            "乾蔥絲 60克",
             "Dried shallot 60g"
           ],
           "instructions": [
-            "Of course, making turnip cake is a must during the Lunar New Year. There are countless videos on making turnip cake, but traditional methods usually take a lot of time. No wonder many fans highly praise Ricky’s lazy version, which simplifies the process but the taste is as good as or better than the traditional method!!! Everyone might as well take the opportunity during the Lunar New Year to revisit Ricky’s lazy turnip cake recipe, it’s truly a treasure!!!",
+            "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
             "Turnip flesh 1200g",
             "Water 300g (for cooking turnip sticks)",
             "Water 300g (Mixed with rice flour)",
@@ -1347,49 +1360,49 @@
           ],
           "instructions": [
             "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
-            "Turnip flesh 1200g",
-            "Water 300g (for cooking turnip sticks)",
-            "Water 300g (Mixed with rice flour)",
-            "Chinese sausage 2pc"
+            "蘿蔔肉 1200克",
+            "清水 300克 (煮蘿蔔用)",
+            "清水 300克 (開粘米粉)",
+            "臘腸 2條"
           ]
         },
         "ja": {
-          "title": "Ricky教室 Rickyの大根餅 簡単レシピ 更新版",
-          "summary": "旧正月にはもちろん大根餅を作らずにはいられません。市販の大根餅の作り方動画は数え切れないほどありますが、伝統的な作り方はほとんど時間がかかります。だからこそ、多くのファンがRickyの簡単バージョンの作り方を絶賛しているのも納得です。作り方を簡略化しながらも、味は伝統的な作り方に勝るとも劣らないのです!!! 皆さんも旧正月の期間にぜひRickyの大根餅簡単バージョンの作り方を再確認してみてください。本当に素晴らしいです!!!",
+          "title": "Ricky教室 Rickyの蘿蔔糕（大根ケーキ）簡単レシピ改訂版",
+          "summary": "農暦新年にはもちろん蘿蔔糕（大根ケーキ）を作らずにはいられません。市販の蘿蔔糕の作り方動画は数え切れないほどありますが、伝統的な作り方は大抵時間がかかります。だからこそ、多くのファンがRickyの簡単版の作り方を絶賛しています。手順を簡略化しながらも、味は伝統的な作り方に勝るとも劣らないのです！皆さんも農暦新年の期間にぜひRickyの蘿蔔糕簡単版の作り方を再確認してみてください。これは本当におすすめです！",
           "ingredients": [
-            "大根肉 1200グラム",
-            "Turnip flesh 1200g",
-            "水 300グラム (大根を煮る用)",
-            "Water 300g (for cooking turnip sticks)",
+            "蘿蔔肉 1200グラム",
+            "大根の身 1200g",
+            "清水 300グラム（大根を煮る用）",
+            "水 300g（大根スティックを煮る用）",
             "塩 12グラム",
-            "Salt 12g",
+            "塩 12g",
             "砂糖 20グラム",
-            "Sugar 20g",
+            "砂糖 20g",
             "鶏がらスープの素 12グラム",
-            "Chicken stock 12g",
-            "黒胡椒 粉末 5グラム",
-            "Black pepper 5g",
-            "米粉 300グラム",
-            "Rice flour 300g",
-            "水 300グラム (米粉を溶く用)",
-            "Water 300g (Mixed with rice flour)",
+            "チキンストック 12g",
+            "黒胡椒粉 5グラム",
+            "黒胡椒 5g",
+            "もち米粉 300グラム",
+            "米粉 300g",
+            "清水 300グラム（米粉を溶く用）",
+            "水 300g（米粉と混ぜる用）",
             "腊腸 2本",
-            "Chinese sausage 2pc",
+            "中国ソーセージ 2本",
+            "膶腸 2本",
             "レバーソーセージ 2本",
-            "Liver sausage 2pc",
-            "干しエビ 60グラム",
-            "Dried shrimp 60g",
-            "ラード 60グラム",
-            "Lard 60g",
+            "蝦米 60グラム",
+            "干しエビ 60g",
+            "豚脂 60グラム",
+            "ラード 60g",
             "乾燥エシャロット 60グラム",
-            "Dried shallot 60g"
+            "乾燥エシャロット 60g"
           ],
           "instructions": [
-            "旧正月にはもちろん大根餅を作らずにはいられません。市販の大根餅の作り方動画は数え切れないほどありますが、伝統的な作り方はほとんど時間がかかります。だからこそ、多くのファンがRickyの簡単バージョンの作り方を絶賛しているのも納得です。作り方を簡略化しながらも、味は伝統的な作り方に勝るとも劣らないのです!!! 皆さんも旧正月の期間にぜひRickyの大根餅簡単バージョンの作り方を再確認してみてください。本当に素晴らしいです!!!",
-            "Turnip flesh 1200g",
-            "Water 300g (for cooking turnip sticks)",
-            "Water 300g (Mixed with rice flour)",
-            "Chinese sausage 2pc"
+            "農暦新年にはもちろん蘿蔔糕（大根ケーキ）を作らずにはいられません。市販の蘿蔔糕の作り方動画は数え切れないほどありますが、伝統的な作り方は大抵時間がかかります。だからこそ、多くのファンがRickyの簡単版の作り方を絶賛しています。手順を簡略化しながらも、味は伝統的な作り方に勝るとも劣らないのです！皆さんも農暦新年の期間にぜひRickyの蘿蔔糕簡単版の作り方を再確認してみてください。これは本当におすすめです！",
+            "大根の身 1200g",
+            "水 300g（大根スティックを煮る用）",
+            "水 300g（米粉と混ぜる用）",
+            "中国ソーセージ 2本"
           ]
         }
       }

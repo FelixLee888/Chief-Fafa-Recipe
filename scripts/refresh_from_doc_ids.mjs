@@ -248,20 +248,50 @@ function scriptCounts(text) {
   return { hiraKata, cjk, latin };
 }
 
+function leadingScriptCounts(lines) {
+  const out = { latin: 0, cjk: 0, jp: 0 };
+  for (const raw of lines || []) {
+    const line = String(raw || '').trim();
+    if (!line) continue;
+    const match = line.match(/[A-Za-z\u3040-\u30ff\u3400-\u9fff]/u);
+    if (!match) continue;
+    const ch = match[0];
+    if (/[A-Za-z]/.test(ch)) {
+      out.latin += 1;
+      continue;
+    }
+    if (/[\u3040-\u30ff]/.test(ch)) {
+      out.jp += 1;
+      out.cjk += 1;
+      continue;
+    }
+    out.cjk += 1;
+  }
+  return out;
+}
+
 function detectRecipeLanguage({ title = '', summary = '', ingredients = [], instructions = [], rawText = '' }) {
-  const sample = [title, summary, ...ingredients.slice(0, 20), ...instructions.slice(0, 20), rawText.slice(0, 3000)]
+  const lines = [title, summary, ...ingredients.slice(0, 40), ...instructions.slice(0, 40), ...String(rawText || '').split('\n').slice(0, 80)];
+  const sample = lines
     .join('\n')
     .trim();
 
   if (!sample) return 'en';
 
   const counts = scriptCounts(sample);
-  if (counts.hiraKata >= 3) return 'ja';
+  const lead = leadingScriptCounts(lines);
+  const jpHints = (sample.match(/(?:の|です|ます|ません|材料|作り方|手順|しょうゆ|みりん|ごま|にんにく|ねぎ|レシピ|料理)/g) || []).length;
+  const zhHints = (sample.match(/(?:的|了|和|在|把|做法|步驟|步骤|食材|醬|酱|蔥|葱|雞|鸡|豬|猪|分鐘|分钟|小時|小时|料理)/g) || []).length;
+
+  if (counts.hiraKata >= 3 && (jpHints >= 1 || counts.hiraKata >= Math.max(6, Math.floor(counts.cjk * 0.12)))) return 'ja';
 
   if (counts.cjk > 0) {
-    const jpHints = (sample.match(/(?:の|です|ます|ません|材料|作り方|手順|しょうゆ|みりん|ごま|にんにく|ねぎ|レシピ|料理)/g) || []).length;
-    const zhHints = (sample.match(/(?:的|了|和|在|把|做法|步驟|步骤|食材|醬|酱|蔥|葱|雞|鸡|豬|猪|分鐘|分钟|小時|小时|料理)/g) || []).length;
-    if (jpHints > zhHints) return 'ja';
+    if (counts.latin > 0) {
+      const latinDominant = counts.latin >= counts.cjk * 1.35;
+      const latinLeadDominant = lead.latin >= Math.max(3, lead.cjk);
+      if (latinDominant && latinLeadDominant) return 'en';
+    }
+    if (jpHints > zhHints && (jpHints >= 2 || lead.jp >= 2)) return 'ja';
     return 'zh-Hant';
   }
 
