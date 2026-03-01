@@ -53,6 +53,7 @@ const TYPE_KEYWORDS = {
 
 const URL_RE = /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/g;
 const YOUTUBE_HOST_RE = /(?:^|\.)youtube\.com$|(?:^|\.)youtu\.be$/i;
+const INSTAGRAM_HOST_RE = /(?:^|\.)instagram\.com$/i;
 const COOK_TIME_HINT_RE = /\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|烤|煮|炸|蒸|炒|焗|炆|煎)\b/i;
 const REST_TIME_HINT_RE = /\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)\b/i;
 const COMMENT_SECTION_START_RE =
@@ -985,6 +986,27 @@ function isYoutubeUrl(url) {
   }
 }
 
+function isInstagramUrl(url) {
+  try {
+    const host = new URL(String(url || '')).hostname.toLowerCase();
+    return INSTAGRAM_HOST_RE.test(host);
+  } catch {
+    return false;
+  }
+}
+
+function normalizeInstagramUrl(url) {
+  try {
+    const u = new URL(String(url || '').trim());
+    if (!isInstagramUrl(u.href)) return String(url || '').trim();
+    u.search = '';
+    u.hash = '';
+    return u.toString().replace(/\/+$/, '/');
+  } catch {
+    return String(url || '').trim();
+  }
+}
+
 function decodeJsonEscaped(value) {
   const raw = String(value || '');
   if (!raw) return '';
@@ -1017,7 +1039,56 @@ function extractYoutubeDescriptionFromHtml(html) {
   return '';
 }
 
+function extractInstagramCaptionFromOembed(raw) {
+  const body = String(raw || '').trim();
+  if (!body) return '';
+
+  try {
+    const parsed = JSON.parse(body);
+    const title = String(parsed?.title || '').trim();
+    if (title) return title;
+  } catch {
+    // Fallback: sometimes the payload may be prefixed/noisy.
+  }
+
+  const titleMatch = body.match(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (titleMatch && titleMatch[1]) {
+    return decodeJsonEscaped(titleMatch[1]).trim();
+  }
+
+  return '';
+}
+
+async function fetchInstagramDescription(sourceUrl) {
+  const normalized = normalizeInstagramUrl(sourceUrl);
+  if (!normalized) return '';
+
+  const endpoint = `https://www.instagram.com/api/v1/oembed/?url=${encodeURIComponent(normalized)}`;
+  const response = await fetch(endpoint, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+      Accept: 'application/json,text/plain,*/*'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`instagram oembed request failed (${response.status})`);
+  }
+  const payload = await response.text();
+  const caption = extractInstagramCaptionFromOembed(payload);
+  return normalizeText(
+    caption
+      .replace(/\\r\\n/g, '\n')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\n')
+      .replace(/\\t/g, '\t')
+  );
+}
+
 async function fetchSourceDescription(sourceUrl) {
+  if (isInstagramUrl(sourceUrl)) {
+    return fetchInstagramDescription(sourceUrl);
+  }
   if (!isYoutubeUrl(sourceUrl)) return '';
 
   const response = await fetch(sourceUrl, {
@@ -1625,6 +1696,7 @@ function ingredientsFromSourceDescription(text) {
     const line = stripListPrefix(rawLine);
     if (!line) continue;
     if (isCommentOrSocialLine(line)) continue;
+    if (/^#[\p{L}\p{N}_-]+(?:\s+#[\p{L}\p{N}_-]+)*$/u.test(line)) continue;
     if (isPromoLine(line)) {
       if (inSection) break;
       continue;
@@ -1687,6 +1759,7 @@ function instructionsFromSourceDescription(text) {
     const line = stripListPrefix(rawLine);
     if (!line) continue;
     if (isCommentOrSocialLine(line)) continue;
+    if (/^#[\p{L}\p{N}_-]+(?:\s+#[\p{L}\p{N}_-]+)*$/u.test(line)) continue;
     if (isPromoLine(line)) {
       if (inSection) break;
       continue;

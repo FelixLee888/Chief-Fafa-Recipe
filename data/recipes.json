@@ -2,7 +2,7 @@
   "site": {
     "title": "Chief Fafa's Recipe",
     "description": "Modern, searchable recipe collection with auto-categorized cuisine and meal types.",
-    "generatedAt": "2026-03-01T10:40:03.303Z",
+    "generatedAt": "2026-03-01T10:48:49.149Z",
     "source": "google-doc-drive:10",
     "sourceType": "docs-api-drive-list",
     "discoveredDocCount": 10,
@@ -438,8 +438,7 @@
         "Chicken stock 8g",
         "清水 100克 (開粘米粉)",
         "Water 100g",
-        "(Mixed with rice flour)",
-        "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #櫻花蝦 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipcake"
+        "(Mixed with rice flour)"
       ],
       "instructions": [
         "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
@@ -480,8 +479,7 @@
             "Chicken stock 8g",
             "清水 100克 (開粘米粉)",
             "Water 100g",
-            "(Mixed with rice flour)",
-            "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #櫻花蝦 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipcake"
+            "(Mixed with rice flour)"
           ],
           "instructions": [
             "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
@@ -517,8 +515,7 @@
             "Chicken stock 8g",
             "清水 100克 (開粘米粉)",
             "Water 100g",
-            "(Mixed with rice flour)",
-            "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #櫻花蝦 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipcake"
+            "(Mixed with rice flour)"
           ],
           "instructions": [
             "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
@@ -554,8 +551,7 @@
             "Chicken stock 8g",
             "清水 100克 (開粘米粉)",
             "Water 100g",
-            "(Mixed with rice flour)",
-            "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #櫻花蝦 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipcake"
+            "(Mixed with rice flour)"
           ],
           "instructions": [
             "就快到農曆新年，又是製作蘿蔔糕的時候。今年Ricky把食譜改良，材料簡單，只有蘿蔔、櫻花蝦、乾蔥及一些調味料，而且製作簡單，即使是入廚新手，也能輕鬆做到，味道絕對不比平常有臘味的蘿蔔糕遜色。",
@@ -1069,15 +1065,42 @@
       "summary": "Recipe Title: Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this beautiful Earl Grey Basque c...",
       "cuisine": "Global",
       "type": "Dessert",
-      "prepTime": "TBD",
-      "cookTime": "TBD",
-      "totalTime": "TBD",
+      "prepTime": "25 min",
+      "cookTime": "40 min",
+      "totalTime": "12 hr 5 min",
       "servings": "TBD",
       "ingredients": [
-        "See source URL for full ingredients list."
+        "Earl Grey Basque Cheesecake",
+        "700g cream cheese",
+        "220g sugar",
+        "1 tsp vanilla extract",
+        "4 large eggs",
+        "300g heavy cream",
+        "7g earl grey leaves",
+        "15g flour",
+        "15g cornstarch",
+        "Matcha Mousse",
+        "130ml hot milk",
+        "12g matcha powder",
+        "8g gelatin sheets",
+        "300 ml heavy cream",
+        "40g sugar",
+        "18cm / 7 inch cake pan"
       ],
       "instructions": [
-        "See source URL for full method."
+        "Heat the heavy cream until just steaming, add 7 g loose Earl Grey tea and vanilla, cover, steep 10–15 minutes, strain, and cool.",
+        "Preheat the oven to 220 °C (430 °F), top/bottom heat, rack in the middle.",
+        "Mix cream cheese and sugar until smooth.",
+        "Add eggs one by one, mixing just to combine.",
+        "Add the cooled Earl Grey cream and mix gently.",
+        "Sift in the flour and cornstarch, mix briefly, then strain the batter into the prepared pan.",
+        "Bake 35–45 minutes until deeply browned with a jiggly center.",
+        "Cool 30–60 minutes, then chill overnight.",
+        "For the matcha mousse, soak gelatin sheets in cold water.",
+        "Mix matcha with hot milk (80°C) until smooth, then stir in the softened gelatin until dissolved.",
+        "Whip heavy cream with sugar to soft peaks, then gently mix in the matcha mixture until smooth.",
+        "Pour over the chilled Basque cheesecake and refrigerate for at least 2 hours.",
+        "Dust with matcha powder and serve."
       ],
       "tags": [],
       "image": "/assets/recipe-images/1xaZHl2HViJCuik6SlOw0nvFJlT7EJ0R-S62zEjdRrRU-01.jpg",
@@ -1089,30 +1112,111 @@
           "title": "Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this",
           "summary": "Recipe Title: Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this beautiful Earl Grey Basque c...",
           "ingredients": [
-            "See source URL for full ingredients list."
+            "Earl Grey Basque Cheesecake",
+            "700g cream cheese",
+            "220g sugar",
+            "1 tsp vanilla extract",
+            "4 large eggs",
+            "300g heavy cream",
+            "7g earl grey leaves",
+            "15g flour",
+            "15g cornstarch",
+            "Matcha Mousse",
+            "130ml hot milk",
+            "12g matcha powder",
+            "8g gelatin sheets",
+            "300 ml heavy cream",
+            "40g sugar",
+            "18cm / 7 inch cake pan"
           ],
           "instructions": [
-            "See source URL for full method."
+            "Heat the heavy cream until just steaming, add 7 g loose Earl Grey tea and vanilla, cover, steep 10–15 minutes, strain, and cool.",
+            "Preheat the oven to 220 °C (430 °F), top/bottom heat, rack in the middle.",
+            "Mix cream cheese and sugar until smooth.",
+            "Add eggs one by one, mixing just to combine.",
+            "Add the cooled Earl Grey cream and mix gently.",
+            "Sift in the flour and cornstarch, mix briefly, then strain the batter into the prepared pan.",
+            "Bake 35–45 minutes until deeply browned with a jiggly center.",
+            "Cool 30–60 minutes, then chill overnight.",
+            "For the matcha mousse, soak gelatin sheets in cold water.",
+            "Mix matcha with hot milk (80°C) until smooth, then stir in the softened gelatin until dissolved.",
+            "Whip heavy cream with sugar to soft peaks, then gently mix in the matcha mixture until smooth.",
+            "Pour over the chilled Basque cheesecake and refrigerate for at least 2 hours.",
+            "Dust with matcha powder and serve."
           ]
         },
         "zh-Hant": {
           "title": "Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this",
           "summary": "Recipe Title: Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this beautiful Earl Grey Basque c...",
           "ingredients": [
-            "See source URL for full ingredients list."
+            "Earl Grey Basque Cheesecake",
+            "700g cream cheese",
+            "220g sugar",
+            "1 tsp vanilla extract",
+            "4 large eggs",
+            "300g heavy cream",
+            "7g earl grey leaves",
+            "15g flour",
+            "15g cornstarch",
+            "Matcha Mousse",
+            "130ml hot milk",
+            "12g matcha powder",
+            "8g gelatin sheets",
+            "300 ml heavy cream",
+            "40g sugar",
+            "18cm / 7 inch cake pan"
           ],
           "instructions": [
-            "See source URL for full method."
+            "Heat the heavy cream until just steaming, add 7 g loose Earl Grey tea and vanilla, cover, steep 10–15 minutes, strain, and cool.",
+            "Preheat the oven to 220 °C (430 °F), top/bottom heat, rack in the middle.",
+            "Mix cream cheese and sugar until smooth.",
+            "Add eggs one by one, mixing just to combine.",
+            "Add the cooled Earl Grey cream and mix gently.",
+            "Sift in the flour and cornstarch, mix briefly, then strain the batter into the prepared pan.",
+            "Bake 35–45 minutes until deeply browned with a jiggly center.",
+            "Cool 30–60 minutes, then chill overnight.",
+            "For the matcha mousse, soak gelatin sheets in cold water.",
+            "Mix matcha with hot milk (80°C) until smooth, then stir in the softened gelatin until dissolved.",
+            "Whip heavy cream with sugar to soft peaks, then gently mix in the matcha mixture until smooth.",
+            "Pour over the chilled Basque cheesecake and refrigerate for at least 2 hours.",
+            "Dust with matcha powder and serve."
           ]
         },
         "ja": {
           "title": "Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this",
           "summary": "Recipe Title: Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this beautiful Earl Grey Basque c...",
           "ingredients": [
-            "See source URL for full ingredients list."
+            "Earl Grey Basque Cheesecake",
+            "700g cream cheese",
+            "220g sugar",
+            "1 tsp vanilla extract",
+            "4 large eggs",
+            "300g heavy cream",
+            "7g earl grey leaves",
+            "15g flour",
+            "15g cornstarch",
+            "Matcha Mousse",
+            "130ml hot milk",
+            "12g matcha powder",
+            "8g gelatin sheets",
+            "300 ml heavy cream",
+            "40g sugar",
+            "18cm / 7 inch cake pan"
           ],
           "instructions": [
-            "See source URL for full method."
+            "Heat the heavy cream until just steaming, add 7 g loose Earl Grey tea and vanilla, cover, steep 10–15 minutes, strain, and cool.",
+            "Preheat the oven to 220 °C (430 °F), top/bottom heat, rack in the middle.",
+            "Mix cream cheese and sugar until smooth.",
+            "Add eggs one by one, mixing just to combine.",
+            "Add the cooled Earl Grey cream and mix gently.",
+            "Sift in the flour and cornstarch, mix briefly, then strain the batter into the prepared pan.",
+            "Bake 35–45 minutes until deeply browned with a jiggly center.",
+            "Cool 30–60 minutes, then chill overnight.",
+            "For the matcha mousse, soak gelatin sheets in cold water.",
+            "Mix matcha with hot milk (80°C) until smooth, then stir in the softened gelatin until dissolved.",
+            "Whip heavy cream with sugar to soft peaks, then gently mix in the matcha mixture until smooth.",
+            "Pour over the chilled Basque cheesecake and refrigerate for at least 2 hours.",
+            "Dust with matcha powder and serve."
           ]
         }
       }
@@ -1152,8 +1256,7 @@
         "豬油 60克",
         "Lard 60g",
         "乾蔥絲 60克",
-        "Dried shallot 60g",
-        "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #臘腸 #膶腸 #鵝肝腸 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipricecake"
+        "Dried shallot 60g"
       ],
       "instructions": [
         "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
@@ -1196,8 +1299,7 @@
             "豬油 60克",
             "Lard 60g",
             "乾蔥絲 60克",
-            "Dried shallot 60g",
-            "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #臘腸 #膶腸 #鵝肝腸 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipricecake"
+            "Dried shallot 60g"
           ],
           "instructions": [
             "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
@@ -1235,8 +1337,7 @@
             "豬油 60克",
             "Lard 60g",
             "乾蔥絲 60克",
-            "Dried shallot 60g",
-            "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #臘腸 #膶腸 #鵝肝腸 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipricecake"
+            "Dried shallot 60g"
           ],
           "instructions": [
             "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
@@ -1274,8 +1375,7 @@
             "豬油 60克",
             "Lard 60g",
             "乾蔥絲 60克",
-            "Dried shallot 60g",
-            "#Ricky講煮講食 #香港名廚 #名廚 #張錦祥 #蘿蔔糕 #臘腸 #膶腸 #鵝肝腸 #OrenjiProduction #HKchef #RickyCheung #Ricky #Turnipricecake"
+            "Dried shallot 60g"
           ],
           "instructions": [
             "農曆新年當然少不得做蘿蔔糕。坊間製作蘿蔔糕的視頻多不勝數，不過傳統做法大多花很多時間，難怪不少粉絲對Ricky的懶人版做法讚不絕口，勝在將做法化簡為繁，但味道比傳統做法做出來的，有過之而無不及!!! 大家不妨趁農歷新年期間，重溫一下Ricky的蘿蔔糕懶人版做法，真是不得之了!!!",
