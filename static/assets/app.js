@@ -1,4 +1,76 @@
 (() => {
+  function initThemeToggle() {
+    const root = document.documentElement;
+    const toggle = document.querySelector('[data-theme-toggle]');
+    const storageKey = 'chief_fafa_theme';
+    const mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+    function getStoredTheme() {
+      try {
+        const value = window.localStorage.getItem(storageKey);
+        if (value === 'dark' || value === 'light') return value;
+      } catch {
+        // no-op
+      }
+      return '';
+    }
+
+    function hasStoredTheme() {
+      return Boolean(getStoredTheme());
+    }
+
+    function resolveTheme() {
+      const stored = getStoredTheme();
+      if (stored) return stored;
+      return mediaQuery && mediaQuery.matches ? 'dark' : 'light';
+    }
+
+    function getLabel(which) {
+      if (!toggle) return which === 'light' ? 'Light mode' : 'Dark mode';
+      const raw = which === 'light' ? toggle.dataset.labelLight : toggle.dataset.labelDark;
+      return String(raw || '').trim() || (which === 'light' ? 'Light mode' : 'Dark mode');
+    }
+
+    function applyTheme(theme, persist = false) {
+      const normalized = theme === 'dark' ? 'dark' : 'light';
+      root.setAttribute('data-theme', normalized);
+      root.style.colorScheme = normalized;
+
+      if (toggle) {
+        const toLight = getLabel('light');
+        const toDark = getLabel('dark');
+        const nextText = normalized === 'dark' ? `☀ ${toLight}` : `🌙 ${toDark}`;
+        toggle.textContent = nextText;
+        toggle.setAttribute('aria-pressed', String(normalized === 'dark'));
+        toggle.dataset.currentTheme = normalized;
+      }
+
+      if (persist) {
+        try {
+          window.localStorage.setItem(storageKey, normalized);
+        } catch {
+          // no-op
+        }
+      }
+    }
+
+    applyTheme(resolveTheme(), false);
+
+    if (!toggle) return;
+
+    toggle.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark', true);
+    });
+
+    if (mediaQuery && typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', (event) => {
+        if (hasStoredTheme()) return;
+        applyTheme(event.matches ? 'dark' : 'light', false);
+      });
+    }
+  }
+
   function initHeroCoverCycle() {
     const heroCover = document.querySelector('[data-hero-cover]');
     const heroVideo = heroCover ? heroCover.querySelector('[data-hero-video]') : null;
@@ -171,6 +243,7 @@
     }
   }
 
+  initThemeToggle();
   initHeroCoverCycle();
 
   const searchInput = document.querySelector('#recipe-search');

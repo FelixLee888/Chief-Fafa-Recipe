@@ -3,6 +3,7 @@
 Modern static recipe site with:
 
 - Multilingual pages: English (`/en`), Traditional Chinese (`/zh-Hant`), Japanese (`/ja`)
+- Dark/light mode toggle with saved user preference
 - Search-friendly recipe pages with clean URLs and `hreflang`
 - Auto-categorized cuisines and recipe types from recipe content
 - Google Doc image extraction into local site assets

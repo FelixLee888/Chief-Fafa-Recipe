@@ -39,8 +39,10 @@ const LOCALES = {
     servings: 'Servings',
     ingredients: 'Ingredients',
     instructions: 'Instructions',
-    language: 'Language'
-    ,
+    language: 'Language',
+    themeToLight: 'Light mode',
+    themeToDark: 'Dark mode',
+    switchTheme: 'Switch color theme',
     source: 'Source',
     googleDoc: 'Google Doc',
     coverAlt: "Chef Fafa's Recipe cover image"
@@ -71,8 +73,10 @@ const LOCALES = {
     servings: '份量',
     ingredients: '材料',
     instructions: '做法',
-    language: '語言'
-    ,
+    language: '語言',
+    themeToLight: '淺色模式',
+    themeToDark: '深色模式',
+    switchTheme: '切換深淺模式',
     source: '原始頁面',
     googleDoc: 'Google 文件',
     coverAlt: '花花之食譜封面圖'
@@ -103,8 +107,10 @@ const LOCALES = {
     servings: '分量',
     ingredients: '材料',
     instructions: '作り方',
-    language: '言語'
-    ,
+    language: '言語',
+    themeToLight: 'ライト',
+    themeToDark: 'ダーク',
+    switchTheme: 'テーマ切替',
     source: '元ページ',
     googleDoc: 'Google ドキュメント',
     coverAlt: 'Chef Fafa レシピのカバー画像'
@@ -289,6 +295,15 @@ function faviconLinks() {
   <link rel="shortcut icon" href="${assetUrl(FAVICON_32_FILE)}?v=${FAVICON_VERSION}">`;
 }
 
+function themeBootScript() {
+  return `<script>(function(){try{var k='chief_fafa_theme';var v=localStorage.getItem(k);var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t=(v==='dark'||v==='light')?v:(d?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.style.colorScheme=t;}catch(_){}})();</script>`;
+}
+
+function themeToggleButton(locale) {
+  const labels = LOCALES[locale];
+  return `<button class="theme-toggle" type="button" data-theme-toggle data-label-light="${escapeHtml(labels.themeToLight)}" data-label-dark="${escapeHtml(labels.themeToDark)}" aria-label="${escapeHtml(labels.switchTheme)}" title="${escapeHtml(labels.switchTheme)}">${escapeHtml(labels.themeToDark)}</button>`;
+}
+
 function languageSwitcher(locale, page) {
   const label = LOCALES[locale].language;
   const links = Object.entries(LOCALES)
@@ -433,6 +448,7 @@ function buildIndexHtml({ site, recipes, locale }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>${escapeHtml(brand)} | ${escapeHtml(labels.navRecipes)}</title>
   <meta name="description" content="${escapeHtml(site.description)}">
   <meta name="robots" content="index, follow">
@@ -443,6 +459,7 @@ function buildIndexHtml({ site, recipes, locale }) {
   <link rel="canonical" href="${canonical}">
   ${alternateLinks({ kind: 'index' }, locale)}
   ${faviconLinks()}
+  ${themeBootScript()}
   <link rel="stylesheet" href="${assetUrl('styles.css')}">
   <script type="application/ld+json">${listSchema}</script>
 </head>
@@ -457,6 +474,7 @@ function buildIndexHtml({ site, recipes, locale }) {
         <a href="#search">${escapeHtml(labels.navSearch)}</a>
         <a href="#recipes">${escapeHtml(labels.navRecipes)}</a>
       </nav>
+      ${themeToggleButton(locale)}
       ${languageSwitcher(locale, { kind: 'index' })}
     </div>
   </header>
@@ -554,6 +572,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>${escapeHtml(view.title)} | ${escapeHtml(brand)}</title>
   <meta name="description" content="${escapeHtml(view.summary)}">
   <meta name="robots" content="index, follow">
@@ -565,6 +584,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
   <link rel="canonical" href="${canonical}">
   ${alternateLinks({ kind: 'recipe', slug: recipe.slug }, locale)}
   ${faviconLinks()}
+  ${themeBootScript()}
   <link rel="stylesheet" href="${assetUrl('styles.css')}">
   <script type="application/ld+json">${schema}</script>
 </head>
@@ -578,6 +598,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
       <nav aria-label="Top navigation">
         <a href="${indexUrl(locale)}">${escapeHtml(labels.allRecipes)}</a>
       </nav>
+      ${themeToggleButton(locale)}
       ${languageSwitcher(locale, { kind: 'recipe', slug: recipe.slug })}
     </div>
   </header>
@@ -626,6 +647,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
   <footer class="site-footer">
     <p>${escapeHtml(labels.footerRecipe)}</p>
   </footer>
+  <script src="${assetUrl('app.js')}" defer></script>
 </body>
 </html>`;
 }
