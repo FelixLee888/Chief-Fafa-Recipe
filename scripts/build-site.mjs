@@ -43,7 +43,7 @@ const LOCALES = {
     ,
     source: 'Source',
     googleDoc: 'Google Doc',
-    coverAlt: "Chief Fafa's Recipe cover image"
+    coverAlt: "Chef Fafa's Recipe cover image"
   },
   'zh-Hant': {
     code: 'zh-Hant',
@@ -75,7 +75,7 @@ const LOCALES = {
     ,
     source: '原始頁面',
     googleDoc: 'Google 文件',
-    coverAlt: 'Chief Fafa 食譜封面圖'
+    coverAlt: '花花之食譜封面圖'
   },
   ja: {
     code: 'ja',
@@ -107,7 +107,7 @@ const LOCALES = {
     ,
     source: '元ページ',
     googleDoc: 'Google ドキュメント',
-    coverAlt: 'チーフファファレシピのカバー画像'
+    coverAlt: 'Chef Fafa レシピのカバー画像'
   }
 };
 
@@ -137,6 +137,11 @@ const TYPE_I18N = {
   Salad: { 'zh-Hant': '沙拉', ja: 'サラダ' },
   Beverage: { 'zh-Hant': '飲品', ja: 'ドリンク' },
   'Main Course': { 'zh-Hant': '主菜', ja: 'メイン' }
+};
+const BRAND_NAME_BY_LOCALE = {
+  en: "Chef Fafa's Recipe",
+  'zh-Hant': '花花之食譜',
+  ja: "Chef Fafa's Recipe"
 };
 const PLACEHOLDER_INGREDIENT = 'See source URL for full ingredients list.';
 const PLACEHOLDER_METHOD = 'See source URL for full method.';
@@ -217,6 +222,10 @@ function localizeCuisine(locale, cuisine) {
 
 function localizeType(locale, type) {
   return localizeValue(locale, type, TYPE_I18N);
+}
+
+function brandName(locale) {
+  return BRAND_NAME_BY_LOCALE[locale] || BRAND_NAME_BY_LOCALE.en;
 }
 
 function localizedRecipeContent(recipe, locale) {
@@ -348,7 +357,7 @@ function itemListSchema(recipes, locale) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: "Chief Fafa's Recipe",
+    name: brandName(locale),
     inLanguage: locale,
     itemListElement: recipes.map((recipe, index) => {
       const view = localizedRecipeContent(recipe, locale);
@@ -384,7 +393,7 @@ function recipeSchema(recipe, locale) {
     recipeYield: recipe.servings,
     author: {
       '@type': 'Organization',
-      name: "Chief Fafa's Recipe"
+      name: brandName(locale)
     }
   };
 
@@ -397,6 +406,7 @@ function recipeSchema(recipe, locale) {
 
 function buildIndexHtml({ site, recipes, locale }) {
   const labels = LOCALES[locale];
+  const brand = brandName(locale);
   const localizedRecipes = recipes.map((recipe) => localizedRecipeContent(recipe, locale));
 
   const cuisines = [...new Set(recipes.map((recipe) => localizeCuisine(locale, recipe.cuisine)))].sort();
@@ -423,10 +433,10 @@ function buildIndexHtml({ site, recipes, locale }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(site.title)} | ${escapeHtml(labels.navRecipes)}</title>
+  <title>${escapeHtml(brand)} | ${escapeHtml(labels.navRecipes)}</title>
   <meta name="description" content="${escapeHtml(site.description)}">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="${escapeHtml(site.title)}">
+  <meta property="og:title" content="${escapeHtml(brand)}">
   <meta property="og:description" content="${escapeHtml(site.description)}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="${escapeHtml(locale)}">
@@ -441,7 +451,7 @@ function buildIndexHtml({ site, recipes, locale }) {
   <div class="bg-orb bg-orb--two" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="site-brand" href="${indexUrl(locale)}">Chief Fafa's Recipe</a>
+    <a class="site-brand" href="${indexUrl(locale)}">${escapeHtml(brand)}</a>
     <div class="site-header__tools">
       <nav aria-label="Top navigation">
         <a href="#search">${escapeHtml(labels.navSearch)}</a>
@@ -508,6 +518,7 @@ function buildIndexHtml({ site, recipes, locale }) {
 
 function buildRecipeHtml({ site, recipe, locale }) {
   const labels = LOCALES[locale];
+  const brand = brandName(locale);
   const view = localizedRecipeContent(recipe, locale);
   const schema = JSON.stringify(recipeSchema(recipe, locale));
 
@@ -543,7 +554,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(view.title)} | ${escapeHtml(site.title)}</title>
+  <title>${escapeHtml(view.title)} | ${escapeHtml(brand)}</title>
   <meta name="description" content="${escapeHtml(view.summary)}">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="${escapeHtml(view.title)}">
@@ -562,7 +573,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
   <div class="bg-orb bg-orb--two" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="site-brand" href="${indexUrl(locale)}">Chief Fafa's Recipe</a>
+    <a class="site-brand" href="${indexUrl(locale)}">${escapeHtml(brand)}</a>
     <div class="site-header__tools">
       <nav aria-label="Top navigation">
         <a href="${indexUrl(locale)}">${escapeHtml(labels.allRecipes)}</a>
@@ -623,13 +634,14 @@ function buildRootIndex() {
   const englishUrl = indexUrl('en');
   const chineseUrl = indexUrl('zh-Hant');
   const japaneseUrl = indexUrl('ja');
+  const brand = brandName('en');
 
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chief Fafa's Recipe</title>
+  <title>${escapeHtml(brand)}</title>
   ${faviconLinks()}
   <meta http-equiv="refresh" content="0; url=${englishUrl}">
   <style>

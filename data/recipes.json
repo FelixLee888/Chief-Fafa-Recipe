@@ -1,8 +1,8 @@
 {
   "site": {
-    "title": "Chief Fafa's Recipe",
+    "title": "Chef Fafa's Recipe",
     "description": "Modern, searchable recipe collection with auto-categorized cuisine and meal types.",
-    "generatedAt": "2026-03-01T11:01:25.380Z",
+    "generatedAt": "2026-03-01T11:10:53.255Z",
     "source": "google-doc-drive:10",
     "sourceType": "docs-api-drive-list",
     "discoveredDocCount": 10,

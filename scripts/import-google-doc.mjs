@@ -750,7 +750,7 @@ function normalizeRecipe(recipe, index, imagesByRef, fallbackImages) {
   return {
     title,
     slug,
-    summary: recipe.summary || `A signature ${(recipe.type || 'main course').toLowerCase()} from Chief Fafa's kitchen.`,
+    summary: recipe.summary || `A signature ${(recipe.type || 'main course').toLowerCase()} from Chef Fafa's kitchen.`,
     cuisine: recipe.cuisine || 'Global',
     type: recipe.type || 'Main Course',
     prepTime: recipe.prepTime || 'TBD',
@@ -1037,7 +1037,7 @@ async function main() {
 
   const output = {
     site: {
-      title: "Chief Fafa's Recipe",
+      title: "Chef Fafa's Recipe",
       description: 'Modern, searchable recipe collection with auto-categorized cuisine and meal types.',
       generatedAt: new Date().toISOString(),
       source: docId ? `google-doc:${docId}` : path.basename(inputPath),

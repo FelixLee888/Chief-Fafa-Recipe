@@ -2447,7 +2447,7 @@ async function main() {
 
   const recipePayload = {
     site: {
-      title: "Chief Fafa's Recipe",
+      title: "Chef Fafa's Recipe",
       description: 'Modern, searchable recipe collection with auto-categorized cuisine and meal types.',
       generatedAt: new Date().toISOString(),
       source: `google-doc-${resolved.source}:${docIds.length}`,
