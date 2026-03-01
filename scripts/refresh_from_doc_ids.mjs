@@ -273,8 +273,23 @@ function leadingScriptCounts(lines) {
   return out;
 }
 
+function normalizeLanguageProbeLine(value) {
+  return String(value || '')
+    .replace(URL_RE, ' ')
+    .replace(/#[\p{L}\p{N}_-]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function detectRecipeLanguage({ title = '', summary = '', ingredients = [], instructions = [], rawText = '' }) {
-  const lines = [title, summary, ...ingredients.slice(0, 40), ...instructions.slice(0, 40), ...String(rawText || '').split('\n').slice(0, 80)];
+  const ingredientLines = ingredients.slice(0, 40).map((line) => normalizeLanguageProbeLine(line)).filter(Boolean);
+  const instructionLines = instructions.slice(0, 40).map((line) => normalizeLanguageProbeLine(line)).filter(Boolean);
+  const rawLines = String(rawText || '')
+    .split('\n')
+    .slice(0, 80)
+    .map((line) => normalizeLanguageProbeLine(line))
+    .filter(Boolean);
+  const lines = [normalizeLanguageProbeLine(title), normalizeLanguageProbeLine(summary), ...ingredientLines, ...instructionLines, ...rawLines];
   const sample = lines
     .join('\n')
     .trim();
@@ -283,12 +298,24 @@ function detectRecipeLanguage({ title = '', summary = '', ingredients = [], inst
 
   const counts = scriptCounts(sample);
   const lead = leadingScriptCounts(lines);
+  const coreLines = [normalizeLanguageProbeLine(title), normalizeLanguageProbeLine(summary), ...ingredientLines];
+  const coreSample = coreLines.join('\n').trim();
+  const coreCounts = scriptCounts(coreSample);
+  const coreLead = leadingScriptCounts(coreLines);
   const jpHints = (sample.match(/(?:の|です|ます|ません|材料|作り方|手順|しょうゆ|みりん|ごま|にんにく|ねぎ|レシピ|料理)/g) || []).length;
   const zhHints = (sample.match(/(?:的|了|和|在|把|做法|步驟|步骤|食材|醬|酱|蔥|葱|雞|鸡|豬|猪|分鐘|分钟|小時|小时|料理)/g) || []).length;
 
   if (counts.hiraKata >= 3 && (jpHints >= 1 || counts.hiraKata >= Math.max(6, Math.floor(counts.cjk * 0.12)))) return 'ja';
 
   if (counts.cjk > 0) {
+    // Mixed-language recipe notes can include English field labels and URLs.
+    // Prefer CJK when title/summary/ingredient core is CJK-heavy.
+    const coreLooksJapanese = coreCounts.hiraKata >= 2 || (jpHints > zhHints && (jpHints >= 2 || lead.jp >= 2));
+    const coreCjkDominant =
+      coreCounts.cjk > 0 &&
+      (coreCounts.cjk >= Math.floor(coreCounts.latin * 0.7) || coreLead.cjk >= Math.max(2, coreLead.latin));
+    if (!coreLooksJapanese && coreCjkDominant) return 'zh-Hant';
+
     if (counts.latin > 0) {
       const latinDominant = counts.latin >= counts.cjk * 1.35;
       const latinLeadDominant = lead.latin >= Math.max(3, lead.cjk);
