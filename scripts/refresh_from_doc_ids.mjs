@@ -68,6 +68,8 @@ const SOURCE_PROMO_LINE_RE =
 const COMMENT_AUTHOR_RE =
   /^[\w\u3400-\u9fff][\w\u3400-\u9fff .,'’\-]{0,48}\s+\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日.*$/u;
 const COMMENT_BODY_RE = /\b(?:thanks for sharing|great post|anonymous said|留下評論|发表留言)\b/i;
+const RECIPE_NOTE_FIELD_LINE_RE =
+  /^(?:recipe\s*title|original\s*page\s*url|source\s*type|recipe\s*summary|food\s*image|video\s*description(?:\s*\(from original source\))?|ingredients?(?:\s*\(from original source\))?|method\s*\/\s*steps(?:\s*\(from original source\))?|instructions?(?:\s*\(from original source\))?|原始(?:頁面)?網址|来源(?:页面)?网址|來源(?:類型)?|来源(?:类型)?|食譜摘要|食谱摘要|食材(?:來源)?|材料(?:來源)?|做法(?:來源)?|步骤(?:来源)?|步驟(?:來源)?|影片(?:說明|描述)|视频(?:说明|描述))\s*[:：]/iu;
 const INGREDIENT_SECTION_ANY_RE = /(?:ingredients?|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i;
 const INGREDIENT_SECTION_LINE_RE = /^(ingredients?|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i;
 const INSTRUCTION_SECTION_LINE_RE = /^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i;
@@ -108,7 +110,8 @@ const FIELD_PATTERNS = {
     /(?:^|[\s(（])(?:總時間|总时间|所需時間|所需时间|全程時間|全程时间)\s*[:：\-]?\s*([^|;\n]+?)(?=(?:份量|人份|食用人數|食用人数)|$)/i
   ],
   servings: [
-    /(?:^|\b)(?:servings?|yield|portion(?:s)?|makes?)\s*[:：\-]?\s*([^|;\n]+)$/i,
+    /(?:^|\b)(?:servings?|yield|portion(?:s)?)\s*[:：\-]?\s*([^|;\n]+)$/i,
+    /(?:^|\b)makes?\s*[:：\-]?\s*([0-9]+(?:\s*(?:-|–|—|~|to)\s*[0-9]+)?(?:\s*(?:servings?|people|persons))?)/i,
     /(?:^|\b)serves?\s+([0-9]+(?:\s*(?:-|–|—|~|to)\s*[0-9]+)?(?:\s*(?:people|persons|servings?))?)/i,
     /(?:^|[\s(（])(?:份量|份數|份数|人份|可供|食用人數|食用人数)\s*[:：\-]?\s*([^|;\n]+)$/i,
     /\b([0-9]+(?:\s*(?:-|–|—|~)\s*[0-9]+)?\s*(?:servings?|people|persons|人份|位份|人))\b/i
@@ -806,9 +809,17 @@ function normalizeText(text) {
     .trim();
 }
 
+function isLikelyRecipeMetadataLine(line) {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+  if (/^https?:\/\//i.test(clean)) return true;
+  return RECIPE_NOTE_FIELD_LINE_RE.test(clean);
+}
+
 function isCommentOrSocialLine(line) {
   const clean = String(line || '').trim();
   if (!clean) return false;
+  if (isLikelyRecipeMetadataLine(clean)) return false;
   if (SOCIAL_SHARE_RE.test(clean)) return true;
   if (COMMENT_AUTHOR_RE.test(clean)) return true;
   if (COMMENT_BODY_RE.test(clean)) return true;
@@ -820,12 +831,14 @@ function isCommentOrSocialLine(line) {
 function isPromoLine(line) {
   const clean = String(line || '').trim();
   if (!clean) return false;
+  if (isLikelyRecipeMetadataLine(clean)) return false;
   return SOURCE_PROMO_LINE_RE.test(clean);
 }
 
 function isCommentSectionStart(line) {
   const clean = String(line || '').trim();
   if (!clean) return false;
+  if (isLikelyRecipeMetadataLine(clean)) return false;
   if (SOCIAL_SHARE_RE.test(clean)) return true;
   return COMMENT_SECTION_START_RE.test(clean);
 }
