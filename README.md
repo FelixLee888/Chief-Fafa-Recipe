@@ -1,4 +1,4 @@
-# Chief Fafa's Recipe Website
+# Chef Fafa's Recipe Website
 
 Modern static recipe site with:
 
