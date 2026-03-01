@@ -75,14 +75,54 @@
     const heroCover = document.querySelector('[data-hero-cover]');
     const heroVideo = heroCover ? heroCover.querySelector('[data-hero-video]') : null;
     const heroVideoSource = heroVideo ? heroVideo.querySelector('source') : null;
+    const audioToggle = heroCover ? heroCover.querySelector('[data-hero-audio-toggle]') : null;
     if (!heroCover || !heroVideo) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) return;
+    if (reducedMotion) {
+      if (audioToggle) {
+        audioToggle.hidden = true;
+        audioToggle.setAttribute('aria-hidden', 'true');
+      }
+      return;
+    }
+
+    function audioLabel(which) {
+      if (!audioToggle) return which === 'mute' ? 'Mute video' : 'Unmute video';
+      const raw = which === 'mute' ? audioToggle.dataset.labelMute : audioToggle.dataset.labelUnmute;
+      return String(raw || '').trim() || (which === 'mute' ? 'Mute video' : 'Unmute video');
+    }
+
+    function setAudioToggleDisabled(isDisabled) {
+      if (!audioToggle) return;
+      audioToggle.disabled = Boolean(isDisabled);
+    }
+
+    function isMutedState() {
+      return heroVideo.muted || heroVideo.volume === 0;
+    }
+
+    function updateAudioToggle() {
+      if (!audioToggle) return;
+      const muted = isMutedState();
+      const label = muted ? audioLabel('unmute') : audioLabel('mute');
+      audioToggle.textContent = label;
+      audioToggle.setAttribute('aria-pressed', String(!muted));
+      audioToggle.dataset.audioState = muted ? 'muted' : 'unmuted';
+    }
+
+    function setMutedState(muted) {
+      const normalized = Boolean(muted);
+      heroVideo.muted = normalized;
+      heroVideo.defaultMuted = normalized;
+      if (!normalized && heroVideo.volume === 0) {
+        heroVideo.volume = 1;
+      }
+      updateAudioToggle();
+    }
 
     // Ensure mobile Safari treats this as an inline muted video.
-    heroVideo.muted = true;
-    heroVideo.defaultMuted = true;
+    setMutedState(true);
     heroVideo.playsInline = true;
     heroVideo.setAttribute('playsinline', '');
     heroVideo.setAttribute('webkit-playsinline', '');
@@ -103,6 +143,7 @@
     let waitingForInteraction = false;
     let isPlaying = false;
     let timer = null;
+    setAudioToggleDisabled(false);
 
     function clearTimer() {
       if (timer !== null) {
@@ -188,6 +229,7 @@
           disabled = true;
           clearTimer();
           resetPlayback();
+          setAudioToggleDisabled(true);
         });
       }
     }
@@ -204,6 +246,7 @@
       disabled = true;
       clearTimer();
       resetPlayback();
+      setAudioToggleDisabled(true);
     });
 
     document.addEventListener('visibilitychange', () => {
@@ -227,6 +270,23 @@
     document.addEventListener('touchstart', onInteraction, { passive: true });
     document.addEventListener('click', onInteraction, { passive: true });
     document.addEventListener('keydown', onInteraction, { passive: true });
+
+    if (audioToggle) {
+      audioToggle.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (disabled) return;
+
+        const nextMuted = !isMutedState();
+        setMutedState(nextMuted);
+
+        if (!nextMuted) {
+          waitingForInteraction = false;
+          playCycle(true);
+        }
+      });
+      updateAudioToggle();
+    }
 
     if (supportsHover) {
       heroCover.addEventListener('mouseenter', () => {

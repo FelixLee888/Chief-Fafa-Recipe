@@ -91,6 +91,7 @@ body,
 .filter-btn,
 .lang-link,
 .theme-toggle,
+.hero__audio-toggle,
 .recipe-stats,
 .recipe-source-links {
   transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease, box-shadow 220ms ease;
@@ -212,6 +213,41 @@ main {
 .hero__cover-video {
   opacity: 0;
   background: var(--hero-cover-bg);
+}
+
+.hero__audio-toggle {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 3;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.36rem 0.72rem;
+  background: var(--surface-tint-strong);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.hero__audio-toggle:hover {
+  border-color: var(--brand);
+  transform: translateY(-1px);
+}
+
+.hero__audio-toggle:focus-visible {
+  outline: 2px solid var(--input-focus);
+  outline-offset: 2px;
+}
+
+.hero__audio-toggle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .hero__cover.is-playing .hero__cover-image {
@@ -547,6 +583,13 @@ main {
   .hero__cover {
     min-height: clamp(220px, 65vw, 300px);
     border-radius: 16px;
+  }
+
+  .hero__audio-toggle {
+    right: 0.55rem;
+    bottom: 0.55rem;
+    padding: 0.3rem 0.58rem;
+    font-size: 0.75rem;
   }
 }
 

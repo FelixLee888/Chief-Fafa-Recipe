@@ -45,7 +45,10 @@ const LOCALES = {
     switchTheme: 'Switch color theme',
     source: 'Source',
     googleDoc: 'Google Doc',
-    coverAlt: "Chef Fafa's Recipe cover image"
+    coverAlt: "Chef Fafa's Recipe cover image",
+    audioUnmute: 'Unmute video',
+    audioMute: 'Mute video',
+    audioSwitch: 'Toggle video sound'
   },
   'zh-Hant': {
     code: 'zh-Hant',
@@ -79,7 +82,10 @@ const LOCALES = {
     switchTheme: '切換深淺模式',
     source: '原始頁面',
     googleDoc: 'Google 文件',
-    coverAlt: '花花之食譜封面圖'
+    coverAlt: '花花之食譜封面圖',
+    audioUnmute: '開啟聲音',
+    audioMute: '靜音',
+    audioSwitch: '切換影片聲音'
   },
   ja: {
     code: 'ja',
@@ -113,7 +119,10 @@ const LOCALES = {
     switchTheme: 'テーマ切替',
     source: '元ページ',
     googleDoc: 'Google ドキュメント',
-    coverAlt: 'Chef Fafa レシピのカバー画像'
+    coverAlt: 'Chef Fafa レシピのカバー画像',
+    audioUnmute: '音声オン',
+    audioMute: 'ミュート',
+    audioSwitch: '動画の音声を切り替え'
   }
 };
 
@@ -304,6 +313,11 @@ function themeToggleButton(locale) {
   return `<button class="theme-toggle" type="button" data-theme-toggle data-label-light="${escapeHtml(labels.themeToLight)}" data-label-dark="${escapeHtml(labels.themeToDark)}" aria-label="${escapeHtml(labels.switchTheme)}" title="${escapeHtml(labels.switchTheme)}">${escapeHtml(labels.themeToDark)}</button>`;
 }
 
+function heroAudioToggleButton(locale) {
+  const labels = LOCALES[locale];
+  return `<button class="hero__audio-toggle" type="button" data-hero-audio-toggle data-label-unmute="${escapeHtml(labels.audioUnmute)}" data-label-mute="${escapeHtml(labels.audioMute)}" aria-label="${escapeHtml(labels.audioSwitch)}" title="${escapeHtml(labels.audioSwitch)}">${escapeHtml(labels.audioUnmute)}</button>`;
+}
+
 function languageSwitcher(locale, page) {
   const label = LOCALES[locale].language;
   const links = Object.entries(LOCALES)
@@ -486,6 +500,7 @@ function buildIndexHtml({ site, recipes, locale }) {
         <video class="hero__cover-video" data-hero-video muted playsinline webkit-playsinline preload="metadata" poster="${assetUrl('fafa_header.png')}" aria-hidden="true">
           <source src="${assetUrl('fafa_header_video1.mp4')}" type="video/mp4">
         </video>
+        ${heroAudioToggleButton(locale)}
       </div>
       <div class="hero__content">
         <p class="eyebrow">${escapeHtml(labels.heroEyebrow)}</p>
