@@ -10,6 +10,16 @@ Modern static recipe site with:
 - Structured data (`schema.org/Recipe`), sitemap, and robots
 - Backend refresh service for automatic Google Doc sync
 
+## Latest Updates (March 2026)
+
+- Brand/content naming standardized to **Chef Fafa's Recipe**
+- Dark/light mode fully integrated in generated pages with:
+  - system preference fallback (`prefers-color-scheme`)
+  - persisted user choice (`localStorage` key: `chief_fafa_theme`)
+  - localized toggle labels (EN / 繁中 / 日本語)
+- Enquiry and recipe content pipeline aligned with Chef Fafa Bot naming and shared Google Docs env keys
+- Refresh workflow supports scheduled auto-refresh from Google Docs and publish to `gh-pages`
+
 ## Project Structure
 
 - `scripts/import-google-doc.mjs`: Single-doc importer/parser with image extraction.
@@ -60,7 +70,16 @@ flowchart LR
 ```bash
 npm run refresh
 npm run build
+npm run start
 ```
+
+This serves the generated site at `http://127.0.0.1:8080`.
+
+## Frontend Theme Behavior
+
+- Initial theme is set before render via inline boot script to reduce theme flash.
+- If no saved preference exists, the site follows system theme.
+- Theme toggle updates `data-theme` on `<html>` and persists preference for next visits.
 
 ## Backend Service (Automatic Refresh)
 
@@ -98,6 +117,8 @@ Default behavior:
 - `GOOGLE_DOCS_DRIVE_PAGE_SIZE` (optional page size for Drive listing, default `200`)
 - `RECIPE_TRANSLATE_ENABLED` (`1` or `0`, default `1`)
 - `RECIPE_TRANSLATE_MODEL` (default `gpt-4.1-mini`)
+- `RECIPE_OCR_MODEL` (default: same as `RECIPE_TRANSLATE_MODEL`)
+- `SITE_BASE_PATH` (for subpath deploys, e.g. `/Chief-Fafa-Recipe`)
 
 ## Google Docs OAuth Env
 
@@ -113,10 +134,12 @@ Recommended OAuth scopes for full auto-discovery:
 - `https://www.googleapis.com/auth/documents.readonly`
 - `https://www.googleapis.com/auth/drive.metadata.readonly`
 
-The scripts automatically check:
+The scripts automatically check env from:
 
 - `/Users/felixlee/Documents/ChiefFaFaBot/.env`
 - `.env` in this project
+
+To override this lookup order, set `RECIPE_ENV_FILE` (or pass `--env-file`).
 
 ## GitHub Pages Deployment
 
