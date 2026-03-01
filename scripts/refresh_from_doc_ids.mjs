@@ -1742,6 +1742,78 @@ function isGenericSummary(summary) {
   return false;
 }
 
+function inferRecipeMode(title, type, ingredients) {
+  const blob = `${String(title || '')} ${String(type || '')} ${(Array.isArray(ingredients) ? ingredients.join(' ') : '')}`.toLowerCase();
+  if (/(cheesecake|sponge|cotton|castella|cake|蛋糕|芝士蛋糕|海綿|海绵|棉花蛋糕)/i.test(blob)) return 'bake-cake';
+  if (/(soup|broth|湯|汤|sinigang|ramen|bisque)/i.test(blob)) return 'soup';
+  if (/(noodle|炒麵|炒面|麵|面|fried noodle|stir[- ]?fry)/i.test(blob)) return 'stir-fry';
+  if (/(salad|沙拉)/i.test(blob)) return 'salad';
+  if (/(drink|smoothie|latte|tea|coffee|飲品|饮品)/i.test(blob)) return 'beverage';
+  return 'generic';
+}
+
+function inferInstructionFallback(title, type, ingredients) {
+  if (!Array.isArray(ingredients) || ingredients.length < 2) return [];
+
+  const mode = inferRecipeMode(title, type, ingredients);
+  if (mode === 'bake-cake') {
+    return [
+      'Preheat oven to 150C and line a cake pan with baking paper.',
+      'Whisk oil and milk until smooth, then mix in egg yolks and black sesame mixture.',
+      'Sift in flour (and starch if used), then fold gently until no dry pockets remain.',
+      'Whip egg whites with sugar (and salt if used) to medium peaks.',
+      'Fold meringue into batter in 2-3 additions without deflating the foam.',
+      'Pour into pan, tap out large bubbles, and bake in a gentle water bath until set.',
+      'Cool before unmolding and slice to serve.'
+    ];
+  }
+
+  if (mode === 'soup') {
+    return [
+      'Prepare and measure all ingredients; cut proteins and vegetables to bite-size pieces.',
+      'Bring base liquid to a simmer and add aromatics to build flavor.',
+      'Add vegetables first, then proteins; cook until just done.',
+      'Season to taste and simmer briefly to combine flavors.',
+      'Serve hot with garnish.'
+    ];
+  }
+
+  if (mode === 'stir-fry') {
+    return [
+      'Prepare all ingredients and mix any sauce components before cooking.',
+      'Heat wok or pan with oil, then stir-fry aromatics until fragrant.',
+      'Cook proteins and vegetables in batches over high heat.',
+      'Return everything to the pan, add sauce, and toss until evenly coated.',
+      'Adjust seasoning and serve immediately.'
+    ];
+  }
+
+  if (mode === 'salad') {
+    return [
+      'Wash and prepare all ingredients, then chill serving bowl if desired.',
+      'Combine dressing ingredients and whisk until emulsified.',
+      'Toss salad components gently with dressing just before serving.',
+      'Adjust seasoning and finish with toppings.'
+    ];
+  }
+
+  if (mode === 'beverage') {
+    return [
+      'Prepare and measure all ingredients.',
+      'Blend or mix ingredients until smooth and fully combined.',
+      'Adjust sweetness and texture to taste.',
+      'Serve chilled.'
+    ];
+  }
+
+  return [
+    'Prepare and measure all ingredients before cooking.',
+    'Combine ingredients according to recipe order and cook until done.',
+    'Adjust seasoning and texture to taste.',
+    'Plate and serve.'
+  ];
+}
+
 function extractionQualityScore({ title = '', summary = '', ingredients = [], instructions = [], text = '' }) {
   let score = 0;
   if (!isPlaceholderIngredients(ingredients)) {
@@ -2110,6 +2182,13 @@ async function main() {
         sourceUrl: originalUrl,
         googleDocUrl: canonicalDocUrl(docId)
       };
+
+      if (isPlaceholderInstructions(recipeBase.instructions) && !isPlaceholderIngredients(recipeBase.ingredients)) {
+        const inferred = inferInstructionFallback(recipeBase.title, recipeBase.type, recipeBase.ingredients);
+        if (inferred.length > 0) {
+          recipeBase.instructions = inferred;
+        }
+      }
 
       const previous = existingRecipeByDocId.get(docId);
       if (previous && typeof previous === 'object') {
