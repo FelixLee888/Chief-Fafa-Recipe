@@ -17,6 +17,7 @@
 
     const configuredMs = Number.parseInt(heroCover.dataset.heroInterval || '3000', 10);
     const intervalMs = Number.isFinite(configuredMs) ? Math.max(3000, configuredMs) : 3000;
+    const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const parsedVideoList = String(heroCover.dataset.heroVideos || '')
       .split(',')
       .map((item) => item.trim())
@@ -69,7 +70,7 @@
 
     function scheduleNextCycle() {
       clearTimer();
-      if (disabled) return;
+      if (disabled || supportsHover) return;
       timer = window.setTimeout(playCycle, intervalMs);
     }
 
@@ -122,7 +123,9 @@
     heroVideo.addEventListener('ended', () => {
       heroCover.classList.remove('is-playing');
       isPlaying = false;
-      scheduleNextCycle();
+      if (!supportsHover) {
+        scheduleNextCycle();
+      }
     });
 
     heroVideo.addEventListener('error', () => {
@@ -137,7 +140,7 @@
         resetPlayback();
         return;
       }
-      if (!disabled) {
+      if (!disabled && !supportsHover) {
         scheduleNextCycle();
       }
     });
@@ -153,7 +156,19 @@
     document.addEventListener('click', onInteraction, { passive: true });
     document.addEventListener('keydown', onInteraction, { passive: true });
 
-    scheduleNextCycle();
+    if (supportsHover) {
+      heroCover.addEventListener('mouseenter', () => {
+        if (disabled) return;
+        playCycle(true);
+      });
+
+      heroCover.addEventListener('mouseleave', () => {
+        clearTimer();
+        resetPlayback();
+      });
+    } else {
+      scheduleNextCycle();
+    }
   }
 
   initHeroCoverCycle();
