@@ -59,6 +59,8 @@ const COMMENT_SECTION_START_RE =
   /(?:^\s*\d+\s+comments?\s*$|\b(?:leave a comment|post a comment|view comments?)\b|(?:發佈留言|发表评论|留言|評論|评论|回覆|回應|回应))/i;
 const SOCIAL_SHARE_RE =
   /(?:blogthis|share this|share on|share to|email this|pin(?:terest)?|facebook|twitter|分享至|分享到|以電子郵件傳送這篇文章|回覆\s*刪除|回复\s*删除)/i;
+const SOURCE_PROMO_LINE_RE =
+  /(?:\b(?:facebook|instagram|tiktok|twitter|x\.com|pinterest|wechat|whatsapp|telegram|patreon|subscribe|follow|support my|recipe book|sponsor(?:ed)?|special thanks|learn more|social media)\b|(?:歡迎合作|合作洽詢|聯絡方式|联系方式))/i;
 const COMMENT_AUTHOR_RE =
   /^[\w\u3400-\u9fff][\w\u3400-\u9fff .,'’\-]{0,48}\s+\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日.*$/u;
 const COMMENT_BODY_RE = /\b(?:thanks for sharing|great post|anonymous said|留下評論|发表留言)\b/i;
@@ -107,6 +109,8 @@ const FIELD_PATTERNS = {
     /\b([0-9]+(?:\s*(?:-|–|—|~)\s*[0-9]+)?\s*(?:servings?|people|persons|人份|位份|人))\b/i
   ]
 };
+const INGREDIENT_MEASURE_TOKEN_RE =
+  /\b(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b/i;
 
 function parseArgs(argv) {
   const args = {};
@@ -644,6 +648,12 @@ function isCommentOrSocialLine(line) {
   return false;
 }
 
+function isPromoLine(line) {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+  return SOURCE_PROMO_LINE_RE.test(clean);
+}
+
 function isCommentSectionStart(line) {
   const clean = String(line || '').trim();
   if (!clean) return false;
@@ -955,7 +965,7 @@ function decodeJsonEscaped(value) {
   const raw = String(value || '');
   if (!raw) return '';
   try {
-    return JSON.parse(`"${raw.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`);
+    return JSON.parse(`"${raw}"`);
   } catch {
     return raw
       .replace(/\\n/g, '\n')
@@ -997,7 +1007,13 @@ async function fetchSourceDescription(sourceUrl) {
   }
 
   const html = await response.text();
-  return normalizeText(extractYoutubeDescriptionFromHtml(html));
+  return normalizeText(
+    extractYoutubeDescriptionFromHtml(html)
+      .replace(/\\r\\n/g, '\n')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\n')
+      .replace(/\\t/g, '\t')
+  );
 }
 
 function slugify(value) {
@@ -1215,6 +1231,7 @@ function summaryFromText(text, ingredients = [], title = '') {
       if (!line) return false;
       if (/^https?:\/\//i.test(line)) return false;
       if (isCommentOrSocialLine(line)) return false;
+      if (isPromoLine(line)) return false;
       if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) return false;
       if (looksLikeMetadataValue(line) || TITLE_STEP_LINE_RE.test(line)) return false;
 
@@ -1233,6 +1250,14 @@ function stripListPrefix(line) {
   return String(line || '')
     .replace(/^\s*[-*•]+\s*/, '')
     .replace(/^\s*\(?[0-9]{1,3}\)?[.)、:：]\s+/, '')
+    .trim();
+}
+
+function normalizeSectionLine(line) {
+  return String(line || '')
+    .replace(/^#{1,6}\s+/, '')
+    .replace(/^[\s\-*•·▪▫►▶◆◇🔸🔹🔶🔷]+/u, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -1415,7 +1440,9 @@ function inferTimeFields(text, instructions) {
 }
 
 function ingredientsFromText(text) {
-  const lines = String(text || '').split('\n').map((line) => line.trim());
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => normalizeSectionLine(line));
   const out = [];
   const seen = new Set();
   let inSection = false;
@@ -1473,6 +1500,33 @@ function ingredientsFromText(text) {
     }
   }
 
+  // Fallback mode: some docs omit explicit "Ingredients" heading.
+  if (out.length === 0) {
+    const fallback = [];
+    const fallbackSeen = new Set();
+    for (const rawLine of lines) {
+      const line = stripListPrefix(normalizeSectionLine(rawLine));
+      if (!line) continue;
+      if (isCommentOrSocialLine(line)) continue;
+      if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) continue;
+      if (INSTRUCTION_SECTION_LINE_RE.test(line)) continue;
+      if (/^https?:\/\//i.test(line)) continue;
+
+      const hasQtyUnit = /\d/.test(line) && INGREDIENT_MEASURE_TOKEN_RE.test(line);
+      const hasFractionUnit =
+        /\b\d+\s*\/\s*\d+\b/.test(line) && /\b(?:tbsp|tsp|cups?|茶匙|湯匙|汤匙|大匙|小匙)\b/i.test(line);
+      const bilingualMeasured = /[\u3400-\u9fff]/u.test(line) && /[A-Za-z]/.test(line) && /\d/.test(line);
+      if (!hasQtyUnit && !hasFractionUnit && !bilingualMeasured) continue;
+
+      const key = line.toLowerCase();
+      if (fallbackSeen.has(key)) continue;
+      fallbackSeen.add(key);
+      fallback.push(line);
+      if (fallback.length >= 60) break;
+    }
+    if (fallback.length >= 3) return fallback.slice(0, 60);
+  }
+
   if (out.length === 1 && out[0].length > 160) {
     const parsedInline = extractIngredientItemsFromSegment(out[0]);
     if (parsedInline.length >= 3) {
@@ -1485,7 +1539,9 @@ function ingredientsFromText(text) {
 }
 
 function instructionsFromText(text) {
-  const lines = String(text || '').split('\n').map((line) => line.trim());
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => normalizeSectionLine(line));
   const out = [];
   let inSection = false;
 
@@ -1507,6 +1563,16 @@ function instructionsFromText(text) {
     if (TITLE_STOP_RE.test(cleaned)) continue;
     out.push(cleaned);
     if (out.length >= 60) break;
+  }
+
+  if (out.length === 0) {
+    const numbered = lines
+      .map((line) => stripListPrefix(normalizeSectionLine(line)))
+      .filter((line) => line && !isCommentOrSocialLine(line))
+      .filter((line) => /^\(?[0-9]{1,3}\)?[.)、:：]\s*/.test(line) || /^step\s*[0-9]+/i.test(line));
+    if (numbered.length >= 2) {
+      return numbered.slice(0, 60);
+    }
   }
 
   if (out.length === 0) return ['See source URL for full method.'];
@@ -1535,6 +1601,10 @@ function ingredientsFromSourceDescription(text) {
     const line = stripListPrefix(rawLine);
     if (!line) continue;
     if (isCommentOrSocialLine(line)) continue;
+    if (isPromoLine(line)) {
+      if (inSection) break;
+      continue;
+    }
     if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) continue;
     if (/^https?:\/\//i.test(line)) continue;
 
@@ -1593,6 +1663,10 @@ function instructionsFromSourceDescription(text) {
     const line = stripListPrefix(rawLine);
     if (!line) continue;
     if (isCommentOrSocialLine(line)) continue;
+    if (isPromoLine(line)) {
+      if (inSection) break;
+      continue;
+    }
     if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) continue;
     if (/^https?:\/\//i.test(line)) continue;
 
@@ -1642,6 +1716,22 @@ function isGenericSummary(summary) {
   if (/^recipe imported from google doc\.?$/i.test(clean)) return true;
   if (/^see source url/i.test(clean)) return true;
   return false;
+}
+
+function extractionQualityScore({ title = '', summary = '', ingredients = [], instructions = [], text = '' }) {
+  let score = 0;
+  if (!isPlaceholderIngredients(ingredients)) {
+    score += Math.min(Array.isArray(ingredients) ? ingredients.length : 0, 20) * 2;
+  }
+  if (!isPlaceholderInstructions(instructions)) {
+    score += Math.min(Array.isArray(instructions) ? instructions.length : 0, 20) * 2;
+  }
+  if (!isGenericSummary(summary)) score += 3;
+  if (isUsableRecipeTitle(title)) score += 2;
+  if (/(?:ingredients?|材料|食材|instructions?|method|steps?|做法|作法|手順|作り方)/i.test(String(text || ''))) {
+    score += 1;
+  }
+  return score;
 }
 
 async function fetchDoc(docId, token) {
@@ -1784,6 +1874,7 @@ async function main() {
   const loadedEnv = await loadEnv(args);
   const token = await resolveDocsAccessToken(loadedEnv);
   const translationConfig = resolveTranslationConfig(args, loadedEnv);
+  const debugDocId = String(args['debug-doc-id'] || process.env.RECIPE_DEBUG_DOC_ID || loadedEnv.RECIPE_DEBUG_DOC_ID || '').trim();
 
   if (translationConfig.enabled && !translationConfig.apiKey) {
     process.stderr.write(
@@ -1808,6 +1899,14 @@ async function main() {
       const docJson = await fetchDoc(docId, token);
       const { images, text } = await extractImagesForDoc(docId, docJson, token);
       const cleanText = sanitizeDocumentText(text);
+      const debugDump =
+        debugDocId && debugDocId === docId
+          ? {
+              docId,
+              docTitle: docJson.title || '',
+              cleanText
+            }
+          : null;
       const urls = extractUrls(cleanText);
       const originalUrl = pickOriginalUrl(urls);
 
@@ -1826,13 +1925,38 @@ async function main() {
       if (isPlaceholderIngredients(ingredients) || isPlaceholderInstructions(instructions) || isGenericSummary(summary)) {
         try {
           const exportedText = sanitizeDocumentText(await exportDocPlainText(docId, token));
-          if (exportedText && exportedText.length > parserText.length + 32) {
-            parserText = exportedText;
-            exportTextUsed = true;
-            ingredients = ingredientsFromText(parserText);
-            instructions = instructionsFromText(parserText);
-            title = titleFromDocName(docJson.title, parserText, ingredients);
-            summary = summaryFromText(parserText, ingredients, title);
+          if (debugDump) {
+            debugDump.exportedText = exportedText;
+          }
+          if (exportedText) {
+            const exportedIngredients = ingredientsFromText(exportedText);
+            const exportedInstructions = instructionsFromText(exportedText);
+            const exportedTitle = titleFromDocName(docJson.title, exportedText, exportedIngredients);
+            const exportedSummary = summaryFromText(exportedText, exportedIngredients, exportedTitle);
+
+            const currentScore = extractionQualityScore({
+              title,
+              summary,
+              ingredients,
+              instructions,
+              text: parserText
+            });
+            const exportScore = extractionQualityScore({
+              title: exportedTitle,
+              summary: exportedSummary,
+              ingredients: exportedIngredients,
+              instructions: exportedInstructions,
+              text: exportedText
+            });
+
+            if (exportScore > currentScore) {
+              parserText = exportedText;
+              exportTextUsed = true;
+              ingredients = exportedIngredients;
+              instructions = exportedInstructions;
+              title = exportedTitle;
+              summary = exportedSummary;
+            }
           }
         } catch (error) {
           process.stderr.write(`Warning: export fallback skipped for ${docId} (${error?.message || 'unknown error'})\n`);
@@ -1849,6 +1973,9 @@ async function main() {
       }
 
       if (sourceDescription) {
+        if (debugDump) {
+          debugDump.sourceDescription = sourceDescription;
+        }
         const fromSourceIngredients = ingredientsFromSourceDescription(sourceDescription);
         const fromSourceInstructions = instructionsFromSourceDescription(sourceDescription);
 
@@ -1899,6 +2026,18 @@ async function main() {
         } catch (error) {
           process.stderr.write(`Warning: image OCR skipped for ${docId} (${error?.message || 'unknown error'})\n`);
         }
+      }
+
+      if (debugDump) {
+        debugDump.final = {
+          title,
+          summary,
+          ingredients,
+          instructions
+        };
+        const debugPath = path.resolve('/tmp', `chief-fafa-debug-${docId}.json`);
+        await fs.writeFile(debugPath, `${JSON.stringify(debugDump, null, 2)}\n`, 'utf8');
+        process.stdout.write(`Debug dump written to ${debugPath}\n`);
       }
 
       const combinedText = sourceDescription ? `${parserText}\n${sourceDescription}` : parserText;
