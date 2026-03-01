@@ -463,10 +463,10 @@ function buildIndexHtml({ site, recipes, locale }) {
 
   <main>
     <section class="hero hero--cover" id="search">
-      <div class="hero__cover" data-hero-cover data-hero-interval="3000">
+      <div class="hero__cover" data-hero-cover data-hero-interval="3000" data-hero-videos="${assetUrl('fafa_header_video1.mp4')},${assetUrl('fafa_header_video2.mp4')}">
         <img class="hero__cover-image" src="${assetUrl('fafa_header.png')}" alt="${escapeHtml(labels.coverAlt)}" loading="eager" decoding="async">
         <video class="hero__cover-video" data-hero-video muted playsinline webkit-playsinline preload="metadata" poster="${assetUrl('fafa_header.png')}" aria-hidden="true">
-          <source src="${assetUrl('fafa_header_video.mp4')}" type="video/mp4">
+          <source src="${assetUrl('fafa_header_video1.mp4')}" type="video/mp4">
         </video>
       </div>
       <div class="hero__content">

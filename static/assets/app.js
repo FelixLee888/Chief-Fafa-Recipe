@@ -2,6 +2,7 @@
   function initHeroCoverCycle() {
     const heroCover = document.querySelector('[data-hero-cover]');
     const heroVideo = heroCover ? heroCover.querySelector('[data-hero-video]') : null;
+    const heroVideoSource = heroVideo ? heroVideo.querySelector('source') : null;
     if (!heroCover || !heroVideo) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -16,6 +17,14 @@
 
     const configuredMs = Number.parseInt(heroCover.dataset.heroInterval || '3000', 10);
     const intervalMs = Number.isFinite(configuredMs) ? Math.max(3000, configuredMs) : 3000;
+    const parsedVideoList = String(heroCover.dataset.heroVideos || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    const videoList = parsedVideoList.length > 0
+      ? parsedVideoList
+      : [heroVideoSource?.getAttribute('src') || heroVideo.getAttribute('src') || ''].filter(Boolean);
+    let nextVideoIndex = 0;
 
     let disabled = false;
     let waitingForInteraction = false;
@@ -40,6 +49,24 @@
       }
     }
 
+    function selectNextVideo() {
+      if (!videoList.length) return;
+      const src = videoList[nextVideoIndex];
+      nextVideoIndex = (nextVideoIndex + 1) % videoList.length;
+      if (!src) return;
+
+      if (heroVideoSource) {
+        if (heroVideoSource.getAttribute('src') === src) return;
+        heroVideoSource.setAttribute('src', src);
+        heroVideo.load();
+        return;
+      }
+
+      if (heroVideo.getAttribute('src') === src) return;
+      heroVideo.setAttribute('src', src);
+      heroVideo.load();
+    }
+
     function scheduleNextCycle() {
       clearTimer();
       if (disabled) return;
@@ -58,6 +85,7 @@
 
       isPlaying = true;
       heroCover.classList.add('is-playing');
+      selectNextVideo();
 
       try {
         heroVideo.currentTime = 0;
