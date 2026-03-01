@@ -55,8 +55,10 @@ const TYPE_KEYWORDS = {
 const URL_RE = /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/g;
 const YOUTUBE_HOST_RE = /(?:^|\.)youtube\.com$|(?:^|\.)youtu\.be$/i;
 const INSTAGRAM_HOST_RE = /(?:^|\.)instagram\.com$/i;
-const COOK_TIME_HINT_RE = /\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|烤|煮|炸|蒸|炒|焗|炆|煎)\b/i;
-const REST_TIME_HINT_RE = /\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)\b/i;
+const COOK_TIME_HINT_RE =
+  /(?:\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|poach|braise|stew|sear|saute)\b|烤|煮|炸|蒸|炒|焗|炆|煎|汆|川燙|川烫|燉|炖|滾|滚|慢火|小火|中火|大火)/i;
+const REST_TIME_HINT_RE =
+  /(?:\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge)\b|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)/i;
 const COMMENT_SECTION_START_RE =
   /(?:^\s*\d+\s+comments?\s*$|\b(?:leave a comment|post a comment|view comments?)\b|(?:發佈留言|发表评论|留言|評論|评论|回覆|回應|回应))/i;
 const SOCIAL_SHARE_RE =
@@ -89,8 +91,9 @@ const TITLE_META_VALUE_RE =
 const TITLE_INGREDIENT_MEASURE_RE =
   /\b[0-9]+(?:\.[0-9]+)?\s*(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b/i;
 const DURATION_RANGE_RE =
-  /(\d+(?:\.\d+)?)\s*(?:-|–|—|to|~|～)\s*(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
-const DURATION_SINGLE_RE = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|小時|小时|鐘頭|钟头)\b/gi;
+  /(\d+(?:\.\d+)?)\s*(?:-|–|—|to|~|～|至|到)\s*(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|分|小時|小时|鐘頭|钟头)(?=$|[\s,.;:!?，。！？；：、)\]])/gi;
+const DURATION_SINGLE_RE =
+  /(\d+(?:\.\d+)?)\s*(hours?|hrs?|hr|h|minutes?|mins?|min|m|分鐘|分钟|分|小時|小时|鐘頭|钟头)(?=$|[\s,.;:!?，。！？；：、)\]])/gi;
 const FIELD_PATTERNS = {
   prepTime: [
     /(?:^|\b)prep(?:aration)?(?:\s*time)?\s*[:：\-]?\s*([^|;\n]+?)(?=\b(?:cook(?:ing)?(?:\s*time)?|total(?:\s*time)?|servings?|yield|serves?)\b|$)/i,
@@ -1639,6 +1642,7 @@ function inferTimeFields(text, instructions) {
   let prepMinutes = 0;
   let cookMinutes = 0;
   let restMinutes = 0;
+  const preferCookForUnclassified = instructionLines.length > 0;
 
   for (const line of lines) {
     const minutes = extractLineDurationMinutes(line);
@@ -1650,6 +1654,10 @@ function inferTimeFields(text, instructions) {
     }
     if (REST_TIME_HINT_RE.test(line)) {
       restMinutes += minutes;
+      continue;
+    }
+    if (preferCookForUnclassified) {
+      cookMinutes += minutes;
       continue;
     }
     prepMinutes += minutes;
