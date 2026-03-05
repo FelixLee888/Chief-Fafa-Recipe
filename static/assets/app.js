@@ -145,6 +145,18 @@
     let timer = null;
     setAudioToggleDisabled(false);
 
+    function isAutoplayBlocked(error) {
+      const message = String(error?.message || '').toLowerCase();
+      const name = String(error?.name || '');
+      return (
+        name === 'NotAllowedError' ||
+        name === 'AbortError' ||
+        message.includes('notallowed') ||
+        message.includes('user gesture') ||
+        message.includes('interact')
+      );
+    }
+
     function clearTimer() {
       if (timer !== null) {
         window.clearTimeout(timer);
@@ -210,16 +222,33 @@
       const playPromise = heroVideo.play();
       if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch((error) => {
-          const message = String(error?.message || '').toLowerCase();
-          const name = String(error?.name || '');
-          const blockedByAutoplay =
-            name === 'NotAllowedError' ||
-            name === 'AbortError' ||
-            message.includes('notallowed') ||
-            message.includes('user gesture') ||
-            message.includes('interact');
+          if (isAutoplayBlocked(error)) {
+            waitingForInteraction = true;
+            resetPlayback();
+            scheduleNextCycle();
+            return;
+          }
 
-          if (blockedByAutoplay) {
+          disabled = true;
+          clearTimer();
+          resetPlayback();
+          setAudioToggleDisabled(true);
+        });
+      }
+    }
+
+    function playWithSoundFromGesture() {
+      if (disabled) return;
+      waitingForInteraction = false;
+      setMutedState(false);
+      clearTimer();
+      heroCover.classList.add('is-playing');
+      isPlaying = true;
+
+      const playPromise = heroVideo.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch((error) => {
+          if (isAutoplayBlocked(error)) {
             waitingForInteraction = true;
             resetPlayback();
             scheduleNextCycle();
@@ -278,12 +307,11 @@
         if (disabled) return;
 
         const nextMuted = !isMutedState();
-        setMutedState(nextMuted);
-
-        if (!nextMuted) {
-          waitingForInteraction = false;
-          playCycle(true);
+        if (nextMuted) {
+          setMutedState(true);
+          return;
         }
+        playWithSoundFromGesture();
       });
       updateAudioToggle();
     }
