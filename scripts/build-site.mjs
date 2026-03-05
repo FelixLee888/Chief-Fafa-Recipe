@@ -442,11 +442,11 @@ function buildIndexHtml({ site, recipes, locale }) {
   const types = [...new Set(recipes.map((recipe) => localizeType(locale, recipe.type)))].sort();
 
   const cuisineButtons = cuisines
-    .map((cuisine) => `<button class="filter-btn" data-filter-group="cuisine" data-filter-value="${escapeHtml(cuisine)}">${escapeHtml(cuisine)}</button>`)
+    .map((cuisine) => `<button class="filter-btn" type="button" data-filter-group="cuisine" data-filter-value="${escapeHtml(cuisine)}">${escapeHtml(cuisine)}</button>`)
     .join('');
 
   const typeButtons = types
-    .map((type) => `<button class="filter-btn" data-filter-group="type" data-filter-value="${escapeHtml(type)}">${escapeHtml(type)}</button>`)
+    .map((type) => `<button class="filter-btn" type="button" data-filter-group="type" data-filter-value="${escapeHtml(type)}">${escapeHtml(type)}</button>`)
     .join('');
 
   const cards = recipes.map((recipe) => recipeCard(locale, recipe)).join('');
@@ -518,14 +518,14 @@ function buildIndexHtml({ site, recipes, locale }) {
       <div>
         <h2>${escapeHtml(labels.cuisines)}</h2>
         <div class="filter-row">
-          <button class="filter-btn is-active" data-filter-group="cuisine" data-filter-value="all">${escapeHtml(labels.allCuisines)}</button>
+          <button class="filter-btn is-active" type="button" data-filter-group="cuisine" data-filter-value="all">${escapeHtml(labels.allCuisines)}</button>
           ${cuisineButtons}
         </div>
       </div>
       <div>
         <h2>${escapeHtml(labels.types)}</h2>
         <div class="filter-row">
-          <button class="filter-btn is-active" data-filter-group="type" data-filter-value="all">${escapeHtml(labels.allTypes)}</button>
+          <button class="filter-btn is-active" type="button" data-filter-group="type" data-filter-value="all">${escapeHtml(labels.allTypes)}</button>
           ${typeButtons}
         </div>
       </div>

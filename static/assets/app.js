@@ -319,12 +319,69 @@
     cuisine: 'all',
     type: 'all'
   };
+  const stateKeys = ['cuisine', 'type'];
+  const filterValueSets = {
+    cuisine: new Set(['all']),
+    type: new Set(['all'])
+  };
+
+  filters.forEach((button) => {
+    const group = button.dataset.filterGroup;
+    const value = button.dataset.filterValue;
+    if (!group || !value) return;
+    if (!filterValueSets[group]) filterValueSets[group] = new Set(['all']);
+    filterValueSets[group].add(value);
+  });
+
+  function normalizeFilterValue(group, value) {
+    const fallback = 'all';
+    const normalized = String(value || '').trim();
+    if (!normalized) return fallback;
+    const allowedValues = filterValueSets[group];
+    if (!allowedValues) return fallback;
+    return allowedValues.has(normalized) ? normalized : fallback;
+  }
+
+  function restoreStateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    state.query = params.get('q') || '';
+    state.cuisine = normalizeFilterValue('cuisine', params.get('cuisine'));
+    state.type = normalizeFilterValue('type', params.get('type'));
+  }
+
+  function persistStateToUrl() {
+    if (!window.history || typeof window.history.replaceState !== 'function') return;
+    const params = new URLSearchParams(window.location.search);
+    const normalizedQuery = state.query.trim();
+
+    if (normalizedQuery) params.set('q', normalizedQuery);
+    else params.delete('q');
+
+    stateKeys.forEach((key) => {
+      const value = state[key];
+      if (value && value !== 'all') params.set(key, value);
+      else params.delete(key);
+    });
+
+    const nextSearch = params.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}${window.location.hash}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (nextUrl === currentUrl) return;
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }
 
   function setActiveButton(group, value) {
     filters.forEach((button) => {
       if (button.dataset.filterGroup !== group) return;
       button.classList.toggle('is-active', button.dataset.filterValue === value);
     });
+  }
+
+  function syncControlsFromState() {
+    stateKeys.forEach((key) => setActiveButton(key, state[key]));
+    if (searchInput && searchInput.value !== state.query) {
+      searchInput.value = state.query;
+    }
   }
 
   function matches(card) {
@@ -357,6 +414,7 @@
     searchInput.addEventListener('input', (event) => {
       state.query = event.currentTarget.value;
       applyFilters();
+      persistStateToUrl();
     });
 
     searchInput.addEventListener('keydown', (event) => {
@@ -364,19 +422,37 @@
       event.currentTarget.value = '';
       state.query = '';
       applyFilters();
+      persistStateToUrl();
     });
   }
 
   filters.forEach((button) => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       const group = button.dataset.filterGroup;
       const value = button.dataset.filterValue;
       if (!group || !value) return;
       state[group] = value;
       setActiveButton(group, value);
       applyFilters();
+      persistStateToUrl();
     });
   });
 
-  applyFilters();
+  function applyUrlState() {
+    restoreStateFromUrl();
+    syncControlsFromState();
+    applyFilters();
+  }
+
+  window.addEventListener('pageshow', () => {
+    applyUrlState();
+  });
+
+  window.addEventListener('popstate', () => {
+    applyUrlState();
+  });
+
+  applyUrlState();
 })();
