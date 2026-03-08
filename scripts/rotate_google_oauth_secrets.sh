@@ -4,9 +4,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-DEFAULT_ENV_FILE="/Users/felixlee/Documents/ChiefFaFaBot/.env"
+DEFAULT_ENV_FILE_FALLBACK="/Users/felixlee/Documents/ChiefFaFaBot/.env"
 DEFAULT_REPO="FelixLee888/Chief-Fafa-Recipe"
 DEFAULT_REDIRECT_URI="http://127.0.0.1:8788/callback"
+
+if [[ -f "${PROJECT_ROOT}/.env" ]]; then
+  DEFAULT_ENV_FILE="${PROJECT_ROOT}/.env"
+else
+  DEFAULT_ENV_FILE="$DEFAULT_ENV_FILE_FALLBACK"
+fi
 
 ENV_FILE="${RECIPE_ENV_FILE:-$DEFAULT_ENV_FILE}"
 REPO="$DEFAULT_REPO"
@@ -30,7 +36,7 @@ Options:
   --code <auth_code>            OAuth authorization code from Google callback URL
   --callback-url <url>          Full callback URL containing ?code=...
   --repo <owner/repo>           GitHub repository (default: FelixLee888/Chief-Fafa-Recipe)
-  --env-file <path>             Local env file (default: /Users/felixlee/Documents/ChiefFaFaBot/.env)
+  --env-file <path>             Local env file (default: RECIPE_ENV_FILE, then ./ .env, then /Users/felixlee/Documents/ChiefFaFaBot/.env)
   --redirect-uri <uri>          OAuth redirect URI (default: http://127.0.0.1:8788/callback)
   --login-hint <email>          Login hint used when generating consent URL
   --client-secret-file <path>   Google OAuth client secret JSON file (optional)
@@ -128,6 +134,17 @@ set +a
 
 CLIENT_ID="${GOOGLE_DOCS_CLIENT_ID:-${GOOGLE_KEEP_CLIENT_ID:-}}"
 CLIENT_SECRET="${GOOGLE_DOCS_CLIENT_SECRET:-${GOOGLE_KEEP_CLIENT_SECRET:-}}"
+if [[ -z "$CLIENT_ID" || -z "$CLIENT_SECRET" ]]; then
+  if [[ "$ENV_FILE" != "$DEFAULT_ENV_FILE_FALLBACK" && -f "$DEFAULT_ENV_FILE_FALLBACK" ]]; then
+    ENV_FILE="$DEFAULT_ENV_FILE_FALLBACK"
+    set -a
+    # shellcheck disable=SC1090
+    source "$ENV_FILE"
+    set +a
+    CLIENT_ID="${GOOGLE_DOCS_CLIENT_ID:-${GOOGLE_KEEP_CLIENT_ID:-}}"
+    CLIENT_SECRET="${GOOGLE_DOCS_CLIENT_SECRET:-${GOOGLE_KEEP_CLIENT_SECRET:-}}"
+  fi
+fi
 if [[ -z "$CLIENT_ID" || -z "$CLIENT_SECRET" ]]; then
   die "Missing GOOGLE_DOCS_CLIENT_ID/GOOGLE_DOCS_CLIENT_SECRET in env"
 fi
