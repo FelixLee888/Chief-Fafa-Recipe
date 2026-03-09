@@ -682,34 +682,35 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
     return translationConfig.cache.get(cacheKey);
   }
 
-  if (!translationConfig.apiKey) {
-    try {
-      const translated = await translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig);
-      translationConfig.cache.set(cacheKey, translated);
-      return translated;
-    } catch {
-      return sourcePayload;
-    }
-  }
-
   let translated = null;
-  try {
-    translated = await translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, targetLocale, translationConfig);
-  } catch (error) {
-    process.stderr.write(
-      `Warning: OpenAI translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
-    );
-  }
-
-  if (!translated) {
+  if (!translationConfig.apiKey) {
     try {
       translated = await translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig);
     } catch (error) {
-      process.stderr.write(
-        `Warning: Google fallback translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
-      );
-      translated = sourcePayload;
+      process.stderr.write(`Warning: Google translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`);
     }
+  } else {
+    try {
+      translated = await translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, targetLocale, translationConfig);
+    } catch (error) {
+      process.stderr.write(
+        `Warning: OpenAI translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
+      );
+    }
+
+    if (!translated) {
+      try {
+        translated = await translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig);
+      } catch (error) {
+        process.stderr.write(
+          `Warning: Google fallback translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
+        );
+      }
+    }
+  }
+
+  if (!translated) {
+    translated = sourcePayload;
   }
 
   const originalTitle = safeString(sourcePayload.title);
