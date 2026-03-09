@@ -2354,11 +2354,13 @@ async function main() {
       const docJson = await fetchDoc(docId, token);
       const { images, text } = await extractImagesForDoc(docId, docJson, token);
       const cleanText = sanitizeDocumentText(text);
+      const preferredDocName = String(entry.name || docJson.title || '').trim();
       const debugDump =
         debugDocId && debugDocId === docId
           ? {
               docId,
               docTitle: docJson.title || '',
+              listedName: entry.name || '',
               cleanText
             }
           : null;
@@ -2373,7 +2375,7 @@ async function main() {
 
       let ingredients = ingredientsFromText(parserText);
       let instructions = instructionsFromText(parserText);
-      let title = titleFromDocName(docJson.title, parserText, ingredients);
+      let title = titleFromDocName(preferredDocName, parserText, ingredients);
       let summary = summaryFromText(parserText, ingredients, title);
 
       // Some docs have incomplete body text via Docs API; retry using Drive plain-text export.
@@ -2386,7 +2388,7 @@ async function main() {
           if (exportedText) {
             const exportedIngredients = ingredientsFromText(exportedText);
             const exportedInstructions = instructionsFromText(exportedText);
-            const exportedTitle = titleFromDocName(docJson.title, exportedText, exportedIngredients);
+            const exportedTitle = titleFromDocName(preferredDocName, exportedText, exportedIngredients);
             const exportedSummary = summaryFromText(exportedText, exportedIngredients, exportedTitle);
 
             const currentScore = extractionQualityScore({
