@@ -7,7 +7,8 @@ const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const DOCS_SCOPE = 'https://www.googleapis.com/auth/documents.readonly';
 const DRIVE_METADATA_SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly';
-const DEFAULT_SCOPE = `${DOCS_SCOPE} ${DRIVE_METADATA_SCOPE}`;
+const DRIVE_READONLY_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
+const DEFAULT_SCOPE = `${DOCS_SCOPE} ${DRIVE_METADATA_SCOPE} ${DRIVE_READONLY_SCOPE}`;
 const DEFAULT_REDIRECT = 'http://127.0.0.1:8788/callback';
 
 function parseArgs(argv) {

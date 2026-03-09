@@ -1,148 +1,15 @@
 [
   {
     "status": "ok",
-    "docId": "1Di3FdyqKbYhE2GUhUGs0VoQsfPvWl2dnycuZB30xZws",
-    "listedName": "Chief Fafa - 蔥燒海參",
-    "listedModifiedTime": "2026-02-28T23:20:06.017Z",
-    "title": "Chief Fafa - 蔥燒海參",
-    "detectedLanguage": "zh-Hant",
-    "googleDocUrl": "https://docs.google.com/document/d/1Di3FdyqKbYhE2GUhUGs0VoQsfPvWl2dnycuZB30xZws/edit",
-    "originalUrl": "",
-    "images": [
-      "/assets/recipe-images/1Di3FdyqKbYhE2GUhUGs0VoQsfPvWl2dnycuZB30xZws-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": false,
-    "imageOcrUsed": false,
-    "candidateUrls": []
-  },
-  {
-    "status": "ok",
-    "docId": "1vcIKTOgG5zmorL6kb6ZhwQZCvQltcTHH-Xdrj6knYBE",
-    "listedName": "Chief Fafa - 號外：KC廚房",
-    "listedModifiedTime": "2026-02-28T21:29:16.089Z",
-    "title": "Chief Fafa - 號外：KC廚房",
-    "detectedLanguage": "zh-Hant",
-    "googleDocUrl": "https://docs.google.com/document/d/1vcIKTOgG5zmorL6kb6ZhwQZCvQltcTHH-Xdrj6knYBE/edit",
-    "originalUrl": "https://gourmetkc.blogspot.com/2012/12/kc.html",
-    "images": [
-      "/assets/recipe-images/1vcIKTOgG5zmorL6kb6ZhwQZCvQltcTHH-Xdrj6knYBE-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": false,
-    "imageOcrUsed": false,
-    "candidateUrls": [
-      "https://gourmetkc.blogspot.com/2012/12/kc.html"
-    ]
-  },
-  {
-    "status": "ok",
-    "docId": "11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4",
-    "listedName": "Chief Fafa - Black Sesame Cotton Sponge Cake",
-    "listedModifiedTime": "2026-02-28T21:18:00.031Z",
-    "title": "Chief Fafa - Black Sesame Cotton Sponge Cake",
-    "detectedLanguage": "en",
-    "googleDocUrl": "https://docs.google.com/document/d/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4/edit",
-    "originalUrl": "https://www.youtube.com/watch?si=fhfNJPgJtO4gcArZ&v=j4lKXjkUkp4&feature=youtu.be",
-    "images": [
-      "/assets/recipe-images/11lASfhSpQPKzApjziA9zPFROvcfhNYuDqsG_ZZ9j0k4-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": true,
-    "imageOcrUsed": false,
-    "candidateUrls": [
-      "https://www.youtube.com/watch?si=fhfNJPgJtO4gcArZ&v=j4lKXjkUkp4&feature=youtu.be"
-    ]
-  },
-  {
-    "status": "ok",
-    "docId": "1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0",
-    "listedName": "Chief Fafa - Ricky教室 全靠呢個秘訣Celebrity chef’s turnip cake recipe",
-    "listedModifiedTime": "2026-02-28T21:17:52.131Z",
-    "title": "Chief Fafa - Ricky教室 全靠呢個秘訣Celebrity chef’s turnip cake recipe",
-    "detectedLanguage": "en",
-    "googleDocUrl": "https://docs.google.com/document/d/1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0/edit",
-    "originalUrl": "https://www.youtube.com/watch?v=6I8K0cWc0LU",
-    "images": [
-      "/assets/recipe-images/1Ie9ulO_9KDm19rpwVo1-maxRm_xfoU371T_7A4KjBc0-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": true,
-    "imageOcrUsed": false,
-    "candidateUrls": [
-      "https://www.youtube.com/watch?v=6I8K0cWc0LU"
-    ]
-  },
-  {
-    "status": "ok",
-    "docId": "1KB5JMvCIwpBot3oxUmAhuUUEO7OiI8MSExHrGoRrDkI",
-    "listedName": "Chief Fafa - Ricky教室 肉絲炒麵 一定要煎至外脆內軟至係王道!!",
-    "listedModifiedTime": "2026-02-28T21:17:45.599Z",
-    "title": "Chief Fafa - Ricky教室 肉絲炒麵 一定要煎至外脆內軟至係王道!!",
-    "detectedLanguage": "zh-Hant",
-    "googleDocUrl": "https://docs.google.com/document/d/1KB5JMvCIwpBot3oxUmAhuUUEO7OiI8MSExHrGoRrDkI/edit",
-    "originalUrl": "https://www.youtube.com/watch?si=5k387qC77TzTgfsP&v=3oovJ1ftaSI&feature=youtu.be",
-    "images": [
-      "/assets/recipe-images/1KB5JMvCIwpBot3oxUmAhuUUEO7OiI8MSExHrGoRrDkI-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": false,
-    "imageOcrUsed": false,
-    "candidateUrls": [
-      "https://www.youtube.com/watch?si=5k387qC77TzTgfsP&v=3oovJ1ftaSI&feature=youtu.be"
-    ]
-  },
-  {
-    "status": "ok",
-    "docId": "1lqDjFzd2mHd4NT2MvGaF9q5YytSEReRkr9cYL0hHukk",
-    "listedName": "Chief Fafa - 長崎風蜂蜜蛋糕 Cake｜MASAの料理",
-    "listedModifiedTime": "2026-02-28T21:17:37.705Z",
-    "title": "Chief Fafa - 長崎風蜂蜜蛋糕 Cake｜MASAの料理",
+    "docId": "1iUuvVQDKaCARzNsTWBXeXPoOgSkRds3PTNYVuPgFSlw",
+    "listedName": "Chief Fafa - 經典香蕉蛋糕",
+    "listedModifiedTime": "2026-03-09T18:09:07.029Z",
+    "title": "Chief Fafa - 經典香蕉蛋糕",
     "detectedLanguage": "ja",
-    "googleDocUrl": "https://docs.google.com/document/d/1lqDjFzd2mHd4NT2MvGaF9q5YytSEReRkr9cYL0hHukk/edit",
-    "originalUrl": "https://www.youtube.com/watch?si=8IJG403F373cwaOn&v=SvlQi79WabI&feature=youtu.be",
-    "images": [
-      "/assets/recipe-images/1lqDjFzd2mHd4NT2MvGaF9q5YytSEReRkr9cYL0hHukk-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": false,
-    "imageOcrUsed": false,
-    "candidateUrls": [
-      "https://www.youtube.com/watch?si=8IJG403F373cwaOn&v=SvlQi79WabI&feature=youtu.be",
-      "https://www.youtube.com/masaabc1"
-    ]
-  },
-  {
-    "status": "ok",
-    "docId": "1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE",
-    "listedName": "Chief Fafa - 蔥油餅也能這樣做？4款超簡單創意料理大公開！",
-    "listedModifiedTime": "2026-02-28T21:17:30.229Z",
-    "title": "Chief Fafa - 蔥油餅也能這樣做？4款超簡單創意料理大公開！",
-    "detectedLanguage": "ja",
-    "googleDocUrl": "https://docs.google.com/document/d/1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE/edit",
-    "originalUrl": "https://www.youtube.com/watch?si=jFqlkD2xLrPQeGYK&v=MqCVsEnbunM&feature=youtu.be",
-    "images": [
-      "/assets/recipe-images/1V9vLKCcP4VEsEetxe-5VeSKMa4-OtyQwcwfdG0C78oE-01.jpg"
-    ],
-    "exportTextUsed": false,
-    "sourceDescriptionUsed": false,
-    "imageOcrUsed": false,
-    "candidateUrls": [
-      "https://www.youtube.com/watch?si=jFqlkD2xLrPQeGYK&v=MqCVsEnbunM&feature=youtu.be",
-      "https://www.youtube.com/masaabc1"
-    ]
-  },
-  {
-    "status": "ok",
-    "docId": "1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM",
-    "listedName": "Chief Fafa - MASAの料理",
-    "listedModifiedTime": "2026-02-28T21:17:22.645Z",
-    "title": "Chief Fafa - MASAの料理",
-    "detectedLanguage": "ja",
-    "googleDocUrl": "https://docs.google.com/document/d/1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM/edit",
+    "googleDocUrl": "https://docs.google.com/document/d/1iUuvVQDKaCARzNsTWBXeXPoOgSkRds3PTNYVuPgFSlw/edit",
     "originalUrl": "https://www.youtube.com/watch?si=XzQjOgqb-yd9cyX5&v=_Pw-U2057OgM&feature=youtu.be",
     "images": [
-      "/assets/recipe-images/1Mo5_kUFujPDgS51MdEop7ViWZrvHSf7-ZO-W6fcwOmM-01.jpg"
+      "/assets/recipe-images/1iUuvVQDKaCARzNsTWBXeXPoOgSkRds3PTNYVuPgFSlw-01.jpg"
     ],
     "exportTextUsed": false,
     "sourceDescriptionUsed": false,
@@ -154,40 +21,235 @@
   },
   {
     "status": "ok",
-    "docId": "1xaZHl2HViJCuik6SlOw0nvFJlT7EJ0R-S62zEjdRrRU",
-    "listedName": "Chief Fafa - Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this",
-    "listedModifiedTime": "2026-02-28T21:16:59.006Z",
-    "title": "Chief Fafa - Earl Grey Matcha Basque Cheesecake Happy New Year, everyone It’s the first day of the year and I made this ",
+    "docId": "16bGggDvA9MmfZJMGMDwKpFT08HUboh1PPmrrJlSbx98",
+    "listedName": "Chief Fafa - Black Sesame Cotton Sponge Cake",
+    "listedModifiedTime": "2026-03-09T14:53:44.430Z",
+    "title": "Chief Fafa - Black Sesame Cotton Sponge Cake",
     "detectedLanguage": "en",
-    "googleDocUrl": "https://docs.google.com/document/d/1xaZHl2HViJCuik6SlOw0nvFJlT7EJ0R-S62zEjdRrRU/edit",
-    "originalUrl": "https://www.instagram.com/reel/DS-lDHEjMMX/?igsh=MWxybXM4YWcxcXo3NQ==",
+    "googleDocUrl": "https://docs.google.com/document/d/16bGggDvA9MmfZJMGMDwKpFT08HUboh1PPmrrJlSbx98/edit",
+    "originalUrl": "https://www.youtube.com/watch?si=fhfNJPgJtO4gcArZ&v=j4lKXjkUkp4&feature=youtu.be",
     "images": [
-      "/assets/recipe-images/1xaZHl2HViJCuik6SlOw0nvFJlT7EJ0R-S62zEjdRrRU-01.jpg"
+      "/assets/recipe-images/16bGggDvA9MmfZJMGMDwKpFT08HUboh1PPmrrJlSbx98-01.jpg"
     ],
     "exportTextUsed": false,
     "sourceDescriptionUsed": true,
     "imageOcrUsed": false,
     "candidateUrls": [
-      "https://www.instagram.com/reel/DS-lDHEjMMX/?igsh=MWxybXM4YWcxcXo3NQ=="
+      "https://www.youtube.com/watch?si=fhfNJPgJtO4gcArZ&v=j4lKXjkUkp4&feature=youtu.be",
+      "https://www.instagram.com/katherinekwa/",
+      "https://kathrinekwa.com/",
+      "https://www.instagram.com/firenzzi_mys/"
     ]
   },
   {
     "status": "ok",
-    "docId": "1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM",
-    "listedName": "Chief Fafa - Ricky教室 Ricky’s turnip cake lazy recipe updated version",
-    "listedModifiedTime": "2026-02-28T21:16:42.253Z",
-    "title": "Chief Fafa - Ricky教室 Ricky’s turnip cake lazy recipe updated version",
-    "detectedLanguage": "en",
-    "googleDocUrl": "https://docs.google.com/document/d/1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM/edit",
-    "originalUrl": "https://www.youtube.com/watch?v=4nzjzwywVWI",
+    "docId": "1cHQbasfYHtBCPbk9tCbidU08_jcsaxV-jwEcMep1L8k",
+    "listedName": "Chief Fafa - Gluten Free Rice Flour White Bread",
+    "listedModifiedTime": "2026-03-09T14:52:38.384Z",
+    "title": "Chief Fafa - Gluten Free Rice Flour White Bread",
+    "detectedLanguage": "ja",
+    "googleDocUrl": "https://docs.google.com/document/d/1cHQbasfYHtBCPbk9tCbidU08_jcsaxV-jwEcMep1L8k/edit",
+    "originalUrl": "https://www.youtube.com/watch?si=t81pAnW113ofSbou&v=Y5y7AWDLfYY&feature=youtu.be",
     "images": [
-      "/assets/recipe-images/1vm3jQSwK0gQzl2HTW_8XzDECNLLLbXQj4dglB75hlbM-01.jpg"
+      "/assets/recipe-images/1cHQbasfYHtBCPbk9tCbidU08_jcsaxV-jwEcMep1L8k-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.youtube.com/watch?si=t81pAnW113ofSbou&v=Y5y7AWDLfYY&feature=youtu.be",
+      "https://www.koku-kyoto.com",
+      "https://item.rakuten.co.jp/asai-tool/at-pb-120-sp/"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1zUbCi2Fv7rFpi3oT5JzZHSAYvQuamsdt3ieoUe7oXLQ",
+    "listedName": "Chief Fafa - Pavlova Bombs with Lemon Curd and Raspberry Coulis",
+    "listedModifiedTime": "2026-03-09T14:52:08.059Z",
+    "title": "Chief Fafa - Pavlova Bombs with Lemon Curd and Raspberry Coulis ",
+    "detectedLanguage": "en",
+    "googleDocUrl": "https://docs.google.com/document/d/1zUbCi2Fv7rFpi3oT5JzZHSAYvQuamsdt3ieoUe7oXLQ/edit",
+    "originalUrl": "https://www.facebook.com/reel/1872624516703874/?fs=e&mibextid=wwXIfr&rdid=nzrAOXI9Q08W2Bwb&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1EetZhcGdj%2F%3Fmibextid%3DwwXIfr",
+    "images": [
+      "/assets/recipe-images/1zUbCi2Fv7rFpi3oT5JzZHSAYvQuamsdt3ieoUe7oXLQ-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.facebook.com/reel/1872624516703874/?fs=e&mibextid=wwXIfr&rdid=nzrAOXI9Q08W2Bwb&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1EetZhcGdj%2F%3Fmibextid%3DwwXIfr"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1fWC37ol8SdDfyR5oDrLAvwOl0g1GoKrQeNM6W8WO5y8",
+    "listedName": "Chief Fafa - 清酒煮鮑魚配鮑魚",
+    "listedModifiedTime": "2026-03-09T14:04:53.961Z",
+    "title": "Chief Fafa - 清酒煮鮑魚配鮑魚",
+    "detectedLanguage": "zh-Hant",
+    "googleDocUrl": "https://docs.google.com/document/d/1fWC37ol8SdDfyR5oDrLAvwOl0g1GoKrQeNM6W8WO5y8/edit",
+    "originalUrl": "https://www.instagram.com/reel/DPL3QcqkyM4/?igsh=b2ZreDZvdW81bnZw",
+    "images": [
+      "/assets/recipe-images/1fWC37ol8SdDfyR5oDrLAvwOl0g1GoKrQeNM6W8WO5y8-01.jpg"
     ],
     "exportTextUsed": false,
     "sourceDescriptionUsed": true,
     "imageOcrUsed": false,
     "candidateUrls": [
-      "https://www.youtube.com/watch?v=4nzjzwywVWI"
+      "https://www.instagram.com/reel/DPL3QcqkyM4/?igsh=b2ZreDZvdW81bnZw"
     ]
+  },
+  {
+    "status": "ok",
+    "docId": "18LzbfqR-VQxWIwIJyTNp4_Nks-vvjCQxhxgNUkQy68g",
+    "listedName": "Chief Fafa - 肉絲炒麵",
+    "listedModifiedTime": "2026-03-09T14:04:29.275Z",
+    "title": "Chief Fafa - 肉絲炒麵",
+    "detectedLanguage": "zh-Hant",
+    "googleDocUrl": "https://docs.google.com/document/d/18LzbfqR-VQxWIwIJyTNp4_Nks-vvjCQxhxgNUkQy68g/edit",
+    "originalUrl": "https://www.youtube.com/watch?si=5k387qC77TzTgfsP&v=3oovJ1ftaSI&feature=youtu.be",
+    "images": [
+      "/assets/recipe-images/18LzbfqR-VQxWIwIJyTNp4_Nks-vvjCQxhxgNUkQy68g-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.youtube.com/watch?si=5k387qC77TzTgfsP&v=3oovJ1ftaSI&feature=youtu.be"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1zjaE_hoZoLRc3K4qis-q6Sjs40Eu05WKE-ntq9P-Of0",
+    "listedName": "Chief Fafa - 蔥油餅",
+    "listedModifiedTime": "2026-03-09T14:03:55.253Z",
+    "title": "Chief Fafa - 蔥油餅",
+    "detectedLanguage": "ja",
+    "googleDocUrl": "https://docs.google.com/document/d/1zjaE_hoZoLRc3K4qis-q6Sjs40Eu05WKE-ntq9P-Of0/edit",
+    "originalUrl": "https://www.youtube.com/watch?si=jFqlkD2xLrPQeGYK&v=MqCVsEnbunM&feature=youtu.be",
+    "images": [
+      "/assets/recipe-images/1zjaE_hoZoLRc3K4qis-q6Sjs40Eu05WKE-ntq9P-Of0-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.youtube.com/watch?si=jFqlkD2xLrPQeGYK&v=MqCVsEnbunM&feature=youtu.be",
+      "https://www.youtube.com/masaabc1"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1dHAEq2xR8Th9wPOHR68kfrsUU5eVVK1cI4PVt1vel2o",
+    "listedName": "Chief Fafa - 長崎風蜂蜜蛋糕",
+    "listedModifiedTime": "2026-03-09T13:57:49.058Z",
+    "title": "Chief Fafa - 長崎風蜂蜜蛋糕",
+    "detectedLanguage": "ja",
+    "googleDocUrl": "https://docs.google.com/document/d/1dHAEq2xR8Th9wPOHR68kfrsUU5eVVK1cI4PVt1vel2o/edit",
+    "originalUrl": "https://www.youtube.com/watch?si=8IJG403F373cwaOn&v=SvlQi79WabI&feature=youtu.be",
+    "images": [
+      "/assets/recipe-images/1dHAEq2xR8Th9wPOHR68kfrsUU5eVVK1cI4PVt1vel2o-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.youtube.com/watch?si=8IJG403F373cwaOn&v=SvlQi79WabI&feature=youtu.be",
+      "https://www.youtube.com/masaabc1"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1UfWd8SE2eXItoF3hIWt-CbU3WcwdcqVwnsi0DVOsyt0",
+    "listedName": "Chief Fafa - 名廚蘿蔔糕",
+    "listedModifiedTime": "2026-03-09T13:52:56.338Z",
+    "title": "Chief Fafa - 名廚蘿蔔糕",
+    "detectedLanguage": "zh-Hant",
+    "googleDocUrl": "https://docs.google.com/document/d/1UfWd8SE2eXItoF3hIWt-CbU3WcwdcqVwnsi0DVOsyt0/edit",
+    "originalUrl": "https://www.youtube.com/watch?si=zAH1jJ8JaFaFkS65&v=4nzjzwywVWI&feature=youtu.be",
+    "images": [
+      "/assets/recipe-images/1UfWd8SE2eXItoF3hIWt-CbU3WcwdcqVwnsi0DVOsyt0-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": true,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.youtube.com/watch?si=zAH1jJ8JaFaFkS65&v=4nzjzwywVWI&feature=youtu.be"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1Lu4RBBTxCF0QBDYDaMUY39l_CI8iIfZAkjPXgph9jUE",
+    "listedName": "Chief Fafa - 棉花蛋糕",
+    "listedModifiedTime": "2026-03-09T13:48:43.156Z",
+    "title": "Chief Fafa - 棉花蛋糕",
+    "detectedLanguage": "zh-Hant",
+    "googleDocUrl": "https://docs.google.com/document/d/1Lu4RBBTxCF0QBDYDaMUY39l_CI8iIfZAkjPXgph9jUE/edit",
+    "originalUrl": "https://www.facebook.com/reel/3482527748570127/?fs=e&mibextid=wwXIfr&rdid=wVfmQalELSqcmmUp&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F1DZN9GbT46%2F%3Fmibextid%3DwwXIfr",
+    "images": [
+      "/assets/recipe-images/1Lu4RBBTxCF0QBDYDaMUY39l_CI8iIfZAkjPXgph9jUE-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.facebook.com/reel/3482527748570127/?fs=e&mibextid=wwXIfr&rdid=wVfmQalELSqcmmUp&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F1DZN9GbT46%2F%3Fmibextid%3DwwXIfr"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "14hrSREhiZ7mwFGstIExh10O_i2VBai2beusRj5_desA",
+    "listedName": "Chief Fafa - Crispy Garlic Parmesan Potato Wedges",
+    "listedModifiedTime": "2026-03-04T14:15:41.607Z",
+    "title": "Chief Fafa - Crispy Garlic Parmesan Potato Wedges",
+    "detectedLanguage": "en",
+    "googleDocUrl": "https://docs.google.com/document/d/14hrSREhiZ7mwFGstIExh10O_i2VBai2beusRj5_desA/edit",
+    "originalUrl": "https://www.facebook.com/reel/1205250218396494/?fs=e&mibextid=wwXIfr&rdid=wuFASGYCaOpCYqHH&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1C3ktiebLY%2F%3Fmibextid%3DwwXIfr",
+    "images": [
+      "/assets/recipe-images/14hrSREhiZ7mwFGstIExh10O_i2VBai2beusRj5_desA-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.facebook.com/reel/1205250218396494/?fs=e&mibextid=wwXIfr&rdid=wuFASGYCaOpCYqHH&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1C3ktiebLY%2F%3Fmibextid%3DwwXIfr"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1F_gxblU2KSLr_ECrxOX7ZCoYS-Q9eQj9EQpxjgG3yVE",
+    "listedName": "Chief Fafa - 玫瑰花酒釀饅頭",
+    "listedModifiedTime": "2026-03-01T21:02:14.452Z",
+    "title": "Chief Fafa - 玫瑰花酒釀饅頭",
+    "detectedLanguage": "zh-Hant",
+    "googleDocUrl": "https://docs.google.com/document/d/1F_gxblU2KSLr_ECrxOX7ZCoYS-Q9eQj9EQpxjgG3yVE/edit",
+    "originalUrl": "https://www.facebook.com/reel/1329190755462005?fs=e&mibextid=wwXIfr&rdid=4INtdTd7eVzMRxpr&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1EfXemRAos%2F%3Fmibextid%3DwwXIfr",
+    "images": [
+      "/assets/recipe-images/1F_gxblU2KSLr_ECrxOX7ZCoYS-Q9eQj9EQpxjgG3yVE-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": [
+      "https://www.facebook.com/reel/1329190755462005?fs=e&mibextid=wwXIfr&rdid=4INtdTd7eVzMRxpr&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1EfXemRAos%2F%3Fmibextid%3DwwXIfr"
+    ]
+  },
+  {
+    "status": "ok",
+    "docId": "1Di3FdyqKbYhE2GUhUGs0VoQsfPvWl2dnycuZB30xZws",
+    "listedName": "Chief Fafa - 蔥燒海參",
+    "listedModifiedTime": "2026-03-01T13:34:31.570Z",
+    "title": "Chief Fafa - 蔥燒海參",
+    "detectedLanguage": "zh-Hant",
+    "googleDocUrl": "https://docs.google.com/document/d/1Di3FdyqKbYhE2GUhUGs0VoQsfPvWl2dnycuZB30xZws/edit",
+    "originalUrl": "",
+    "images": [
+      "/assets/recipe-images/1Di3FdyqKbYhE2GUhUGs0VoQsfPvWl2dnycuZB30xZws-01.jpg"
+    ],
+    "exportTextUsed": false,
+    "sourceDescriptionUsed": false,
+    "imageOcrUsed": false,
+    "candidateUrls": []
   }
 ]

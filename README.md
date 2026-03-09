@@ -133,6 +133,7 @@ Recommended OAuth scopes for full auto-discovery:
 
 - `https://www.googleapis.com/auth/documents.readonly`
 - `https://www.googleapis.com/auth/drive.metadata.readonly`
+- `https://www.googleapis.com/auth/drive.readonly` (required for Drive plain-text export fallback)
 
 The scripts automatically check env from:
 
