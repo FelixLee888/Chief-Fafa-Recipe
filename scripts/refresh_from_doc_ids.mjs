@@ -358,6 +358,43 @@ function localeLabel(locale) {
   return 'English';
 }
 
+function titleScriptProfile(text) {
+  const sample = String(text || '').trim();
+  if (!sample) return { latin: 0, cjk: 0, jpKana: 0 };
+  return {
+    latin: (sample.match(/[A-Za-z]/g) || []).length,
+    cjk: (sample.match(/[\u3400-\u9fff]/g) || []).length,
+    jpKana: (sample.match(/[\u3040-\u30ff]/g) || []).length
+  };
+}
+
+function titleAlreadyMatchesLocale(title, locale) {
+  const profile = titleScriptProfile(title);
+  if (locale === 'zh-Hant') {
+    return profile.cjk > 0 && profile.jpKana === 0;
+  }
+  if (locale === 'ja') {
+    return profile.jpKana > 0 || (profile.cjk > 0 && profile.latin === 0);
+  }
+  return profile.latin > 0 && profile.cjk === 0 && profile.jpKana === 0;
+}
+
+function normalizeTranslatedTitleCandidate(value, fallback) {
+  const clean = cleanTitleCandidate(value);
+  if (isUsableRecipeTitle(clean)) return clean;
+  return cleanTitleCandidate(fallback) || 'Untitled Recipe';
+}
+
+function detectTitleSourceLocale(title, fallbackLocale) {
+  const normalized = cleanTitleCandidate(title);
+  if (!normalized) return fallbackLocale;
+  const profile = titleScriptProfile(normalized);
+  if (profile.jpKana > 0) return 'ja';
+  if (profile.cjk > 0 && profile.latin === 0) return 'zh-Hant';
+  if (profile.latin > 0 && profile.cjk === 0 && profile.jpKana === 0) return 'en';
+  return fallbackLocale;
+}
+
 function safeString(value, fallback = '') {
   const out = String(value || '').trim();
   return out || fallback;
@@ -675,6 +712,22 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
     }
   }
 
+  const originalTitle = safeString(sourcePayload.title);
+  if (titleAlreadyMatchesLocale(originalTitle, targetLocale)) {
+    translated.title = originalTitle;
+  } else {
+    const titleSourceLocale = detectTitleSourceLocale(originalTitle, sourceLocale);
+    try {
+      const stableTitle = await translateTextViaGoogle(originalTitle, titleSourceLocale, targetLocale, translationConfig);
+      if (isUsableRecipeTitle(stableTitle)) {
+        translated.title = stableTitle;
+      }
+    } catch {
+      // Keep model title if deterministic fallback is unavailable.
+    }
+  }
+  translated.title = normalizeTranslatedTitleCandidate(translated.title, originalTitle);
+
   translationConfig.cache.set(cacheKey, translated);
   return translated;
 }
@@ -762,7 +815,9 @@ async function listGoogleDocsFromDrive(token, options = {}) {
       if (response.status === 403 && /scope|insufficient/i.test(detail)) {
         throw new Error(
           `Insufficient Google OAuth scope for Drive listing. Re-authorize with scopes: ` +
-            `https://www.googleapis.com/auth/documents.readonly and https://www.googleapis.com/auth/drive.metadata.readonly`
+            `https://www.googleapis.com/auth/documents.readonly, ` +
+            `https://www.googleapis.com/auth/drive.metadata.readonly, and ` +
+            `https://www.googleapis.com/auth/drive.readonly`
         );
       }
       throw new Error(`Failed to list Google Docs from Drive: ${detail}`);
@@ -1091,8 +1146,25 @@ async function exportDocPlainText(docId, token) {
   });
 
   if (!response.ok) {
-    const body = await response.text().catch(() => '');
-    const detail = body ? body.slice(0, 240) : `export api error (${response.status})`;
+    let detail = '';
+    try {
+      const bodyJson = await response.json();
+      detail = String(bodyJson?.error?.message || '').trim();
+    } catch {
+      const bodyText = await response.text().catch(() => '');
+      detail = String(bodyText || '').trim();
+    }
+    if (!detail) {
+      detail = `export api error (${response.status})`;
+    }
+    if (response.status === 403 && /scope|insufficient/i.test(detail)) {
+      throw new Error(
+        `Insufficient Google OAuth scope for Drive export fallback. Re-authorize with scopes: ` +
+          `https://www.googleapis.com/auth/documents.readonly, ` +
+          `https://www.googleapis.com/auth/drive.metadata.readonly, and ` +
+          `https://www.googleapis.com/auth/drive.readonly`
+      );
+    }
     throw new Error(detail);
   }
 
