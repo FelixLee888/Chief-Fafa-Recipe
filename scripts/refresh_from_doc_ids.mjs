@@ -779,6 +779,15 @@ async function resolveDocsAccessToken(loaded) {
     if (response.ok && body && typeof body === 'object' && body.access_token) {
       return String(body.access_token);
     }
+
+    const detail =
+      body?.error_description ||
+      body?.error ||
+      `token refresh failed (${response.status || 'unknown status'})`;
+    throw new Error(
+      `Failed to refresh Google Docs access token: ${detail}. ` +
+        `Update GOOGLE_DOCS_REFRESH_TOKEN and GOOGLE_DOCS_ACCESS_TOKEN in GitHub Actions secrets.`
+    );
   }
 
   if (directToken) return directToken;
