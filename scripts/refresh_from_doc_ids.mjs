@@ -89,7 +89,7 @@ const TITLE_STEP_LINE_RE = /^(?:\(?[0-9]{1,3}\)?[.)、:：]|step\s*[0-9]+|第\s*
 const TITLE_META_LINE_RE =
   /^(?:original\s*page\s*url|source\s*url|page\s*url|google\s*doc(?:ument)?\s*url|reference\s*url|video\s*url|media\s*url|recipe\s*title|author|description|caption|source\s*type|input\s*source|language|lang|cuisine|type|category)(?:\s*[:：].*)?$/i;
 const TITLE_META_VALUE_RE =
-  /^(?:global|chinese|japanese|korean|thai|filipino|indian|italian|french|mexican|mediterranean|american|dessert|dinner|lunch|breakfast|snack|appetizer|soup|salad|beverage|main course|english|en|ja|zh(?:-hant)?|繁體中文|日本語)$/i;
+  /^(?:global|chinese|japanese|korean|thai|filipino|indian|italian|french|mexican|mediterranean|american|dessert|dinner|lunch|breakfast|snack|appetizer|soup|salad|beverage|main course|english|en|ja|zh(?:-hant)?|繁體中文|日本語|video link|page link|post link|media link|source link)$/i;
 const TITLE_INGREDIENT_MEASURE_RE =
   /\b[0-9]+(?:\.[0-9]+)?\s*(?:kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)\b/i;
 const DURATION_RANGE_RE =
@@ -1438,8 +1438,11 @@ function cleanTitleCandidate(value) {
 
 function isUsableRecipeTitle(title) {
   const clean = cleanTitleCandidate(title);
+  const compact = clean.replace(/\s+/g, '');
+  const profile = titleScriptProfile(clean);
+  const allowShortCjkTitle = compact.length >= 2 && compact.length <= 8 && profile.latin === 0 && (profile.cjk > 0 || profile.jpKana > 0);
   if (!clean) return false;
-  if (clean.length < 3 || clean.length > 140) return false;
+  if ((compact.length < 3 && !allowShortCjkTitle) || compact.length > 140) return false;
   if (!/[\p{L}\p{N}]/u.test(clean)) return false;
   if (/^https?:\/\//i.test(clean)) return false;
   if (TITLE_PLACEHOLDER_RE.test(clean)) return false;
@@ -1455,8 +1458,10 @@ function isUsableRecipeTitle(title) {
 function looksLikeMetadataValue(value) {
   const clean = cleanTitleCandidate(value);
   if (!clean) return true;
+  if (isLikelyRecipeMetadataLine(clean)) return true;
   if (TITLE_META_LINE_RE.test(clean)) return true;
   if (TITLE_META_VALUE_RE.test(clean)) return true;
+  if (/^(?:video\s+recipe\s+captured|recipe\s+submitted\s+as\s+text)\s*[:：]/i.test(clean)) return true;
   if (/^\(?.{0,56}(?:not provided|unavailable|missing|n\/a).{0,56}\)?$/i.test(clean)) return true;
   if (/^[\p{L}\p{N}\s/-]{1,48}[:：]$/u.test(clean)) return true;
   if (/\b(?:source|url|language|cuisine|category|type|image|attachment|payload|detected|input)\b/i.test(clean) && clean.split(/\s+/).length <= 8) {
@@ -1615,8 +1620,10 @@ function summaryFromText(text, ingredients = [], title = '') {
     .find((line) => {
       if (!line) return false;
       if (/^https?:\/\//i.test(line)) return false;
+      if (isLikelyRecipeMetadataLine(line)) return false;
       if (isCommentOrSocialLine(line)) return false;
       if (isPromoLine(line)) return false;
+      if (/^(?:video\s+recipe\s+captured|recipe\s+submitted\s+as\s+text)\s*[:：]/i.test(line)) return false;
       if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) return false;
       if (looksLikeMetadataValue(line) || TITLE_STEP_LINE_RE.test(line)) return false;
 
