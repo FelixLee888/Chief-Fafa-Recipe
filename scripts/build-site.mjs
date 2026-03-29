@@ -285,6 +285,45 @@ function hostFromUrl(url) {
   }
 }
 
+function cleanCardSummary(summary) {
+  const text = String(summary || '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([,.;:!?])/g, '$1')
+    .trim();
+
+  if (!text) return '';
+
+  const sectionSplit = /(?:^|\s)(?:ingredients?|instructions?|directions?|method|steps?|prep(?:aration)?|cook(?:ing)?|total|servings?)\s*[:：]|(?:^|\s)(?:材料|食材|做法|作法|步骤|步驟|調理方法|作り方|手順)\s*[:：]/i;
+  const metadataSplit = /(?:^|\s)(?:source type|source url|video recipe captured|recipe submitted as text|recipe title)\s*[:：]/i;
+
+  let cleaned = text
+    .split(sectionSplit)[0]
+    .split(metadataSplit)[0]
+    .trim();
+
+  if (!cleaned) cleaned = text;
+
+  const clauseSplit = cleaned.split(/\s*[|｜]\s*|\s+[.-]\s+/u)[0].trim();
+  if (clauseSplit) {
+    cleaned = clauseSplit;
+  }
+
+  const sentenceMatch = cleaned.match(/^(.{1,160}?[.!?。！？]|.{1,160}$)/u);
+  let teaser = sentenceMatch ? sentenceMatch[1].trim() : cleaned;
+  const compactTeaser = teaser.replace(/[\s.!?。！？|:：]+/g, '');
+  if (compactTeaser.length < 12) {
+    teaser = cleaned;
+  }
+
+  const maxLength = /[\u3040-\u30ff\u3400-\u9fff]/u.test(teaser) ? 56 : 110;
+  if (teaser.length <= maxLength) return teaser;
+
+  const slice = teaser.slice(0, maxLength);
+  const lastSpace = slice.lastIndexOf(' ');
+  teaser = lastSpace > maxLength * 0.6 ? slice.slice(0, lastSpace) : slice;
+  return `${teaser.trim()}...`;
+}
+
 function alternateLinks(page, locale) {
   const lines = Object.keys(LOCALES)
     .map((code) => {
@@ -334,6 +373,7 @@ function languageSwitcher(locale, page) {
 function recipeCard(locale, recipe) {
   const labels = LOCALES[locale];
   const view = localizedRecipeContent(recipe, locale);
+  const cardSummary = cleanCardSummary(view.summary);
   const cuisine = localizeCuisine(locale, recipe.cuisine);
   const type = localizeType(locale, recipe.type);
 
@@ -369,7 +409,7 @@ function recipeCard(locale, recipe) {
           <span>${escapeHtml(type)}</span>
         </div>
         <h3>${escapeHtml(view.title)}</h3>
-        <p>${escapeHtml(view.summary)}</p>
+        <p class="recipe-card__summary">${escapeHtml(cardSummary)}</p>
         <div class="recipe-card__time">${escapeHtml(labels.total)}: ${escapeHtml(recipe.totalTime || 'TBD')}</div>
         ${
           recipe.sourceUrl
