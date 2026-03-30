@@ -2,9 +2,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  GOOGLE_DOCS_DEFAULT_SCOPE,
+  exchangeServiceAccountAccessToken,
+  loadGoogleServiceAccount
+} from './google_auth.mjs';
 
 const DEFAULT_EXTERNAL_ENV = '/Users/felixlee/Documents/ChiefFaFaBot/.env';
-const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DOCS_API_BASE = 'https://docs.googleapis.com/v1/documents';
 const GOOGLE_DRIVE_FILES_API = 'https://www.googleapis.com/drive/v3/files';
 const GOOGLE_DRIVE_EXPORT_API = 'https://www.googleapis.com/drive/v3/files';
@@ -757,6 +761,15 @@ async function buildRecipeTranslations(recipe, sourceLocale, translationConfig) 
 }
 
 async function resolveDocsAccessToken(loaded) {
+  const serviceAccount = await loadGoogleServiceAccount(loaded);
+  if (serviceAccount) {
+    const subject = pickEnv(loaded, ['GOOGLE_SERVICE_ACCOUNT_SUBJECT', 'GOOGLE_DOCS_SERVICE_ACCOUNT_SUBJECT']);
+    return exchangeServiceAccountAccessToken(serviceAccount, {
+      scope: GOOGLE_DOCS_DEFAULT_SCOPE,
+      subject
+    });
+  }
+
   const refreshToken = pickEnv(loaded, ['GOOGLE_DOCS_REFRESH_TOKEN', 'GOOGLE_KEEP_REFRESH_TOKEN']);
   const directToken = pickEnv(loaded, ['GOOGLE_DOCS_ACCESS_TOKEN', 'GOOGLE_KEEP_ACCESS_TOKEN']);
   const clientId = pickEnv(loaded, ['GOOGLE_DOCS_CLIENT_ID', 'GOOGLE_KEEP_CLIENT_ID']);
@@ -791,7 +804,9 @@ async function resolveDocsAccessToken(loaded) {
   }
 
   if (directToken) return directToken;
-  throw new Error('Missing Google Docs OAuth token configuration');
+  throw new Error(
+    'Missing Google Docs credentials. Configure GOOGLE_SERVICE_ACCOUNT_JSON_B64/GOOGLE_SERVICE_ACCOUNT_FILE or Google Docs OAuth tokens.'
+  );
 }
 
 async function listGoogleDocsFromDrive(token, options = {}) {

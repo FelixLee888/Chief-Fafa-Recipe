@@ -2,13 +2,17 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  GOOGLE_DOCS_DEFAULT_SCOPE,
+  exchangeServiceAccountAccessToken,
+  loadGoogleServiceAccount
+} from './google_auth.mjs';
 
 const DEFAULT_INPUT = path.resolve('data/google-doc-export.txt');
 const DEFAULT_OUTPUT = path.resolve('data/recipes.json');
 const DEFAULT_EXTERNAL_ENV = '/Users/felixlee/Documents/ChiefFaFaBot/.env';
 const IMAGE_STATIC_DIR = path.resolve('static/assets/recipe-images');
 
-const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DOCS_API_BASE = 'https://docs.googleapis.com/v1/documents';
 const GOOGLE_DOCS_URL_RE = /https?:\/\/docs\.google\.com\/document\/d\/([A-Za-z0-9_-]+)/i;
 const IMAGE_MARKER_RE = /^\[\[IMAGE:([A-Za-z0-9_-]+)\]\]$/;
@@ -184,6 +188,20 @@ function resolveGoogleClientSecrets(extraEnv) {
 }
 
 async function resolveDocsAccessToken(extraEnv) {
+  const serviceAccount = await loadGoogleServiceAccount(extraEnv);
+  if (serviceAccount) {
+    const subject = pickEnv(extraEnv, ['GOOGLE_SERVICE_ACCOUNT_SUBJECT', 'GOOGLE_DOCS_SERVICE_ACCOUNT_SUBJECT']);
+    try {
+      const token = await exchangeServiceAccountAccessToken(serviceAccount, {
+        scope: GOOGLE_DOCS_DEFAULT_SCOPE,
+        subject
+      });
+      return { token, error: '' };
+    } catch (error) {
+      return { token: '', error: error?.message || 'service account token exchange failed' };
+    }
+  }
+
   const refreshToken = pickEnv(extraEnv, ['GOOGLE_DOCS_REFRESH_TOKEN', 'GOOGLE_KEEP_REFRESH_TOKEN']);
   const directToken = pickEnv(extraEnv, ['GOOGLE_DOCS_ACCESS_TOKEN', 'GOOGLE_KEEP_ACCESS_TOKEN']);
 
@@ -241,7 +259,8 @@ async function resolveDocsAccessToken(extraEnv) {
 
   return {
     token: '',
-    error: 'GOOGLE_DOCS_ACCESS_TOKEN / GOOGLE_DOCS_REFRESH_TOKEN not configured'
+    error:
+      'GOOGLE_SERVICE_ACCOUNT_JSON_B64 / GOOGLE_SERVICE_ACCOUNT_FILE or GOOGLE_DOCS_ACCESS_TOKEN / GOOGLE_DOCS_REFRESH_TOKEN not configured'
   };
 }
 

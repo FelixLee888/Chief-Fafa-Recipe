@@ -170,11 +170,15 @@ This workflow:
 
 In `Settings` -> `Secrets and variables` -> `Actions`, add:
 
+- `GOOGLE_SERVICE_ACCOUNT_JSON_B64` (recommended; base64-encoded service account JSON)
+- `GOOGLE_SERVICE_ACCOUNT_SUBJECT` (optional; only for Workspace domain-wide delegation)
 - `GOOGLE_DOCS_CLIENT_ID`
 - `GOOGLE_DOCS_CLIENT_SECRET`
 - `GOOGLE_DOCS_REFRESH_TOKEN`
 - `GOOGLE_DOCS_ACCESS_TOKEN` (optional fallback)
 - `OPENAI_API_KEY` (optional but recommended for EN/ZH/JA recipe translation)
+
+Service account auth is preferred when available. OAuth client credentials remain supported as fallback.
 
 Alternative legacy names are also supported:
 
@@ -190,3 +194,27 @@ Open `Actions` -> `Refresh Docs and Publish` -> `Run workflow`.
 Optional input:
 
 - `doc_ids`: comma-separated doc IDs override for one run.
+
+### Service Account Setup
+
+Recommended for stable automation without repeated user re-consent:
+
+1. Create a Google service account with Docs API and Drive API enabled.
+2. Share your recipe folder or shared drive to that service account email as `Viewer`.
+3. Add `GOOGLE_SERVICE_ACCOUNT_JSON_B64` to GitHub Actions secrets.
+4. Optionally set `GOOGLE_DOCS_DRIVE_QUERY` to a folder-scoped query such as:
+
+```text
+'<FOLDER_ID>' in parents and mimeType='application/vnd.google-apps.document' and trashed=false
+```
+
+To create the secret value locally:
+
+```bash
+base64 -i /path/to/service-account.json | pbcopy
+```
+
+Local development can also use:
+
+- `GOOGLE_SERVICE_ACCOUNT_FILE=/absolute/path/to/service-account.json`
+- `GOOGLE_SERVICE_ACCOUNT_JSON=<raw-json>`
