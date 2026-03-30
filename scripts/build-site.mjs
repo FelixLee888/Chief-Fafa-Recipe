@@ -605,20 +605,23 @@ function buildRecipeHtml({ site, recipe, locale }) {
     ? `<figure class="recipe-hero-image"><img src="${escapeHtml(siteScopedUrl(recipe.image))}" alt="${escapeHtml(view.title)}" loading="eager" decoding="async"></figure>`
     : '';
 
-  const sourceLinks = `
+  const sourceLinkItems = [
+    recipe.sourceUrl
+      ? `<p><strong>${escapeHtml(labels.source)}:</strong> <a href="${escapeHtml(recipe.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(recipe.sourceUrl)}</a></p>`
+      : '',
+    recipe.googleDocUrl
+      ? `<p><strong>${escapeHtml(labels.googleDoc)}:</strong> <a href="${escapeHtml(recipe.googleDocUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(recipe.googleDocUrl)}</a></p>`
+      : ''
+  ].filter(Boolean);
+
+  const sourceLinks =
+    sourceLinkItems.length > 0
+      ? `
       <section class="recipe-source-links">
-        ${
-          recipe.sourceUrl
-            ? `<p><strong>${escapeHtml(labels.source)}:</strong> <a href="${escapeHtml(recipe.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(recipe.sourceUrl)}</a></p>`
-            : ''
-        }
-        ${
-          recipe.googleDocUrl
-            ? `<p><strong>${escapeHtml(labels.googleDoc)}:</strong> <a href="${escapeHtml(recipe.googleDocUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(recipe.googleDocUrl)}</a></p>`
-            : ''
-        }
+        ${sourceLinkItems.join('\n        ')}
       </section>
-  `;
+  `
+      : '';
 
   const canonical = recipeUrl(locale, recipe.slug);
 
@@ -672,7 +675,6 @@ function buildRecipeHtml({ site, recipe, locale }) {
       <h1>${escapeHtml(view.title)}</h1>
       <p class="recipe-summary">${escapeHtml(view.summary)}</p>
       ${image}
-      ${sourceLinks}
 
       <section class="recipe-stats" aria-label="Recipe details">
         <div><strong>${escapeHtml(labels.prep)}:</strong> ${escapeHtml(recipe.prepTime || 'TBD')}</div>
@@ -696,6 +698,8 @@ function buildRecipeHtml({ site, recipe, locale }) {
           ${steps}
         </ol>
       </section>
+
+      ${sourceLinks}
     </article>
   </main>
 
