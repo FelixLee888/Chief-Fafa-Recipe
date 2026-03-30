@@ -144,21 +144,21 @@ To override this lookup order, set `RECIPE_ENV_FILE` (or pass `--env-file`).
 
 ## GitHub Pages Deployment
 
-This project includes a GitHub Actions workflow at `.github/workflows/deploy-pages.yml`.
+This project uses a single canonical GitHub Actions workflow for refresh + publish:
 
-After pushing this repository to GitHub on the `main` branch:
+- `.github/workflows/refresh-docs-gh-pages.yml`
+
+After pushing this repository to GitHub:
 
 1. Open repo `Settings` -> `Pages`
 2. Set `Source` to `GitHub Actions`
-3. Push to `main` (or re-run the workflow)
+3. Use the workflow above for all deploys
 
-The workflow builds the static site with `node scripts/build-site.mjs` and publishes the generated `site/` folder.
+The workflow runs on:
 
-## Trigger Refresh on GitHub
-
-For GitHub Pages branch-based deployment (`gh-pages`), use:
-
-- `.github/workflows/refresh-docs-gh-pages.yml`
+- push to `main`
+- manual dispatch
+- hourly schedule
 
 This workflow:
 

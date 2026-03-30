@@ -1,6 +1,9 @@
 name: Refresh Docs and Publish
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       doc_ids:
