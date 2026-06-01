@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chef Fafa&#39;s Recipe</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/Chief-Fafa-Recipe/assets/favicon-32.png?v=20260227-2">
+  <link rel="icon" type="image/png" sizes="512x512" href="/Chief-Fafa-Recipe/assets/fafa_icon.png?v=20260227-2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Chief-Fafa-Recipe/assets/apple-touch-icon.png?v=20260227-2">
+  <link rel="shortcut icon" href="/Chief-Fafa-Recipe/assets/favicon-32.png?v=20260227-2">
+  <meta http-equiv="refresh" content="0; url=/Chief-Fafa-Recipe/en/index.html">
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 2rem; }
+    a { display: inline-block; margin: 0.35rem 0.5rem 0 0; }
+  </style>
+</head>
+<body>
+  <p>Redirecting to localized site...</p>
+  <p>
+    <a href="/Chief-Fafa-Recipe/en/index.html">English</a>
+    <a href="/Chief-Fafa-Recipe/zh-Hant/index.html">繁體中文</a>
+    <a href="/Chief-Fafa-Recipe/ja/index.html">日本語</a>
+  </p>
+  <script>
+    const lang = (navigator.language || '').toLowerCase();
+    let target = '/Chief-Fafa-Recipe/en/index.html';
+    if (lang.startsWith('zh')) target = '/Chief-Fafa-Recipe/zh-Hant/index.html';
+    if (lang.startsWith('ja')) target = '/Chief-Fafa-Recipe/ja/index.html';
+    location.replace(target);
+  </script>
+</body>
+</html>
