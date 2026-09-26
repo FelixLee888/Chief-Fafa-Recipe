@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: /Chief-Fafa-Recipe/sitemap.xml
