@@ -116,7 +116,7 @@ Default behavior:
 - `GOOGLE_DOCS_MAX_DOCS` (optional limit, useful for testing)
 - `GOOGLE_DOCS_DRIVE_PAGE_SIZE` (optional page size for Drive listing, default `200`)
 - `RECIPE_TRANSLATE_ENABLED` (`1` or `0`, default `1`)
-- `RECIPE_TRANSLATE_MODEL` (default `gpt-4.1-mini`)
+- `RECIPE_TRANSLATE_MODEL` (default `gpt-6-luna`)
 - `RECIPE_OCR_MODEL` (default: same as `RECIPE_TRANSLATE_MODEL`)
 - `SITE_BASE_PATH` (for subpath deploys, e.g. `/Chief-Fafa-Recipe`)
 

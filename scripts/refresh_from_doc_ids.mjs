@@ -342,9 +342,9 @@ function resolveTranslationConfig(args, loadedEnv) {
 
   const apiKey = pickEnv(loadedEnv, ['OPENAI_API_KEY']);
   const model =
-    String(args['translate-model'] || process.env.RECIPE_TRANSLATE_MODEL || loadedEnv.RECIPE_TRANSLATE_MODEL || 'gpt-4.1-mini').trim();
+    String(args['translate-model'] || process.env.RECIPE_TRANSLATE_MODEL || loadedEnv.RECIPE_TRANSLATE_MODEL || 'gpt-6-luna').trim();
   const ocrModel =
-    String(args['ocr-model'] || process.env.RECIPE_OCR_MODEL || loadedEnv.RECIPE_OCR_MODEL || model || 'gpt-4.1-mini').trim();
+    String(args['ocr-model'] || process.env.RECIPE_OCR_MODEL || loadedEnv.RECIPE_OCR_MODEL || model || 'gpt-6-luna').trim();
 
   return {
     enabled,
@@ -630,7 +630,7 @@ async function extractRecipeFromImageWithOpenAI(localImagePath, translationConfi
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: translationConfig.ocrModel || translationConfig.model || 'gpt-4.1-mini',
+      model: translationConfig.ocrModel || translationConfig.model || 'gpt-6-luna',
       temperature: 0,
       response_format: { type: 'json_object' },
       messages: [
