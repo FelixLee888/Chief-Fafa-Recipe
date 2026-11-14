@@ -41,14 +41,14 @@ const CUISINE_KEYWORDS = {
   Mexican: ['tortilla', 'jalapeno', 'pico de gallo', 'black beans', 'queso', 'chipotle', '墨西哥'],
   Mediterranean: ['tahini', 'chickpea', 'feta', 'zaatar', 'olive oil', 'hummus', '地中海'],
   American: ['bbq', 'ranch', 'coleslaw', 'burger', 'mac and cheese', 'cornbread'],
-  French: ['beurre', 'veloute', 'herbes de provence', 'ratatouille', 'dijon', '法式']
+  French: ['beurre', 'veloute', 'herbes de provence', 'ratatouille', 'dijon', 'canele', 'canelé', '可麗露', '可丽露', '法式']
 };
 
 const TYPE_KEYWORDS = {
   Breakfast: ['breakfast', 'omelet', 'oatmeal', 'pancake', 'toast', 'granola', 'scramble', 'morning', '早餐'],
   Lunch: ['lunch', 'sandwich', 'rice bowl', 'bento', 'wrap', '午餐'],
   Dinner: ['dinner', 'main', 'entree', 'stew', 'braise', 'roast', 'curry', 'adobo', '晚餐'],
-  Dessert: ['dessert', 'cake', 'cookie', 'brownie', 'pudding', 'sweet', 'ice cream', '甜點', '甜品', '蛋糕'],
+  Dessert: ['dessert', 'cake', 'cookie', 'brownie', 'pudding', 'sweet', 'ice cream', 'canele', 'canelé', '甜點', '甜品', '蛋糕', '可麗露', '可丽露'],
   Snack: ['snack', 'bite', 'onigiri', 'bar', 'chips', '點心', '点心'],
   Appetizer: ['appetizer', 'starter', 'dip', 'canape', 'small plate', '前菜'],
   Soup: ['soup', 'broth', 'ramen', 'bisque', 'sinigang', '湯', '汤'],
@@ -62,7 +62,7 @@ const INSTAGRAM_HOST_RE = /(?:^|\.)instagram\.com$/i;
 const COOK_TIME_HINT_RE =
   /(?:\b(?:bake|roast|boil|simmer|fry|steam|grill|cook|preheat|poach|braise|stew|sear|saute)\b|烤|煮|炸|蒸|炒|焗|炆|煎|汆|川燙|川烫|燉|炖|滾|滚|慢火|小火|中火|大火)/i;
 const REST_TIME_HINT_RE =
-  /(?:\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge)\b|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵)/i;
+  /(?:\b(?:rest|chill(?:ed|ing)?|cool|freeze|marinate|proof|soak|steep|overnight|refrigerate|fridge)\b|冷藏|冷凍|冷冻|放涼|放凉|靜置|静置|浸泡|醃|腌|發酵|发酵|室溫|室温|回溫|回温|退溫|退温|關火後.{0,16}[燜焖])/i;
 const COMMENT_SECTION_START_RE =
   /(?:^\s*\d+\s+comments?\s*$|\b(?:leave a comment|post a comment|view comments?)\b|(?:發佈留言|发表评论|留言|評論|评论|回覆|回應|回应))/i;
 const SOCIAL_SHARE_RE =
@@ -77,7 +77,12 @@ const RECIPE_NOTE_FIELD_LINE_RE =
 const INGREDIENT_SECTION_ANY_RE = /(?:ingredients?|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i;
 const INGREDIENT_SECTION_LINE_RE = /^(ingredients?|材料|食材)(?:\s*\([^)]*\))?\s*[:：]?/i;
 const INSTRUCTION_SECTION_LINE_RE = /^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i;
-const INGREDIENT_STOP_INLINE_RE = /(?:\b(?:instructions?|method|steps?|directions?)\b|做法|作法|手順|作り方|https?:\/\/|#[\p{L}\p{N}_-]+)/iu;
+const SUMMARY_SECTION_LINE_RE = /^(?:summary|description|簡介|简介|摘要|說明|说明)\s*[:：]?$/i;
+const NOTES_SECTION_LINE_RE = /^(?:notes?|tips?|remarks?|備註|备注|提示|小貼士|小贴士|ポイント)\s*[:：]?$/i;
+const SOURCE_SECTION_LINE_RE = /^(?:source|sources|來源|来源|出典)\s*[:：]?$/i;
+const ORIGINAL_RECORD_SECTION_LINE_RE = /^(?:original\s+source\s+record(?:\s*-+)?|original\s+record|原始來源記錄|原始来源记录)\s*[:：-]*$/i;
+const RECIPE_SECTION_BOUNDARY_RE = /^(?:summary|description|簡介|简介|摘要|說明|说明|ingredients?|材料|食材|instructions?|method|steps?|directions?|做法|作法|手順|作り方|notes?|tips?|remarks?|備註|备注|提示|小貼士|小贴士|ポイント|source|sources|來源|来源|出典|original\s+source\s+record(?:\s*-+)?|original\s+record|原始來源記錄|原始来源记录)\s*[:：-]*$/i;
+const INGREDIENT_STOP_INLINE_RE = /(?:\b(?:instructions?|method|steps?|directions?|notes?|tips?|remarks?|source|original\s+source\s+record)\b|做法|作法|手順|作り方|備註|备注|來源|来源|https?:\/\/|#[\p{L}\p{N}_-]+)/iu;
 const INGREDIENT_INLINE_ITEM_RE =
   /([A-Za-z\u00C0-\u024F\u3400-\u9fff][A-Za-z0-9\u00C0-\u024F\u3400-\u9fff'’()\/,&.+\- ]{0,72}?)\s*(\d+(?:\.\d+)?)\s*(kg|g|mg|ml|l|cc|oz|lb|lbs|tbsp|tsp|cups?|pcs?|pc|克|公斤|毫升|公升|茶匙|湯匙|汤匙|大匙|小匙|條|条|隻|只|個|个|片|塊|块|顆|颗|粒)/giu;
 const INGREDIENT_PLACEHOLDER_RE =
@@ -118,7 +123,9 @@ const FIELD_PATTERNS = {
     /(?:^|\b)makes?\s*[:：\-]?\s*([0-9]+(?:\s*(?:-|–|—|~|to)\s*[0-9]+)?(?:\s*(?:servings?|people|persons))?)/i,
     /(?:^|\b)serves?\s+([0-9]+(?:\s*(?:-|–|—|~|to)\s*[0-9]+)?(?:\s*(?:people|persons|servings?))?)/i,
     /(?:^|[\s(（])(?:份量|份數|份数|人份|可供|食用人數|食用人数)\s*[:：\-]?\s*([^|;\n]+)$/i,
-    /\b([0-9]+(?:\s*(?:-|–|—|~)\s*[0-9]+)?\s*(?:servings?|people|persons|人份|位份|人))\b/i
+    /\b([0-9]+(?:\s*(?:-|–|—|~)\s*[0-9]+)?\s*(?:servings?|people|persons|人份|位份|人))\b/i,
+    /(?:可(?:製作|制作)\s*(?:約|约)?|(?:約|约|大約|大约)\s*)([0-9]+\s*(?:顆|颗|個|个|份|件))/i,
+    /[（(]\s*([0-9]+\s*(?:顆|颗|個|个|份|件))\s*[）)]/i
   ]
 };
 const INGREDIENT_MEASURE_TOKEN_RE =
@@ -389,6 +396,16 @@ function normalizeTranslatedTitleCandidate(value, fallback) {
   return cleanTitleCandidate(fallback) || 'Untitled Recipe';
 }
 
+function normalizeLocalizedRecipeTitle(value, locale) {
+  let title = String(value || '').trim();
+  if (locale === 'en') {
+    title = title.replace(/\bkelilu\b/gi, 'Canelé').replace(/可麗露|可丽露/g, 'Canelé');
+  } else if (locale === 'ja') {
+    title = title.replace(/\bkelilu\b/gi, 'カヌレ').replace(/可麗露|可丽露/g, 'カヌレ');
+  }
+  return title;
+}
+
 function detectTitleSourceLocale(title, fallbackLocale) {
   const normalized = cleanTitleCandidate(title);
   if (!normalized) return fallbackLocale;
@@ -522,9 +539,9 @@ async function translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, tar
     'You are an expert recipe translator.',
     `Translate from ${localeLabel(sourceLocale)} to ${localeLabel(targetLocale)}.`,
     'Preserve numbers, units, ingredient amounts, and cooking times exactly.',
-    'Keep ingredients and instructions as arrays with the same order as input.',
+    'Keep ingredients, instructions, and notes as arrays with the same order as input.',
     'Do not invent missing details.',
-    'Return ONLY valid JSON with keys: title, summary, ingredients, instructions.'
+    'Return ONLY valid JSON with keys: title, summary, ingredients, instructions, notes.'
   ].join(' ');
 
   const response = await fetch(OPENAI_CHAT_COMPLETIONS_API, {
@@ -535,7 +552,6 @@ async function translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, tar
     },
     body: JSON.stringify({
       model: translationConfig.model,
-      temperature: 0.1,
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: systemPrompt },
@@ -567,29 +583,33 @@ async function translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, tar
     title: safeString(parsed.title, sourcePayload.title),
     summary: safeString(parsed.summary, sourcePayload.summary),
     ingredients: normalizeLineArray(parsed.ingredients, sourcePayload.ingredients),
-    instructions: normalizeLineArray(parsed.instructions, sourcePayload.instructions)
+    instructions: normalizeLineArray(parsed.instructions, sourcePayload.instructions),
+    notes: normalizeLineArray(parsed.notes, sourcePayload.notes)
   };
 
   if (!translated.title) translated.title = sourcePayload.title;
   if (!translated.summary) translated.summary = sourcePayload.summary;
   if (translated.ingredients.length === 0) translated.ingredients = sourcePayload.ingredients;
   if (translated.instructions.length === 0) translated.instructions = sourcePayload.instructions;
+  if (translated.notes.length === 0) translated.notes = sourcePayload.notes;
   return translated;
 }
 
 async function translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig) {
-  const [title, summary, ingredients, instructions] = await Promise.all([
+  const [title, summary, ingredients, instructions, notes] = await Promise.all([
     translateTextViaGoogle(sourcePayload.title, sourceLocale, targetLocale, translationConfig).catch(() => sourcePayload.title),
     translateTextViaGoogle(sourcePayload.summary, sourceLocale, targetLocale, translationConfig).catch(() => sourcePayload.summary),
     translateLineArrayViaGoogle(sourcePayload.ingredients, sourceLocale, targetLocale, translationConfig),
-    translateLineArrayViaGoogle(sourcePayload.instructions, sourceLocale, targetLocale, translationConfig)
+    translateLineArrayViaGoogle(sourcePayload.instructions, sourceLocale, targetLocale, translationConfig),
+    translateLineArrayViaGoogle(sourcePayload.notes, sourceLocale, targetLocale, translationConfig)
   ]);
 
   return {
     title: safeString(title, sourcePayload.title),
     summary: safeString(summary, sourcePayload.summary),
     ingredients: normalizeLineArray(ingredients, sourcePayload.ingredients),
-    instructions: normalizeLineArray(instructions, sourcePayload.instructions)
+    instructions: normalizeLineArray(instructions, sourcePayload.instructions),
+    notes: normalizeLineArray(notes, sourcePayload.notes)
   };
 }
 
@@ -631,7 +651,6 @@ async function extractRecipeFromImageWithOpenAI(localImagePath, translationConfi
     },
     body: JSON.stringify({
       model: translationConfig.ocrModel || translationConfig.model || 'gpt-6-luna',
-      temperature: 0,
       response_format: { type: 'json_object' },
       messages: [
         {
@@ -670,7 +689,8 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
     title: safeString(source.title),
     summary: safeString(source.summary),
     ingredients: Array.isArray(source.ingredients) ? source.ingredients.slice(0, 120) : [],
-    instructions: Array.isArray(source.instructions) ? source.instructions.slice(0, 120) : []
+    instructions: Array.isArray(source.instructions) ? source.instructions.slice(0, 120) : [],
+    notes: Array.isArray(source.notes) ? source.notes.slice(0, 60) : []
   };
 
   if (targetLocale === sourceLocale) {
@@ -731,7 +751,10 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
       // Keep model title if deterministic fallback is unavailable.
     }
   }
-  translated.title = normalizeTranslatedTitleCandidate(translated.title, originalTitle);
+  translated.title = normalizeTranslatedTitleCandidate(
+    normalizeLocalizedRecipeTitle(translated.title, targetLocale),
+    originalTitle
+  );
 
   translationConfig.cache.set(cacheKey, translated);
   return translated;
@@ -743,7 +766,8 @@ async function buildRecipeTranslations(recipe, sourceLocale, translationConfig) 
     title: safeString(recipe.title),
     summary: safeString(recipe.summary),
     ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
-    instructions: Array.isArray(recipe.instructions) ? recipe.instructions : []
+    instructions: Array.isArray(recipe.instructions) ? recipe.instructions : [],
+    notes: Array.isArray(recipe.notes) ? recipe.notes : []
   };
 
   const translations = {};
@@ -1600,6 +1624,16 @@ function inferTitleFromIngredients(ingredients, text) {
 }
 
 function titleFromDocName(name, text, ingredients = []) {
+  const cleanFormatLines = String(text || '')
+    .split('\n')
+    .map((line) => normalizeSectionLine(line))
+    .filter(Boolean);
+  const cleanFormatMarkerIndex = cleanFormatLines.findIndex((line) => /^chef\s+fafa\s+clean\s+recipe(?:\s+v\d+)?$/i.test(line));
+  if (cleanFormatMarkerIndex > 0) {
+    const cleanFormatTitle = cleanTitleCandidate(cleanFormatLines[cleanFormatMarkerIndex - 1]);
+    if (isUsableRecipeTitle(cleanFormatTitle)) return cleanFormatTitle;
+  }
+
   const cleanName = cleanTitleCandidate(name);
   if (isUsableRecipeTitle(cleanName)) return cleanName;
 
@@ -1622,6 +1656,11 @@ function titleFromDocName(name, text, ingredients = []) {
 }
 
 function summaryFromText(text, ingredients = [], title = '') {
+  const explicitSummary = sectionLinesFromText(text, SUMMARY_SECTION_LINE_RE)
+    .join(' ')
+    .trim();
+  if (explicitSummary) return explicitSummary.slice(0, 600);
+
   const ingredientKeys = new Set(
     (Array.isArray(ingredients) ? ingredients : [])
       .map((item) => cleanTitleCandidate(item).toLowerCase())
@@ -1639,6 +1678,7 @@ function summaryFromText(text, ingredients = [], title = '') {
       if (isCommentOrSocialLine(line)) return false;
       if (isPromoLine(line)) return false;
       if (/^(?:video\s+recipe\s+captured|recipe\s+submitted\s+as\s+text)\s*[:：]/i.test(line)) return false;
+      if (/^chef\s+fafa\s+clean\s+recipe(?:\s+v\d+)?$/i.test(line)) return false;
       if (TITLE_PLACEHOLDER_RE.test(line) || TITLE_STOP_RE.test(line)) return false;
       if (looksLikeMetadataValue(line) || TITLE_STEP_LINE_RE.test(line)) return false;
 
@@ -1666,6 +1706,27 @@ function normalizeSectionLine(line) {
     .replace(/^[\s\-*•·▪▫►▶◆◇🔸🔹🔶🔷]+/u, '')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function sectionLinesFromText(text, startPattern, stopPattern = RECIPE_SECTION_BOUNDARY_RE) {
+  const lines = String(text || '')
+    .split('\n')
+    .map((line) => normalizeSectionLine(line));
+  const out = [];
+  let inSection = false;
+
+  for (const line of lines) {
+    if (!inSection) {
+      if (startPattern.test(line)) inSection = true;
+      continue;
+    }
+    if (stopPattern.test(line)) break;
+    const clean = stripListPrefix(line);
+    if (!clean || isCommentOrSocialLine(clean)) continue;
+    out.push(clean);
+  }
+
+  return out;
 }
 
 function cleanFieldValue(value) {
@@ -1733,10 +1794,10 @@ function durationToMinutes(amount, unit) {
   return Math.round(n);
 }
 
-function extractLineDurationMinutes(line) {
+function extractLineDurations(line) {
   const text = String(line || '');
-  let total = 0;
-  let matched = false;
+  const durations = [];
+  const contextFor = (index, length) => text.slice(Math.max(0, index - 45), Math.min(text.length, index + length + 45));
 
   for (const match of text.matchAll(DURATION_RANGE_RE)) {
     const start = Number(match[1]);
@@ -1744,26 +1805,23 @@ function extractLineDurationMinutes(line) {
     const unit = match[3];
     if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
     const avg = (start + end) / 2;
-    total += durationToMinutes(avg, unit);
-    matched = true;
+    durations.push({ minutes: durationToMinutes(avg, unit), context: contextFor(match.index || 0, match[0].length) });
   }
 
   // Prevent double counting ranges when single-value regex also matches their tail.
-  const scrubbed = text.replace(DURATION_RANGE_RE, ' ');
+  const scrubbed = text.replace(DURATION_RANGE_RE, (value) => ' '.repeat(value.length));
   for (const match of scrubbed.matchAll(DURATION_SINGLE_RE)) {
     const amount = Number(match[1]);
     const unit = match[2];
     if (!Number.isFinite(amount)) continue;
-    total += durationToMinutes(amount, unit);
-    matched = true;
+    durations.push({ minutes: durationToMinutes(amount, unit), context: contextFor(match.index || 0, match[0].length) });
   }
 
   if (/\bovernight\b/i.test(text)) {
-    total += 8 * 60;
-    matched = true;
+    durations.push({ minutes: 8 * 60, context: text });
   }
 
-  return matched ? total : 0;
+  return durations.filter((item) => item.minutes > 0);
 }
 
 function formatDuration(minutes) {
@@ -1819,22 +1877,22 @@ function inferTimeFields(text, instructions) {
   const preferCookForUnclassified = instructionLines.length > 0;
 
   for (const line of lines) {
-    const minutes = extractLineDurationMinutes(line);
-    if (minutes <= 0) continue;
-
-    if (COOK_TIME_HINT_RE.test(line)) {
-      cookMinutes += minutes;
-      continue;
+    for (const duration of extractLineDurations(line)) {
+      const context = duration.context || line;
+      if (REST_TIME_HINT_RE.test(context)) {
+        restMinutes += duration.minutes;
+        continue;
+      }
+      if (COOK_TIME_HINT_RE.test(context)) {
+        cookMinutes += duration.minutes;
+        continue;
+      }
+      if (preferCookForUnclassified) {
+        cookMinutes += duration.minutes;
+        continue;
+      }
+      prepMinutes += duration.minutes;
     }
-    if (REST_TIME_HINT_RE.test(line)) {
-      restMinutes += minutes;
-      continue;
-    }
-    if (preferCookForUnclassified) {
-      cookMinutes += minutes;
-      continue;
-    }
-    prepMinutes += minutes;
   }
 
   if (prepMinutes === 0 && lines.length > 0 && (cookMinutes > 0 || restMinutes > 0)) {
@@ -1890,6 +1948,7 @@ function ingredientsFromText(text) {
       }
       continue;
     }
+    if (inSection && RECIPE_SECTION_BOUNDARY_RE.test(line)) break;
     if (INSTRUCTION_SECTION_LINE_RE.test(line)) {
       if (inSection) break;
       continue;
@@ -1963,11 +2022,12 @@ function instructionsFromText(text) {
       continue;
     }
 
-    if (/^(instructions?|method|steps?|directions?|做法|作法|手順|作り方)(?:\s*[:：]|\s+|$)/i.test(line)) {
+    if (INSTRUCTION_SECTION_LINE_RE.test(line)) {
       inSection = true;
       continue;
     }
     if (!inSection) continue;
+    if (RECIPE_SECTION_BOUNDARY_RE.test(line)) break;
 
     const cleaned = stripListPrefix(line);
     if (!cleaned) continue;
@@ -1989,6 +2049,10 @@ function instructionsFromText(text) {
 
   if (out.length === 0) return ['See source URL for full method.'];
   return out;
+}
+
+function notesFromText(text) {
+  return sectionLinesFromText(text, NOTES_SECTION_LINE_RE).slice(0, 30);
 }
 
 function cleanSourceLine(line) {
@@ -2407,6 +2471,7 @@ async function main() {
 
       let ingredients = ingredientsFromText(parserText);
       let instructions = instructionsFromText(parserText);
+      let notes = notesFromText(parserText);
       let title = titleFromDocName(preferredDocName, parserText, ingredients);
       let summary = summaryFromText(parserText, ingredients, title);
 
@@ -2420,6 +2485,7 @@ async function main() {
           if (exportedText) {
             const exportedIngredients = ingredientsFromText(exportedText);
             const exportedInstructions = instructionsFromText(exportedText);
+            const exportedNotes = notesFromText(exportedText);
             const exportedTitle = titleFromDocName(preferredDocName, exportedText, exportedIngredients);
             const exportedSummary = summaryFromText(exportedText, exportedIngredients, exportedTitle);
 
@@ -2443,6 +2509,7 @@ async function main() {
               exportTextUsed = true;
               ingredients = exportedIngredients;
               instructions = exportedInstructions;
+              notes = exportedNotes;
               title = exportedTitle;
               summary = exportedSummary;
             }
@@ -2522,7 +2589,8 @@ async function main() {
           title,
           summary,
           ingredients,
-          instructions
+          instructions,
+          notes
         };
         const debugPath = path.resolve('/tmp', `chief-fafa-debug-${docId}.json`);
         await fs.writeFile(debugPath, `${JSON.stringify(debugDump, null, 2)}\n`, 'utf8');
@@ -2531,13 +2599,14 @@ async function main() {
 
       const combinedText = sourceDescription ? `${parserText}\n${sourceDescription}` : parserText;
       const searchable = `${title} ${summary} ${combinedText}`.toLowerCase();
-      const fields = extractRecipeFields(combinedText);
-      const inferredTimes = inferTimeFields(combinedText, instructions);
+      const fields = extractRecipeFields(parserText);
+      const inferredTimes = inferTimeFields(parserText, instructions);
       const sourceLanguage = detectRecipeLanguage({
         title,
         summary,
         ingredients,
         instructions,
+        notes,
         rawText: combinedText
       });
 
@@ -2569,6 +2638,7 @@ async function main() {
         servings: fields.servings || 'TBD',
         ingredients,
         instructions,
+        notes,
         tags: [],
         image: images[0] || '',
         sourceUrl: originalUrl,
@@ -2586,6 +2656,7 @@ async function main() {
       if (previous && typeof previous === 'object') {
         const prevIngredients = Array.isArray(previous.ingredients) ? previous.ingredients : [];
         const prevInstructions = Array.isArray(previous.instructions) ? previous.instructions : [];
+        const prevNotes = Array.isArray(previous.notes) ? previous.notes : [];
         const prevSummary = String(previous.summary || '').trim();
         const prevTitle = String(previous.title || '').trim();
 
@@ -2594,6 +2665,9 @@ async function main() {
         }
         if (isPlaceholderInstructions(recipeBase.instructions) && !isPlaceholderInstructions(prevInstructions)) {
           recipeBase.instructions = prevInstructions.slice(0, 120);
+        }
+        if (recipeBase.notes.length === 0 && prevNotes.length > 0) {
+          recipeBase.notes = prevNotes.slice(0, 60);
         }
         if (isGenericSummary(recipeBase.summary) && prevSummary && !isGenericSummary(prevSummary)) {
           recipeBase.summary = prevSummary;

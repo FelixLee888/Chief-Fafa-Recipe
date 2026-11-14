@@ -39,6 +39,7 @@ const LOCALES = {
     servings: 'Servings',
     ingredients: 'Ingredients',
     instructions: 'Instructions',
+    notes: 'Notes',
     language: 'Language',
     themeToLight: 'Light mode',
     themeToDark: 'Dark mode',
@@ -76,6 +77,7 @@ const LOCALES = {
     servings: '份量',
     ingredients: '材料',
     instructions: '做法',
+    notes: '備註',
     language: '語言',
     themeToLight: '淺色模式',
     themeToDark: '深色模式',
@@ -113,6 +115,7 @@ const LOCALES = {
     servings: '分量',
     ingredients: '材料',
     instructions: '作り方',
+    notes: 'ポイント',
     language: '言語',
     themeToLight: 'ライト',
     themeToDark: 'ダーク',
@@ -251,6 +254,7 @@ function localizedRecipeContent(recipe, locale) {
 
   let ingredients = Array.isArray(translated.ingredients) && translated.ingredients.length > 0 ? translated.ingredients : recipe.ingredients;
   let instructions = Array.isArray(translated.instructions) && translated.instructions.length > 0 ? translated.instructions : recipe.instructions;
+  const notes = Array.isArray(translated.notes) && translated.notes.length > 0 ? translated.notes : recipe.notes;
 
   const placeholder = PLACEHOLDER_I18N[locale] || PLACEHOLDER_I18N.en;
   if (Array.isArray(ingredients) && ingredients.length === 1 && String(ingredients[0]).trim() === PLACEHOLDER_INGREDIENT) {
@@ -265,7 +269,8 @@ function localizedRecipeContent(recipe, locale) {
     title: String(translated.title || recipe.title || ''),
     summary: String(translated.summary || recipe.summary || ''),
     ingredients,
-    instructions
+    instructions,
+    notes: Array.isArray(notes) ? notes : []
   };
 }
 
@@ -597,6 +602,7 @@ function buildRecipeHtml({ site, recipe, locale }) {
 
   const ingredients = view.ingredients.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
   const steps = view.instructions.map((step) => `<li>${escapeHtml(step)}</li>`).join('');
+  const notes = (Array.isArray(view.notes) ? view.notes : []).map((note) => `<li>${escapeHtml(note)}</li>`).join('');
   const tags = recipe.tags.map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`).join('');
   const cuisine = localizeCuisine(locale, recipe.cuisine);
   const type = localizeType(locale, recipe.type);
@@ -698,6 +704,14 @@ function buildRecipeHtml({ site, recipe, locale }) {
           ${steps}
         </ol>
       </section>
+
+      ${notes ? `
+      <aside class="recipe-notes">
+        <h2>${escapeHtml(labels.notes)}</h2>
+        <ul>
+          ${notes}
+        </ul>
+      </aside>` : ''}
 
       ${sourceLinks}
     </article>
