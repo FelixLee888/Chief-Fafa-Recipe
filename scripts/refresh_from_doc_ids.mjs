@@ -14,6 +14,18 @@ const GOOGLE_DRIVE_FILES_API = 'https://www.googleapis.com/drive/v3/files';
 const GOOGLE_DRIVE_EXPORT_API = 'https://www.googleapis.com/drive/v3/files';
 const OPENAI_CHAT_COMPLETIONS_API = 'https://api.openai.com/v1/chat/completions';
 const GOOGLE_TRANSLATE_API = 'https://translate.googleapis.com/translate_a/single';
+const DEFAULT_OPENAI_MODEL = 'gpt-6-luna';
+const RETIRED_OPENAI_MODEL_PATTERNS = [
+  /^gpt-3\.5(?:-|$)/i,
+  /^gpt-4(?:\.|-|o|$)/i,
+  /^gpt-5(?:-|$)/i,
+  /^gpt-5\.1(?:-|$)/i,
+  /^gpt-5\.3-codex(?:-|$)/i,
+  /^o(?:1|3|4)(?:-|$)/i,
+  /^chatgpt-4o(?:-|$)/i,
+  /^codex-mini-latest$/i,
+  /^computer-use-preview$/i
+];
 const IMAGE_STATIC_DIR = path.resolve('static/assets/recipe-images');
 const OUTPUT_RECIPES = path.resolve('data/recipes.json');
 const OUTPUT_REPORT = path.resolve('data/doc-assets.json');
@@ -348,10 +360,14 @@ function resolveTranslationConfig(args, loadedEnv) {
       : parseBoolean(explicit, true);
 
   const apiKey = pickEnv(loadedEnv, ['OPENAI_API_KEY']);
-  const model =
-    String(args['translate-model'] || process.env.RECIPE_TRANSLATE_MODEL || loadedEnv.RECIPE_TRANSLATE_MODEL || 'gpt-6-luna').trim();
-  const ocrModel =
-    String(args['ocr-model'] || process.env.RECIPE_OCR_MODEL || loadedEnv.RECIPE_OCR_MODEL || model || 'gpt-6-luna').trim();
+  const requestedModel = String(
+    args['translate-model'] || process.env.RECIPE_TRANSLATE_MODEL || loadedEnv.RECIPE_TRANSLATE_MODEL || DEFAULT_OPENAI_MODEL
+  ).trim();
+  const model = supportedOpenAIModel(requestedModel, 'translation');
+  const requestedOcrModel = String(
+    args['ocr-model'] || process.env.RECIPE_OCR_MODEL || loadedEnv.RECIPE_OCR_MODEL || model || DEFAULT_OPENAI_MODEL
+  ).trim();
+  const ocrModel = supportedOpenAIModel(requestedOcrModel, 'OCR');
 
   return {
     enabled,
@@ -361,6 +377,15 @@ function resolveTranslationConfig(args, loadedEnv) {
     cache: new Map(),
     lineCache: new Map()
   };
+}
+
+function supportedOpenAIModel(model, purpose) {
+  const candidate = String(model || '').trim() || DEFAULT_OPENAI_MODEL;
+  if (!RETIRED_OPENAI_MODEL_PATTERNS.some((pattern) => pattern.test(candidate))) return candidate;
+  process.stderr.write(
+    `Warning: configured ${purpose} model ${candidate} is retired or deprecated; using ${DEFAULT_OPENAI_MODEL}.\n`
+  );
+  return DEFAULT_OPENAI_MODEL;
 }
 
 function localeLabel(locale) {
@@ -711,7 +736,7 @@ async function extractRecipeFromImageWithOpenAI(localImagePath, translationConfi
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: translationConfig.ocrModel || translationConfig.model || 'gpt-6-luna',
+      model: translationConfig.ocrModel || translationConfig.model || DEFAULT_OPENAI_MODEL,
       response_format: { type: 'json_object' },
       messages: [
         {
