@@ -469,6 +469,29 @@ function parseGoogleTranslatePayload(raw) {
   return translated;
 }
 
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function recipeTranslationLooksValid(sourcePayload, translated, targetLocale) {
+  if (!translated || typeof translated !== 'object') return false;
+  const sourceText = [sourcePayload.title, sourcePayload.summary, ...(sourcePayload.ingredients || []), ...(sourcePayload.instructions || [])]
+    .join('\n')
+    .trim();
+  const translatedText = [translated.title, translated.summary, ...(translated.ingredients || []), ...(translated.instructions || [])]
+    .join('\n')
+    .trim();
+  if (!translatedText || translatedText === sourceText) return false;
+
+  if (targetLocale === 'zh-Hant') {
+    return (translatedText.match(/[\u3400-\u9fff]/g) || []).length >= 3;
+  }
+  if (targetLocale === 'ja') {
+    return (translatedText.match(/[\u3040-\u30ff]/g) || []).length >= 3;
+  }
+  return (translatedText.match(/[A-Za-z]/g) || []).length >= 8;
+}
+
 async function translateTextViaGoogle(text, sourceLocale, targetLocale, translationConfig) {
   const sourceText = String(text || '').trim();
   if (!sourceText) return '';
@@ -489,46 +512,68 @@ async function translateTextViaGoogle(text, sourceLocale, targetLocale, translat
     q: sourceText
   });
 
-  const response = await fetch(`${GOOGLE_TRANSLATE_API}?${params.toString()}`, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+  let lastError = null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      const response = await fetch(`${GOOGLE_TRANSLATE_API}?${params.toString()}`, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`google translate request failed (${response.status})`);
+      }
+
+      const body = await response.text();
+      const translated = parseGoogleTranslatePayload(body);
+      if (!translated) throw new Error('google translate returned an empty response');
+      if (translationConfig?.lineCache) {
+        translationConfig.lineCache.set(cacheKey, translated);
+      }
+      return translated;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 4) await wait(400 * 2 ** attempt);
     }
-  });
-  if (!response.ok) {
-    throw new Error(`google translate request failed (${response.status})`);
   }
 
-  const body = await response.text();
-  const translated = parseGoogleTranslatePayload(body);
-  const out = translated || sourceText;
-  if (translationConfig?.lineCache) {
-    translationConfig.lineCache.set(cacheKey, out);
-  }
-  return out;
+  throw lastError || new Error('google translate request failed');
 }
 
 async function translateLineArrayViaGoogle(lines, sourceLocale, targetLocale, translationConfig) {
   const sourceLines = Array.isArray(lines) ? lines.map((line) => String(line || '').trim()).filter(Boolean) : [];
   if (sourceLines.length === 0) return [];
 
-  const translated = new Array(sourceLines.length).fill('');
-  const concurrency = 6;
+  const delimiterToken = '__CHIEF_FAFA_LINE_BREAK__';
+  const delimiter = `\n${delimiterToken}\n`;
+  const chunks = [];
+  let chunk = [];
+  let chunkLength = 0;
 
-  for (let i = 0; i < sourceLines.length; i += concurrency) {
-    const slice = sourceLines.slice(i, i + concurrency);
-    const batch = await Promise.all(
-      slice.map(async (line) => {
-        try {
-          return await translateTextViaGoogle(line, sourceLocale, targetLocale, translationConfig);
-        } catch {
-          return line;
-        }
-      })
-    );
-    for (let j = 0; j < batch.length; j += 1) {
-      translated[i + j] = String(batch[j] || '').trim() || sourceLines[i + j];
+  for (const line of sourceLines) {
+    const nextLength = chunkLength + line.length + (chunk.length > 0 ? delimiter.length : 0);
+    if (chunk.length > 0 && (chunk.length >= 20 || nextLength > 1200)) {
+      chunks.push(chunk);
+      chunk = [];
+      chunkLength = 0;
     }
+    chunk.push(line);
+    chunkLength += line.length + (chunk.length > 1 ? delimiter.length : 0);
+  }
+  if (chunk.length > 0) chunks.push(chunk);
+
+  const translated = [];
+  for (const sourceChunk of chunks) {
+    const joined = sourceChunk.join(delimiter);
+    const translatedChunk = await translateTextViaGoogle(joined, sourceLocale, targetLocale, translationConfig);
+    const parts = translatedChunk
+      .split(new RegExp(`\\s*${delimiterToken}\\s*`, 'g'))
+      .map((line) => line.trim());
+    if (parts.length !== sourceChunk.length || parts.some((line) => !line)) {
+      throw new Error('google translate did not preserve recipe line boundaries');
+    }
+    translated.push(...parts);
   }
 
   return translated;
@@ -596,21 +641,37 @@ async function translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, tar
 }
 
 async function translateRecipeContentWithGoogle(sourcePayload, sourceLocale, targetLocale, translationConfig) {
-  const [title, summary, ingredients, instructions, notes] = await Promise.all([
-    translateTextViaGoogle(sourcePayload.title, sourceLocale, targetLocale, translationConfig).catch(() => sourcePayload.title),
-    translateTextViaGoogle(sourcePayload.summary, sourceLocale, targetLocale, translationConfig).catch(() => sourcePayload.summary),
-    translateLineArrayViaGoogle(sourcePayload.ingredients, sourceLocale, targetLocale, translationConfig),
-    translateLineArrayViaGoogle(sourcePayload.instructions, sourceLocale, targetLocale, translationConfig),
-    translateLineArrayViaGoogle(sourcePayload.notes, sourceLocale, targetLocale, translationConfig)
-  ]);
+  const ingredientCount = sourcePayload.ingredients.length;
+  const instructionCount = sourcePayload.instructions.length;
+  const noteCount = sourcePayload.notes.length;
+  const lines = [
+    sourcePayload.title,
+    sourcePayload.summary,
+    ...sourcePayload.ingredients,
+    ...sourcePayload.instructions,
+    ...sourcePayload.notes
+  ];
+  const translatedLines = await translateLineArrayViaGoogle(lines, sourceLocale, targetLocale, translationConfig);
+  let offset = 0;
+  const title = translatedLines[offset++];
+  const summary = translatedLines[offset++];
+  const ingredients = translatedLines.slice(offset, offset + ingredientCount);
+  offset += ingredientCount;
+  const instructions = translatedLines.slice(offset, offset + instructionCount);
+  offset += instructionCount;
+  const notes = translatedLines.slice(offset, offset + noteCount);
 
-  return {
+  const translated = {
     title: safeString(title, sourcePayload.title),
     summary: safeString(summary, sourcePayload.summary),
     ingredients: normalizeLineArray(ingredients, sourcePayload.ingredients),
     instructions: normalizeLineArray(instructions, sourcePayload.instructions),
     notes: normalizeLineArray(notes, sourcePayload.notes)
   };
+  if (!recipeTranslationLooksValid(sourcePayload, translated, targetLocale)) {
+    throw new Error(`google translate returned content that does not match ${localeLabel(targetLocale)}`);
+  }
+  return translated;
 }
 
 function siteAssetToLocalPath(assetPath) {
@@ -716,6 +777,9 @@ async function translateRecipeContent(source, sourceLocale, targetLocale, transl
   } else {
     try {
       translated = await translateRecipeContentWithOpenAI(sourcePayload, sourceLocale, targetLocale, translationConfig);
+      if (!recipeTranslationLooksValid(sourcePayload, translated, targetLocale)) {
+        throw new Error(`translation response does not match ${localeLabel(targetLocale)}`);
+      }
     } catch (error) {
       process.stderr.write(
         `Warning: OpenAI translation failed (${sourceLocale} -> ${targetLocale}): ${error?.message || 'unknown error'}\n`
